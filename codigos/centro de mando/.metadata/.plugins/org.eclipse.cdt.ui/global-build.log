@@ -1,0 +1,1115 @@
+22:41:34 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-gcc -o "centro_de_mando.elf" @"objects.list"   -mcpu=cortex-m4 -T"A:\universidad\tesis\control de mando\codigo\centro de mando\centro_de_mando\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="centro_de_mando.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+A:/descargas/stm32/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/bin/ld.exe: ./Core/Src/main.o: in function `main':
+A:/universidad/tesis/control de mando/codigo/centro de mando/centro_de_mando/Debug/../Core/Src/main.c:73:(.text.main+0xa): undefined reference to `SystemClock_Config'
+A:/descargas/stm32/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/bin/ld.exe: ./Core/Src/usart.o: in function `MX_USART2_UART_Init':
+A:/universidad/tesis/control de mando/codigo/centro de mando/centro_de_mando/Debug/../Core/Src/usart.c:53:(.text.MX_USART2_UART_Init+0x4e): undefined reference to `Error_Handler'
+A:/descargas/stm32/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/bin/ld.exe: ./Core/Src/usart.o: in function `HAL_UART_MspInit':
+A:/universidad/tesis/control de mando/codigo/centro de mando/centro_de_mando/Debug/../Core/Src/usart.c:78:(.text.HAL_UART_MspInit+0x48): undefined reference to `Error_Handler'
+A:/descargas/stm32/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/bin/ld.exe: ./Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.o: in function `HAL_NVIC_SetPriorityGrouping':
+A:/universidad/tesis/control de mando/codigo/centro de mando/centro_de_mando/Debug/../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c:166:(.text.HAL_NVIC_SetPriorityGrouping+0x2a): undefined reference to `assert_failed'
+A:/descargas/stm32/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/bin/ld.exe: ./Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.o: in function `HAL_NVIC_SetPriority':
+A:/universidad/tesis/control de mando/codigo/centro de mando/centro_de_mando/Debug/../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c:190:(.text.HAL_NVIC_SetPriority+0x1c): undefined reference to `assert_failed'
+A:/descargas/stm32/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/bin/ld.exe: A:/universidad/tesis/control de mando/codigo/centro de mando/centro_de_mando/Debug/../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c:191:(.text.HAL_NVIC_SetPriority+0x2a): undefined reference to `assert_failed'
+A:/descargas/stm32/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/bin/ld.exe: ./Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_gpio.o: in function `HAL_GPIO_Init':
+A:/universidad/tesis/control de mando/codigo/centro de mando/centro_de_mando/Debug/../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_gpio.c:170:(.text.HAL_GPIO_Init+0x32): undefined reference to `assert_failed'
+A:/descargas/stm32/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/bin/ld.exe: A:/universidad/tesis/control de mando/codigo/centro de mando/centro_de_mando/Debug/../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_gpio.c:171:(.text.HAL_GPIO_Init+0x4e): undefined reference to `assert_failed'
+A:/descargas/stm32/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/bin/ld.exe: ./Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_gpio.o:A:/universidad/tesis/control de mando/codigo/centro de mando/centro_de_mando/Debug/../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_gpio.c:172: more undefined references to `assert_failed' follow
+collect2.exe: error: ld returned 1 exit status
+make: *** [makefile:67: centro_de_mando.elf] Error 1
+"make -j16 all" terminated with exit code 2. Build might be incomplete.
+22:43:56 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "centro_de_mando.elf" @"objects.list"   -mcpu=cortex-m4 -T"A:\universidad\tesis\control de mando\codigo\centro de mando\centro_de_mando\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="centro_de_mando.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: centro_de_mando.elf
+ 
+arm-none-eabi-size  centro_de_mando.elf 
+arm-none-eabi-objdump -h -S centro_de_mando.elf  > "centro_de_mando.list"
+   text	   data	    bss	    dec	    hex	filename
+  14876	     12	   1708	  16596	   40d4	centro_de_mando.elf
+arm-none-eabi-objcopy  -O ihex centro_de_mando.elf  "centro_de_mando.hex"
+Finished building: default.size.stdout
+ 
+Finished building: centro_de_mando.hex
+ 
+Finished building: centro_de_mando.list
+ 
+22:46:57 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:101:5: warning: implicit declaration of function 'SystemClock_Config'; did you mean 'SysTick_Config'? [-Wimplicit-function-declaration]
+  101 |     SystemClock_Config();
+      |     ^~~~~~~~~~~~~~~~~~
+      |     SysTick_Config
+arm-none-eabi-gcc -o "centro_de_mando.elf" @"objects.list"   -mcpu=cortex-m4 -T"A:\universidad\tesis\control de mando\codigo\centro de mando\centro_de_mando\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="centro_de_mando.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+A:/descargas/stm32/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/bin/ld.exe: ./Core/Src/main.o: in function `main':
+A:/universidad/tesis/control de mando/codigo/centro de mando/centro_de_mando/Debug/../Core/Src/main.c:101:(.text.main+0xa): undefined reference to `SystemClock_Config'
+A:/descargas/stm32/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/bin/ld.exe: ./Core/Src/usart.o: in function `MX_USART2_UART_Init':
+A:/universidad/tesis/control de mando/codigo/centro de mando/centro_de_mando/Debug/../Core/Src/usart.c:53:(.text.MX_USART2_UART_Init+0x4e): undefined reference to `Error_Handler'
+A:/descargas/stm32/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/bin/ld.exe: ./Core/Src/usart.o: in function `HAL_UART_MspInit':
+A:/universidad/tesis/control de mando/codigo/centro de mando/centro_de_mando/Debug/../Core/Src/usart.c:78:(.text.HAL_UART_MspInit+0x48): undefined reference to `Error_Handler'
+A:/descargas/stm32/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/bin/ld.exe: ./Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.o: in function `HAL_NVIC_SetPriorityGrouping':
+A:/universidad/tesis/control de mando/codigo/centro de mando/centro_de_mando/Debug/../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c:166:(.text.HAL_NVIC_SetPriorityGrouping+0x2a): undefined reference to `assert_failed'
+A:/descargas/stm32/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/bin/ld.exe: ./Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.o: in function `HAL_NVIC_SetPriority':
+A:/universidad/tesis/control de mando/codigo/centro de mando/centro_de_mando/Debug/../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c:190:(.text.HAL_NVIC_SetPriority+0x1c): undefined reference to `assert_failed'
+A:/descargas/stm32/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/bin/ld.exe: A:/universidad/tesis/control de mando/codigo/centro de mando/centro_de_mando/Debug/../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c:191:(.text.HAL_NVIC_SetPriority+0x2a): undefined reference to `assert_failed'
+A:/descargas/stm32/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/bin/ld.exe: ./Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_gpio.o: in function `HAL_GPIO_Init':
+A:/universidad/tesis/control de mando/codigo/centro de mando/centro_de_mando/Debug/../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_gpio.c:170:(.text.HAL_GPIO_Init+0x32): undefined reference to `assert_failed'
+A:/descargas/stm32/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/bin/ld.exe: A:/universidad/tesis/control de mando/codigo/centro de mando/centro_de_mando/Debug/../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_gpio.c:171:(.text.HAL_GPIO_Init+0x4e): undefined reference to `assert_failed'
+A:/descargas/stm32/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/bin/ld.exe: ./Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_gpio.o:A:/universidad/tesis/control de mando/codigo/centro de mando/centro_de_mando/Debug/../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_gpio.c:172: more undefined references to `assert_failed' follow
+collect2.exe: error: ld returned 1 exit status
+make: *** [makefile:67: centro_de_mando.elf] Error 1
+"make -j16 all" terminated with exit code 2. Build might be incomplete.
+22:48:01 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:214:23: warning: implicit declaration of function 'printf' [-Wimplicit-function-declaration]
+  214 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d\r\n",
+      |                       ^~~~~~
+../Core/Src/main.c:23:1: note: include '<stdio.h>' or provide a declaration of 'printf'
+   22 | #include "gpio.h"
+  +++ |+#include <stdio.h>
+   23 | 
+../Core/Src/main.c:214:23: warning: incompatible implicit declaration of built-in function 'printf' [-Wbuiltin-declaration-mismatch]
+  214 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d\r\n",
+      |                       ^~~~~~
+../Core/Src/main.c:214:23: note: include '<stdio.h>' or provide a declaration of 'printf'
+../Core/Src/main.c: At top level:
+../Core/Src/main.c:225:1: error: expected identifier or '(' before '}' token
+  225 | }
+      | ^
+make: *** [Core/Src/subdir.mk:40: Core/Src/main.o] Error 1
+"make -j16 all" terminated with exit code 2. Build might be incomplete.
+22:48:13 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:214:23: warning: implicit declaration of function 'printf' [-Wimplicit-function-declaration]
+  214 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d\r\n",
+      |                       ^~~~~~
+../Core/Src/main.c:23:1: note: include '<stdio.h>' or provide a declaration of 'printf'
+   22 | #include "gpio.h"
+  +++ |+#include <stdio.h>
+   23 | 
+../Core/Src/main.c:214:23: warning: incompatible implicit declaration of built-in function 'printf' [-Wbuiltin-declaration-mismatch]
+  214 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d\r\n",
+      |                       ^~~~~~
+../Core/Src/main.c:214:23: note: include '<stdio.h>' or provide a declaration of 'printf'
+arm-none-eabi-gcc -o "centro_de_mando.elf" @"objects.list"   -mcpu=cortex-m4 -T"A:\universidad\tesis\control de mando\codigo\centro de mando\centro_de_mando\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="centro_de_mando.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: centro_de_mando.elf
+ 
+arm-none-eabi-size  centro_de_mando.elf 
+arm-none-eabi-objdump -h -S centro_de_mando.elf  > "centro_de_mando.list"
+   text	   data	    bss	    dec	    hex	filename
+  20828	    104	   2080	  23012	   59e4	centro_de_mando.elf
+arm-none-eabi-objcopy  -O ihex centro_de_mando.elf  "centro_de_mando.hex"
+Finished building: default.size.stdout
+ 
+Finished building: centro_de_mando.hex
+ 
+Finished building: centro_de_mando.list
+ 
+22:48:34 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:214:23: warning: implicit declaration of function 'printf' [-Wimplicit-function-declaration]
+  214 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d\r\n",
+      |                       ^~~~~~
+../Core/Src/main.c:23:1: note: include '<stdio.h>' or provide a declaration of 'printf'
+   22 | #include "gpio.h"
+  +++ |+#include <stdio.h>
+   23 | 
+../Core/Src/main.c:214:23: warning: incompatible implicit declaration of built-in function 'printf' [-Wbuiltin-declaration-mismatch]
+  214 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d\r\n",
+      |                       ^~~~~~
+../Core/Src/main.c:214:23: note: include '<stdio.h>' or provide a declaration of 'printf'
+arm-none-eabi-gcc -o "centro_de_mando.elf" @"objects.list"   -mcpu=cortex-m4 -T"A:\universidad\tesis\control de mando\codigo\centro de mando\centro_de_mando\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="centro_de_mando.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: centro_de_mando.elf
+ 
+arm-none-eabi-size  centro_de_mando.elf 
+arm-none-eabi-objdump -h -S centro_de_mando.elf  > "centro_de_mando.list"
+   text	   data	    bss	    dec	    hex	filename
+  20828	    104	   2080	  23012	   59e4	centro_de_mando.elf
+arm-none-eabi-objcopy  -O ihex centro_de_mando.elf  "centro_de_mando.hex"
+Finished building: default.size.stdout
+ 
+Finished building: centro_de_mando.hex
+ 
+Finished building: centro_de_mando.list
+ 
+22:49:59 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:215:23: warning: implicit declaration of function 'printf' [-Wimplicit-function-declaration]
+  215 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d\r\n",
+      |                       ^~~~~~
+../Core/Src/main.c:23:1: note: include '<stdio.h>' or provide a declaration of 'printf'
+   22 | #include "gpio.h"
+  +++ |+#include <stdio.h>
+   23 | 
+../Core/Src/main.c:215:23: warning: incompatible implicit declaration of built-in function 'printf' [-Wbuiltin-declaration-mismatch]
+  215 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d\r\n",
+      |                       ^~~~~~
+../Core/Src/main.c:215:23: note: include '<stdio.h>' or provide a declaration of 'printf'
+arm-none-eabi-gcc -o "centro_de_mando.elf" @"objects.list"   -mcpu=cortex-m4 -T"A:\universidad\tesis\control de mando\codigo\centro de mando\centro_de_mando\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="centro_de_mando.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: centro_de_mando.elf
+ 
+arm-none-eabi-size  centro_de_mando.elf 
+arm-none-eabi-objdump -h -S centro_de_mando.elf  > "centro_de_mando.list"
+   text	   data	    bss	    dec	    hex	filename
+  20820	    104	   2080	  23004	   59dc	centro_de_mando.elf
+arm-none-eabi-objcopy  -O ihex centro_de_mando.elf  "centro_de_mando.hex"
+Finished building: default.size.stdout
+ 
+Finished building: centro_de_mando.hex
+ 
+Finished building: centro_de_mando.list
+ 
+22:50:02 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-size  centro_de_mando.elf 
+   text	   data	    bss	    dec	    hex	filename
+  20820	    104	   2080	  23004	   59dc	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+22:50:11 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-size  centro_de_mando.elf 
+   text	   data	    bss	    dec	    hex	filename
+  20820	    104	   2080	  23004	   59dc	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+22:50:35 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:215:23: warning: implicit declaration of function 'printf' [-Wimplicit-function-declaration]
+  215 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d\r\n",
+      |                       ^~~~~~
+../Core/Src/main.c:23:1: note: include '<stdio.h>' or provide a declaration of 'printf'
+   22 | #include "gpio.h"
+  +++ |+#include <stdio.h>
+   23 | 
+../Core/Src/main.c:215:23: warning: incompatible implicit declaration of built-in function 'printf' [-Wbuiltin-declaration-mismatch]
+  215 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d\r\n",
+      |                       ^~~~~~
+../Core/Src/main.c:215:23: note: include '<stdio.h>' or provide a declaration of 'printf'
+arm-none-eabi-gcc -o "centro_de_mando.elf" @"objects.list"   -mcpu=cortex-m4 -T"A:\universidad\tesis\control de mando\codigo\centro de mando\centro_de_mando\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="centro_de_mando.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: centro_de_mando.elf
+ 
+arm-none-eabi-size  centro_de_mando.elf 
+arm-none-eabi-objdump -h -S centro_de_mando.elf  > "centro_de_mando.list"
+   text	   data	    bss	    dec	    hex	filename
+  20820	    104	   2080	  23004	   59dc	centro_de_mando.elf
+arm-none-eabi-objcopy  -O ihex centro_de_mando.elf  "centro_de_mando.hex"
+Finished building: default.size.stdout
+ 
+Finished building: centro_de_mando.hex
+ 
+Finished building: centro_de_mando.list
+ 
+22:50:42 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-size  centro_de_mando.elf 
+   text	   data	    bss	    dec	    hex	filename
+  20820	    104	   2080	  23004	   59dc	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+22:50:52 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-size  centro_de_mando.elf 
+   text	   data	    bss	    dec	    hex	filename
+  20820	    104	   2080	  23004	   59dc	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+22:59:38 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:238:23: warning: implicit declaration of function 'printf' [-Wimplicit-function-declaration]
+  238 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d\r\n",
+      |                       ^~~~~~
+../Core/Src/main.c:23:1: note: include '<stdio.h>' or provide a declaration of 'printf'
+   22 | #include "gpio.h"
+  +++ |+#include <stdio.h>
+   23 | 
+../Core/Src/main.c:238:23: warning: incompatible implicit declaration of built-in function 'printf' [-Wbuiltin-declaration-mismatch]
+  238 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d\r\n",
+      |                       ^~~~~~
+../Core/Src/main.c:238:23: note: include '<stdio.h>' or provide a declaration of 'printf'
+arm-none-eabi-gcc -o "centro_de_mando.elf" @"objects.list"   -mcpu=cortex-m4 -T"A:\universidad\tesis\control de mando\codigo\centro de mando\centro_de_mando\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="centro_de_mando.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: centro_de_mando.elf
+ 
+arm-none-eabi-size  centro_de_mando.elf 
+arm-none-eabi-objdump -h -S centro_de_mando.elf  > "centro_de_mando.list"
+   text	   data	    bss	    dec	    hex	filename
+  20848	    104	   2080	  23032	   59f8	centro_de_mando.elf
+arm-none-eabi-objcopy  -O ihex centro_de_mando.elf  "centro_de_mando.hex"
+Finished building: default.size.stdout
+ 
+Finished building: centro_de_mando.hex
+ 
+Finished building: centro_de_mando.list
+ 
+23:00:08 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:240:23: warning: implicit declaration of function 'printf' [-Wimplicit-function-declaration]
+  240 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d\r\n",
+      |                       ^~~~~~
+../Core/Src/main.c:23:1: note: include '<stdio.h>' or provide a declaration of 'printf'
+   22 | #include "gpio.h"
+  +++ |+#include <stdio.h>
+   23 | 
+../Core/Src/main.c:240:23: warning: incompatible implicit declaration of built-in function 'printf' [-Wbuiltin-declaration-mismatch]
+  240 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d\r\n",
+      |                       ^~~~~~
+../Core/Src/main.c:240:23: note: include '<stdio.h>' or provide a declaration of 'printf'
+arm-none-eabi-gcc -o "centro_de_mando.elf" @"objects.list"   -mcpu=cortex-m4 -T"A:\universidad\tesis\control de mando\codigo\centro de mando\centro_de_mando\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="centro_de_mando.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: centro_de_mando.elf
+ 
+arm-none-eabi-size  centro_de_mando.elf 
+arm-none-eabi-objdump -h -S centro_de_mando.elf  > "centro_de_mando.list"
+   text	   data	    bss	    dec	    hex	filename
+  20852	    104	   2080	  23036	   59fc	centro_de_mando.elf
+arm-none-eabi-objcopy  -O ihex centro_de_mando.elf  "centro_de_mando.hex"
+Finished building: default.size.stdout
+ 
+Finished building: centro_de_mando.hex
+ 
+Finished building: centro_de_mando.list
+ 
+00:06:41 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:244:23: warning: implicit declaration of function 'printf' [-Wimplicit-function-declaration]
+  244 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d\r\n",
+      |                       ^~~~~~
+../Core/Src/main.c:23:1: note: include '<stdio.h>' or provide a declaration of 'printf'
+   22 | #include "gpio.h"
+  +++ |+#include <stdio.h>
+   23 | 
+../Core/Src/main.c:244:23: warning: incompatible implicit declaration of built-in function 'printf' [-Wbuiltin-declaration-mismatch]
+  244 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d\r\n",
+      |                       ^~~~~~
+../Core/Src/main.c:244:23: note: include '<stdio.h>' or provide a declaration of 'printf'
+../Core/Src/main.c:245:89: error: 'eventTimesta' undeclared (first use in this function); did you mean 'eventTimestamp'?
+  245 |                              btn1, btn2, btn3, btn4, btn_suction, enc1_send, enc2_send, eventTimesta);
+      |                                                                                         ^~~~~~~~~~~~
+      |                                                                                         eventTimestamp
+../Core/Src/main.c:245:89: note: each undeclared identifier is reported only once for each function it appears in
+make: *** [Core/Src/subdir.mk:40: Core/Src/main.o] Error 1
+"make -j16 all" terminated with exit code 2. Build might be incomplete.
+00:07:31 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:244:23: warning: implicit declaration of function 'printf' [-Wimplicit-function-declaration]
+  244 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d\r\n T:%lu\r\n"",
+      |                       ^~~~~~
+../Core/Src/main.c:23:1: note: include '<stdio.h>' or provide a declaration of 'printf'
+   22 | #include "gpio.h"
+  +++ |+#include <stdio.h>
+   23 | 
+../Core/Src/main.c:244:23: warning: incompatible implicit declaration of built-in function 'printf' [-Wbuiltin-declaration-mismatch]
+  244 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d\r\n T:%lu\r\n"",
+      |                       ^~~~~~
+../Core/Src/main.c:244:23: note: include '<stdio.h>' or provide a declaration of 'printf'
+../Core/Src/main.c:244:87: warning: missing terminating " character
+  244 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d\r\n T:%lu\r\n"",
+      |                                                                                       ^
+../Core/Src/main.c:244:87: error: missing terminating " character
+  244 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d\r\n T:%lu\r\n"",
+      |                                                                                       ^~
+../Core/Src/main.c:244:87: error: expected ')' before 'btn1'
+  244 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d\r\n T:%lu\r\n"",
+      |                             ~                                                         ^
+      |                                                                                       )
+  245 |                              btn1, btn2, btn3, btn4, btn_suction, enc1_send, enc2_send, eventTimesta);
+      |                              ~~~~                                                      
+../Core/Src/main.c:244:35: warning: format '%d' expects a matching 'int' argument [-Wformat=]
+  244 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d\r\n T:%lu\r\n"",
+      |                                  ~^
+      |                                   |
+      |                                   int
+../Core/Src/main.c:244:41: warning: format '%d' expects a matching 'int' argument [-Wformat=]
+  244 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d\r\n T:%lu\r\n"",
+      |                                        ~^
+      |                                         |
+      |                                         int
+../Core/Src/main.c:244:47: warning: format '%d' expects a matching 'int' argument [-Wformat=]
+  244 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d\r\n T:%lu\r\n"",
+      |                                              ~^
+      |                                               |
+      |                                               int
+../Core/Src/main.c:244:53: warning: format '%d' expects a matching 'int' argument [-Wformat=]
+  244 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d\r\n T:%lu\r\n"",
+      |                                                    ~^
+      |                                                     |
+      |                                                     int
+../Core/Src/main.c:244:59: warning: format '%d' expects a matching 'int' argument [-Wformat=]
+  244 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d\r\n T:%lu\r\n"",
+      |                                                          ~^
+      |                                                           |
+      |                                                           int
+../Core/Src/main.c:244:65: warning: format '%d' expects a matching 'int' argument [-Wformat=]
+  244 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d\r\n T:%lu\r\n"",
+      |                                                                ~^
+      |                                                                 |
+      |                                                                 int
+../Core/Src/main.c:244:71: warning: format '%d' expects a matching 'int' argument [-Wformat=]
+  244 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d\r\n T:%lu\r\n"",
+      |                                                                      ~^
+      |                                                                       |
+      |                                                                       int
+../Core/Src/main.c:244:81: warning: format '%lu' expects a matching 'long unsigned int' argument [-Wformat=]
+  244 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d\r\n T:%lu\r\n"",
+      |                                                                               ~~^
+      |                                                                                 |
+      |                                                                                 long unsigned int
+make: *** [Core/Src/subdir.mk:40: Core/Src/main.o] Error 1
+"make -j16 all" terminated with exit code 2. Build might be incomplete.
+00:07:50 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:244:23: warning: implicit declaration of function 'printf' [-Wimplicit-function-declaration]
+  244 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d T:%lu\r\n"",
+      |                       ^~~~~~
+../Core/Src/main.c:23:1: note: include '<stdio.h>' or provide a declaration of 'printf'
+   22 | #include "gpio.h"
+  +++ |+#include <stdio.h>
+   23 | 
+../Core/Src/main.c:244:23: warning: incompatible implicit declaration of built-in function 'printf' [-Wbuiltin-declaration-mismatch]
+  244 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d T:%lu\r\n"",
+      |                       ^~~~~~
+../Core/Src/main.c:244:23: note: include '<stdio.h>' or provide a declaration of 'printf'
+../Core/Src/main.c:244:83: warning: missing terminating " character
+  244 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d T:%lu\r\n"",
+      |                                                                                   ^
+../Core/Src/main.c:244:83: error: missing terminating " character
+  244 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d T:%lu\r\n"",
+      |                                                                                   ^~
+../Core/Src/main.c:244:83: error: expected ')' before 'btn1'
+  244 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d T:%lu\r\n"",
+      |                             ~                                                     ^
+      |                                                                                   )
+  245 |                              btn1, btn2, btn3, btn4, btn_suction, enc1_send, enc2_send, eventTimesta);
+      |                              ~~~~                                                  
+../Core/Src/main.c:244:35: warning: format '%d' expects a matching 'int' argument [-Wformat=]
+  244 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d T:%lu\r\n"",
+      |                                  ~^
+      |                                   |
+      |                                   int
+../Core/Src/main.c:244:41: warning: format '%d' expects a matching 'int' argument [-Wformat=]
+  244 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d T:%lu\r\n"",
+      |                                        ~^
+      |                                         |
+      |                                         int
+../Core/Src/main.c:244:47: warning: format '%d' expects a matching 'int' argument [-Wformat=]
+  244 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d T:%lu\r\n"",
+      |                                              ~^
+      |                                               |
+      |                                               int
+../Core/Src/main.c:244:53: warning: format '%d' expects a matching 'int' argument [-Wformat=]
+  244 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d T:%lu\r\n"",
+      |                                                    ~^
+      |                                                     |
+      |                                                     int
+../Core/Src/main.c:244:59: warning: format '%d' expects a matching 'int' argument [-Wformat=]
+  244 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d T:%lu\r\n"",
+      |                                                          ~^
+      |                                                           |
+      |                                                           int
+../Core/Src/main.c:244:65: warning: format '%d' expects a matching 'int' argument [-Wformat=]
+  244 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d T:%lu\r\n"",
+      |                                                                ~^
+      |                                                                 |
+      |                                                                 int
+../Core/Src/main.c:244:71: warning: format '%d' expects a matching 'int' argument [-Wformat=]
+  244 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d T:%lu\r\n"",
+      |                                                                      ~^
+      |                                                                       |
+      |                                                                       int
+../Core/Src/main.c:244:77: warning: format '%lu' expects a matching 'long unsigned int' argument [-Wformat=]
+  244 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d T:%lu\r\n"",
+      |                                                                           ~~^
+      |                                                                             |
+      |                                                                             long unsigned int
+make: *** [Core/Src/subdir.mk:40: Core/Src/main.o] Error 1
+"make -j16 all" terminated with exit code 2. Build might be incomplete.
+00:08:44 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:244:23: warning: implicit declaration of function 'printf' [-Wimplicit-function-declaration]
+  244 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d T:%lu\r\n",
+      |                       ^~~~~~
+../Core/Src/main.c:23:1: note: include '<stdio.h>' or provide a declaration of 'printf'
+   22 | #include "gpio.h"
+  +++ |+#include <stdio.h>
+   23 | 
+../Core/Src/main.c:244:23: warning: incompatible implicit declaration of built-in function 'printf' [-Wbuiltin-declaration-mismatch]
+  244 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d T:%lu\r\n",
+      |                       ^~~~~~
+../Core/Src/main.c:244:23: note: include '<stdio.h>' or provide a declaration of 'printf'
+../Core/Src/main.c:245:89: error: 'eventTimesta' undeclared (first use in this function); did you mean 'eventTimestamp'?
+  245 |                              btn1, btn2, btn3, btn4, btn_suction, enc1_send, enc2_send, eventTimesta);
+      |                                                                                         ^~~~~~~~~~~~
+      |                                                                                         eventTimestamp
+../Core/Src/main.c:245:89: note: each undeclared identifier is reported only once for each function it appears in
+make: *** [Core/Src/subdir.mk:40: Core/Src/main.o] Error 1
+"make -j16 all" terminated with exit code 2. Build might be incomplete.
+00:09:45 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:244:23: warning: implicit declaration of function 'printf' [-Wimplicit-function-declaration]
+  244 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d T:%lu\r\n",
+      |                       ^~~~~~
+../Core/Src/main.c:23:1: note: include '<stdio.h>' or provide a declaration of 'printf'
+   22 | #include "gpio.h"
+  +++ |+#include <stdio.h>
+   23 | 
+../Core/Src/main.c:244:23: warning: incompatible implicit declaration of built-in function 'printf' [-Wbuiltin-declaration-mismatch]
+  244 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d T:%lu\r\n",
+      |                       ^~~~~~
+../Core/Src/main.c:244:23: note: include '<stdio.h>' or provide a declaration of 'printf'
+arm-none-eabi-gcc -o "centro_de_mando.elf" @"objects.list"   -mcpu=cortex-m4 -T"A:\universidad\tesis\control de mando\codigo\centro de mando\centro_de_mando\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="centro_de_mando.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: centro_de_mando.elf
+ 
+arm-none-eabi-size  centro_de_mando.elf 
+arm-none-eabi-objdump -h -S centro_de_mando.elf  > "centro_de_mando.list"
+arm-none-eabi-objcopy  -O ihex centro_de_mando.elf  "centro_de_mando.hex"
+   text	   data	    bss	    dec	    hex	filename
+  20884	    104	   2088	  23076	   5a24	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+Finished building: centro_de_mando.hex
+ 
+Finished building: centro_de_mando.list
+ 
+00:09:57 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-size  centro_de_mando.elf 
+   text	   data	    bss	    dec	    hex	filename
+  20884	    104	   2088	  23076	   5a24	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+01:10:51 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:240:23: warning: implicit declaration of function 'printf' [-Wimplicit-function-declaration]
+  240 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d\r\n",
+      |                       ^~~~~~
+../Core/Src/main.c:23:1: note: include '<stdio.h>' or provide a declaration of 'printf'
+   22 | #include "gpio.h"
+  +++ |+#include <stdio.h>
+   23 | 
+../Core/Src/main.c:240:23: warning: incompatible implicit declaration of built-in function 'printf' [-Wbuiltin-declaration-mismatch]
+  240 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d\r\n",
+      |                       ^~~~~~
+../Core/Src/main.c:240:23: note: include '<stdio.h>' or provide a declaration of 'printf'
+arm-none-eabi-gcc -o "centro_de_mando.elf" @"objects.list"   -mcpu=cortex-m4 -T"A:\universidad\tesis\control de mando\codigo\centro de mando\centro_de_mando\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="centro_de_mando.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: centro_de_mando.elf
+ 
+arm-none-eabi-size  centro_de_mando.elf 
+arm-none-eabi-objdump -h -S centro_de_mando.elf  > "centro_de_mando.list"
+arm-none-eabi-objcopy  -O ihex centro_de_mando.elf  "centro_de_mando.hex"
+   text	   data	    bss	    dec	    hex	filename
+  20852	    104	   2080	  23036	   59fc	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+Finished building: centro_de_mando.hex
+ 
+Finished building: centro_de_mando.list
+ 
+01:11:02 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-size  centro_de_mando.elf 
+   text	   data	    bss	    dec	    hex	filename
+  20852	    104	   2080	  23036	   59fc	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+01:26:11 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:241:23: warning: implicit declaration of function 'printf' [-Wimplicit-function-declaration]
+  241 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d\r\n",
+      |                       ^~~~~~
+../Core/Src/main.c:23:1: note: include '<stdio.h>' or provide a declaration of 'printf'
+   22 | #include "gpio.h"
+  +++ |+#include <stdio.h>
+   23 | 
+../Core/Src/main.c:241:23: warning: incompatible implicit declaration of built-in function 'printf' [-Wbuiltin-declaration-mismatch]
+  241 |                       printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d\r\n",
+      |                       ^~~~~~
+../Core/Src/main.c:241:23: note: include '<stdio.h>' or provide a declaration of 'printf'
+arm-none-eabi-gcc -o "centro_de_mando.elf" @"objects.list"   -mcpu=cortex-m4 -T"A:\universidad\tesis\control de mando\codigo\centro de mando\centro_de_mando\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="centro_de_mando.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: centro_de_mando.elf
+ 
+arm-none-eabi-size  centro_de_mando.elf 
+arm-none-eabi-objdump -h -S centro_de_mando.elf  > "centro_de_mando.list"
+arm-none-eabi-objcopy  -O ihex centro_de_mando.elf  "centro_de_mando.hex"
+   text	   data	    bss	    dec	    hex	filename
+  20852	    104	   2080	  23036	   59fc	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+Finished building: centro_de_mando.hex
+ 
+Finished building: centro_de_mando.list
+ 
+01:26:23 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-size  centro_de_mando.elf 
+   text	   data	    bss	    dec	    hex	filename
+  20852	    104	   2080	  23036	   59fc	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+11:35:18 **** Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-gcc "../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal.d" -MT"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal.o"
+arm-none-eabi-gcc "../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.d" -MT"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.o"
+arm-none-eabi-gcc "../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma.d" -MT"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma.o"
+arm-none-eabi-gcc "../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma_ex.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma_ex.d" -MT"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma_ex.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma_ex.o"
+arm-none-eabi-gcc "../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_exti.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_exti.d" -MT"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_exti.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_exti.o"
+arm-none-eabi-gcc "../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash.d" -MT"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash.o"
+arm-none-eabi-gcc "../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash_ex.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash_ex.d" -MT"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash_ex.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash_ex.o"
+arm-none-eabi-gcc "../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash_ramfunc.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash_ramfunc.d" -MT"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash_ramfunc.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash_ramfunc.o"
+arm-none-eabi-gcc "../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_gpio.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_gpio.d" -MT"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_gpio.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_gpio.o"
+arm-none-eabi-gcc "../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c.d" -MT"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c.o"
+arm-none-eabi-gcc "../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c_ex.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c_ex.d" -MT"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c_ex.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c_ex.o"
+arm-none-eabi-gcc "../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr.d" -MT"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr.o"
+arm-none-eabi-gcc "../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr_ex.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr_ex.d" -MT"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr_ex.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr_ex.o"
+arm-none-eabi-gcc "../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc.d" -MT"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc.o"
+arm-none-eabi-gcc "../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc_ex.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc_ex.d" -MT"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc_ex.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc_ex.o"
+arm-none-eabi-gcc "../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim.d" -MT"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim.o"
+arm-none-eabi-gcc "../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim_ex.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim_ex.d" -MT"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim_ex.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim_ex.o"
+arm-none-eabi-gcc "../Core/Src/gpio.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/gpio.d" -MT"Core/Src/gpio.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/gpio.o"
+arm-none-eabi-gcc "../Core/Src/i2c.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/i2c.d" -MT"Core/Src/i2c.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/i2c.o"
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc "../Core/Src/stm32l4xx_hal_msp.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/stm32l4xx_hal_msp.d" -MT"Core/Src/stm32l4xx_hal_msp.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/stm32l4xx_hal_msp.o"
+arm-none-eabi-gcc "../Core/Src/stm32l4xx_it.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/stm32l4xx_it.d" -MT"Core/Src/stm32l4xx_it.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/stm32l4xx_it.o"
+arm-none-eabi-gcc "../Core/Src/syscalls.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/syscalls.d" -MT"Core/Src/syscalls.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/syscalls.o"
+arm-none-eabi-gcc "../Core/Src/sysmem.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/sysmem.d" -MT"Core/Src/sysmem.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/sysmem.o"
+arm-none-eabi-gcc "../Core/Src/system_stm32l4xx.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/system_stm32l4xx.d" -MT"Core/Src/system_stm32l4xx.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/system_stm32l4xx.o"
+arm-none-eabi-gcc "../Core/Src/tim.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/tim.d" -MT"Core/Src/tim.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/tim.o"
+../Core/Src/main.c: In function '_write':
+../Core/Src/main.c:123:5: warning: implicit declaration of function 'HAL_UART_Transmit' [-Wimplicit-function-declaration]
+  123 |     HAL_UART_Transmit(&huart2, (uint8_t*)ptr, len, HAL_MAX_DELAY);
+      |     ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:123:24: error: 'huart2' undeclared (first use in this function)
+  123 |     HAL_UART_Transmit(&huart2, (uint8_t*)ptr, len, HAL_MAX_DELAY);
+      |                        ^~~~~~
+../Core/Src/main.c:123:24: note: each undeclared identifier is reported only once for each function it appears in
+../Core/Src/main.c: At top level:
+../Core/Src/main.c:135:30: error: unknown type name 'UART_HandleTypeDef'; did you mean 'TIM_HandleTypeDef'?
+  135 | void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+      |                              ^~~~~~~~~~~~~~~~~~
+      |                              TIM_HandleTypeDef
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:196:3: warning: implicit declaration of function 'HAL_UART_Receive_IT'; did you mean 'HAL_I2C_Slave_Receive_IT'? [-Wimplicit-function-declaration]
+  196 |   HAL_UART_Receive_IT(&huart2, &rx_byte, 1);
+      |   ^~~~~~~~~~~~~~~~~~~
+      |   HAL_I2C_Slave_Receive_IT
+../Core/Src/main.c:196:24: error: 'huart2' undeclared (first use in this function)
+  196 |   HAL_UART_Receive_IT(&huart2, &rx_byte, 1);
+      |                        ^~~~~~
+../Core/Src/main.c:296:16: warning: implicit declaration of function 'sscanf' [-Wimplicit-function-declaration]
+  296 |             if(sscanf((char*)rx_buffer, "V1:%d", &fuerza_motor) == 1) {
+      |                ^~~~~~
+../Core/Src/main.c:24:1: note: include '<stdio.h>' or provide a declaration of 'sscanf'
+   23 | #include "gpio.h"
+  +++ |+#include <stdio.h>
+   24 | 
+../Core/Src/main.c:296:16: warning: incompatible implicit declaration of built-in function 'sscanf' [-Wbuiltin-declaration-mismatch]
+  296 |             if(sscanf((char*)rx_buffer, "V1:%d", &fuerza_motor) == 1) {
+      |                ^~~~~~
+../Core/Src/main.c:296:16: note: include '<stdio.h>' or provide a declaration of 'sscanf'
+../Core/Src/main.c:334:13: warning: implicit declaration of function 'printf' [-Wimplicit-function-declaration]
+  334 |             printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d IR:%ld IRV:%ld GX:%d GY:%d GZ:%d\r\n",
+      |             ^~~~~~
+../Core/Src/main.c:334:13: note: include '<stdio.h>' or provide a declaration of 'printf'
+../Core/Src/main.c:334:13: warning: incompatible implicit declaration of built-in function 'printf' [-Wbuiltin-declaration-mismatch]
+../Core/Src/main.c:334:13: note: include '<stdio.h>' or provide a declaration of 'printf'
+make: *** [Core/Src/subdir.mk:43: Core/Src/main.o] Error 1
+make: *** Waiting for unfinished jobs....
+"make -j16 all" terminated with exit code 2. Build might be incomplete.
+11:36:23 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function '_write':
+../Core/Src/main.c:123:5: warning: implicit declaration of function 'HAL_UART_Transmit' [-Wimplicit-function-declaration]
+  123 |     HAL_UART_Transmit(&huart2, (uint8_t*)ptr, len, HAL_MAX_DELAY);
+      |     ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:123:24: error: 'huart2' undeclared (first use in this function)
+  123 |     HAL_UART_Transmit(&huart2, (uint8_t*)ptr, len, HAL_MAX_DELAY);
+      |                        ^~~~~~
+../Core/Src/main.c:123:24: note: each undeclared identifier is reported only once for each function it appears in
+../Core/Src/main.c: At top level:
+../Core/Src/main.c:135:30: error: unknown type name 'UART_HandleTypeDef'; did you mean 'TIM_HandleTypeDef'?
+  135 | void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+      |                              ^~~~~~~~~~~~~~~~~~
+      |                              TIM_HandleTypeDef
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:196:3: warning: implicit declaration of function 'HAL_UART_Receive_IT'; did you mean 'HAL_I2C_Slave_Receive_IT'? [-Wimplicit-function-declaration]
+  196 |   HAL_UART_Receive_IT(&huart2, &rx_byte, 1);
+      |   ^~~~~~~~~~~~~~~~~~~
+      |   HAL_I2C_Slave_Receive_IT
+../Core/Src/main.c:196:24: error: 'huart2' undeclared (first use in this function)
+  196 |   HAL_UART_Receive_IT(&huart2, &rx_byte, 1);
+      |                        ^~~~~~
+../Core/Src/main.c:296:16: warning: implicit declaration of function 'sscanf' [-Wimplicit-function-declaration]
+  296 |             if(sscanf((char*)rx_buffer, "V1:%d", &fuerza_motor) == 1) {
+      |                ^~~~~~
+../Core/Src/main.c:24:1: note: include '<stdio.h>' or provide a declaration of 'sscanf'
+   23 | #include "gpio.h"
+  +++ |+#include <stdio.h>
+   24 | 
+../Core/Src/main.c:296:16: warning: incompatible implicit declaration of built-in function 'sscanf' [-Wbuiltin-declaration-mismatch]
+  296 |             if(sscanf((char*)rx_buffer, "V1:%d", &fuerza_motor) == 1) {
+      |                ^~~~~~
+../Core/Src/main.c:296:16: note: include '<stdio.h>' or provide a declaration of 'sscanf'
+../Core/Src/main.c:334:13: warning: implicit declaration of function 'printf' [-Wimplicit-function-declaration]
+  334 |             printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d IR:%ld IRV:%ld GX:%d GY:%d GZ:%d\r\n",
+      |             ^~~~~~
+../Core/Src/main.c:334:13: note: include '<stdio.h>' or provide a declaration of 'printf'
+../Core/Src/main.c:334:13: warning: incompatible implicit declaration of built-in function 'printf' [-Wbuiltin-declaration-mismatch]
+../Core/Src/main.c:334:13: note: include '<stdio.h>' or provide a declaration of 'printf'
+make: *** [Core/Src/subdir.mk:43: Core/Src/main.o] Error 1
+"make -j16 all" terminated with exit code 2. Build might be incomplete.
+11:57:56 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-gcc "../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal.d" -MT"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal.o"
+arm-none-eabi-gcc "../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.d" -MT"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.o"
+arm-none-eabi-gcc "../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma.d" -MT"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma.o"
+arm-none-eabi-gcc "../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma_ex.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma_ex.d" -MT"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma_ex.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma_ex.o"
+arm-none-eabi-gcc "../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_exti.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_exti.d" -MT"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_exti.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_exti.o"
+arm-none-eabi-gcc "../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash.d" -MT"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash.o"
+arm-none-eabi-gcc "../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash_ex.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash_ex.d" -MT"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash_ex.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash_ex.o"
+arm-none-eabi-gcc "../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash_ramfunc.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash_ramfunc.d" -MT"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash_ramfunc.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash_ramfunc.o"
+arm-none-eabi-gcc "../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_gpio.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_gpio.d" -MT"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_gpio.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_gpio.o"
+arm-none-eabi-gcc "../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c.d" -MT"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c.o"
+arm-none-eabi-gcc "../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c_ex.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c_ex.d" -MT"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c_ex.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c_ex.o"
+arm-none-eabi-gcc "../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr.d" -MT"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr.o"
+arm-none-eabi-gcc "../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr_ex.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr_ex.d" -MT"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr_ex.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr_ex.o"
+arm-none-eabi-gcc "../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc.d" -MT"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc.o"
+arm-none-eabi-gcc "../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc_ex.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc_ex.d" -MT"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc_ex.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc_ex.o"
+arm-none-eabi-gcc "../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim.d" -MT"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim.o"
+arm-none-eabi-gcc "../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim_ex.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim_ex.d" -MT"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim_ex.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim_ex.o"
+arm-none-eabi-gcc "../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart.d" -MT"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart.o"
+arm-none-eabi-gcc "../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart_ex.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart_ex.d" -MT"Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart_ex.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart_ex.o"
+arm-none-eabi-gcc "../Core/Src/gpio.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/gpio.d" -MT"Core/Src/gpio.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/gpio.o"
+arm-none-eabi-gcc "../Core/Src/i2c.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/i2c.d" -MT"Core/Src/i2c.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/i2c.o"
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc "../Core/Src/stm32l4xx_hal_msp.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/stm32l4xx_hal_msp.d" -MT"Core/Src/stm32l4xx_hal_msp.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/stm32l4xx_hal_msp.o"
+arm-none-eabi-gcc "../Core/Src/stm32l4xx_it.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/stm32l4xx_it.d" -MT"Core/Src/stm32l4xx_it.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/stm32l4xx_it.o"
+arm-none-eabi-gcc "../Core/Src/syscalls.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/syscalls.d" -MT"Core/Src/syscalls.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/syscalls.o"
+arm-none-eabi-gcc "../Core/Src/sysmem.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/sysmem.d" -MT"Core/Src/sysmem.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/sysmem.o"
+arm-none-eabi-gcc "../Core/Src/system_stm32l4xx.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/system_stm32l4xx.d" -MT"Core/Src/system_stm32l4xx.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/system_stm32l4xx.o"
+arm-none-eabi-gcc "../Core/Src/tim.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/tim.d" -MT"Core/Src/tim.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/tim.o"
+arm-none-eabi-gcc "../Core/Src/usart.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/usart.d" -MT"Core/Src/usart.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/usart.o"
+../Core/Src/main.c:320:1: error: expected identifier or '(' before '}' token
+  320 | }
+      | ^
+make: *** [Core/Src/subdir.mk:46: Core/Src/main.o] Error 1
+make: *** Waiting for unfinished jobs....
+"make -j16 all" terminated with exit code 2. Build might be incomplete.
+11:58:43 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "centro_de_mando.elf" @"objects.list"   -mcpu=cortex-m4 -T"A:\universidad\tesis\control de mando\codigo\centro de mando\centro_de_mando\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="centro_de_mando.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: centro_de_mando.elf
+ 
+arm-none-eabi-size  centro_de_mando.elf 
+arm-none-eabi-objdump -h -S centro_de_mando.elf  > "centro_de_mando.list"
+arm-none-eabi-objcopy  -O ihex centro_de_mando.elf  "centro_de_mando.hex"
+   text	   data	    bss	    dec	    hex	filename
+  39508	    104	   2368	  41980	   a3fc	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+Finished building: centro_de_mando.hex
+ 
+Finished building: centro_de_mando.list
+ 
+15:36:12 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-gcc "../Core/Src/gpio.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/gpio.d" -MT"Core/Src/gpio.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/gpio.o"
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc "../Core/Src/stm32l4xx_it.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/stm32l4xx_it.d" -MT"Core/Src/stm32l4xx_it.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/stm32l4xx_it.o"
+../Core/Src/main.c:315:1: error: expected identifier or '(' before '}' token
+  315 | }
+      | ^
+make: *** [Core/Src/subdir.mk:46: Core/Src/main.o] Error 1
+make: *** Waiting for unfinished jobs....
+"make -j16 all" terminated with exit code 2. Build might be incomplete.
+15:36:36 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "centro_de_mando.elf" @"objects.list"   -mcpu=cortex-m4 -T"A:\universidad\tesis\control de mando\codigo\centro de mando\centro_de_mando\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="centro_de_mando.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: centro_de_mando.elf
+ 
+arm-none-eabi-size  centro_de_mando.elf 
+arm-none-eabi-objdump -h -S centro_de_mando.elf  > "centro_de_mando.list"
+arm-none-eabi-objcopy  -O ihex centro_de_mando.elf  "centro_de_mando.hex"
+   text	   data	    bss	    dec	    hex	filename
+  38364	    104	   2368	  40836	   9f84	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+Finished building: centro_de_mando.hex
+ 
+Finished building: centro_de_mando.list
+ 
+18:14:52 **** Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "centro_de_mando.elf" @"objects.list"   -mcpu=cortex-m4 -T"A:\universidad\tesis\control de mando\codigo\centro de mando\centro_de_mando\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="centro_de_mando.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: centro_de_mando.elf
+ 
+arm-none-eabi-size  centro_de_mando.elf 
+arm-none-eabi-objdump -h -S centro_de_mando.elf  > "centro_de_mando.list"
+   text	   data	    bss	    dec	    hex	filename
+  38364	    104	   2368	  40836	   9f84	centro_de_mando.elf
+arm-none-eabi-objcopy  -O ihex centro_de_mando.elf  "centro_de_mando.hex"
+Finished building: default.size.stdout
+ 
+Finished building: centro_de_mando.hex
+ 
+Finished building: centro_de_mando.list
+ 
+19:47:10 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "centro_de_mando.elf" @"objects.list"   -mcpu=cortex-m4 -T"A:\universidad\tesis\control de mando\codigo\centro de mando\centro_de_mando\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="centro_de_mando.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: centro_de_mando.elf
+ 
+arm-none-eabi-size  centro_de_mando.elf 
+arm-none-eabi-objdump -h -S centro_de_mando.elf  > "centro_de_mando.list"
+   text	   data	    bss	    dec	    hex	filename
+  39404	    104	   2368	  41876	   a394	centro_de_mando.elf
+arm-none-eabi-objcopy  -O ihex centro_de_mando.elf  "centro_de_mando.hex"
+Finished building: default.size.stdout
+ 
+Finished building: centro_de_mando.hex
+ 
+Finished building: centro_de_mando.list
+ 
+19:54:52 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-size  centro_de_mando.elf 
+   text	   data	    bss	    dec	    hex	filename
+  39404	    104	   2368	  41876	   a394	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+19:59:16 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "centro_de_mando.elf" @"objects.list"   -mcpu=cortex-m4 -T"A:\universidad\tesis\control de mando\codigo\centro de mando\centro_de_mando\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="centro_de_mando.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: centro_de_mando.elf
+ 
+arm-none-eabi-size  centro_de_mando.elf 
+arm-none-eabi-objdump -h -S centro_de_mando.elf  > "centro_de_mando.list"
+   text	   data	    bss	    dec	    hex	filename
+  39604	    104	   2368	  42076	   a45c	centro_de_mando.elf
+arm-none-eabi-objcopy  -O ihex centro_de_mando.elf  "centro_de_mando.hex"
+Finished building: default.size.stdout
+ 
+Finished building: centro_de_mando.hex
+ 
+Finished building: centro_de_mando.list
+ 
+20:03:19 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-size  centro_de_mando.elf 
+   text	   data	    bss	    dec	    hex	filename
+  39604	    104	   2368	  42076	   a45c	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+20:08:29 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-size  centro_de_mando.elf 
+   text	   data	    bss	    dec	    hex	filename
+  39604	    104	   2368	  42076	   a45c	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+20:23:22 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-gcc "../Core/Src/i2c.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/i2c.d" -MT"Core/Src/i2c.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/i2c.o"
+arm-none-eabi-gcc -o "centro_de_mando.elf" @"objects.list"   -mcpu=cortex-m4 -T"A:\universidad\tesis\control de mando\codigo\centro de mando\centro_de_mando\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="centro_de_mando.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: centro_de_mando.elf
+ 
+arm-none-eabi-size  centro_de_mando.elf 
+arm-none-eabi-objdump -h -S centro_de_mando.elf  > "centro_de_mando.list"
+arm-none-eabi-objcopy  -O ihex centro_de_mando.elf  "centro_de_mando.hex"
+   text	   data	    bss	    dec	    hex	filename
+  39604	    104	   2368	  42076	   a45c	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+Finished building: centro_de_mando.hex
+ 
+Finished building: centro_de_mando.list
+ 
+20:23:34 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-size  centro_de_mando.elf 
+   text	   data	    bss	    dec	    hex	filename
+  39604	    104	   2368	  42076	   a45c	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+20:24:19 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-size  centro_de_mando.elf 
+   text	   data	    bss	    dec	    hex	filename
+  39604	    104	   2368	  42076	   a45c	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+20:27:13 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-size  centro_de_mando.elf 
+   text	   data	    bss	    dec	    hex	filename
+  39604	    104	   2368	  42076	   a45c	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+20:28:08 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-gcc "../Core/Src/i2c.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/i2c.d" -MT"Core/Src/i2c.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/i2c.o"
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "centro_de_mando.elf" @"objects.list"   -mcpu=cortex-m4 -T"A:\universidad\tesis\control de mando\codigo\centro de mando\centro_de_mando\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="centro_de_mando.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: centro_de_mando.elf
+ 
+arm-none-eabi-size  centro_de_mando.elf 
+arm-none-eabi-objdump -h -S centro_de_mando.elf  > "centro_de_mando.list"
+   text	   data	    bss	    dec	    hex	filename
+  39788	    104	   2368	  42260	   a514	centro_de_mando.elf
+arm-none-eabi-objcopy  -O ihex centro_de_mando.elf  "centro_de_mando.hex"
+Finished building: default.size.stdout
+ 
+Finished building: centro_de_mando.hex
+ 
+Finished building: centro_de_mando.list
+ 
+20:28:23 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-size  centro_de_mando.elf 
+   text	   data	    bss	    dec	    hex	filename
+  39788	    104	   2368	  42260	   a514	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+20:35:51 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "centro_de_mando.elf" @"objects.list"   -mcpu=cortex-m4 -T"A:\universidad\tesis\control de mando\codigo\centro de mando\centro_de_mando\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="centro_de_mando.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: centro_de_mando.elf
+ 
+arm-none-eabi-size  centro_de_mando.elf 
+arm-none-eabi-objdump -h -S centro_de_mando.elf  > "centro_de_mando.list"
+   text	   data	    bss	    dec	    hex	filename
+  39004	    104	   2368	  41476	   a204	centro_de_mando.elf
+arm-none-eabi-objcopy  -O ihex centro_de_mando.elf  "centro_de_mando.hex"
+Finished building: default.size.stdout
+ 
+Finished building: centro_de_mando.hex
+ 
+Finished building: centro_de_mando.list
+ 
+20:42:13 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-size  centro_de_mando.elf 
+   text	   data	    bss	    dec	    hex	filename
+  39004	    104	   2368	  41476	   a204	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+20:50:08 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-size  centro_de_mando.elf 
+   text	   data	    bss	    dec	    hex	filename
+  39004	    104	   2368	  41476	   a204	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+20:50:35 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-size  centro_de_mando.elf 
+   text	   data	    bss	    dec	    hex	filename
+  39004	    104	   2368	  41476	   a204	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+20:51:14 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-size  centro_de_mando.elf 
+   text	   data	    bss	    dec	    hex	filename
+  39004	    104	   2368	  41476	   a204	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+20:55:27 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-size  centro_de_mando.elf 
+   text	   data	    bss	    dec	    hex	filename
+  39004	    104	   2368	  41476	   a204	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+20:57:34 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-size  centro_de_mando.elf 
+   text	   data	    bss	    dec	    hex	filename
+  39004	    104	   2368	  41476	   a204	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+20:58:10 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-size  centro_de_mando.elf 
+   text	   data	    bss	    dec	    hex	filename
+  39004	    104	   2368	  41476	   a204	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+21:00:17 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-size  centro_de_mando.elf 
+   text	   data	    bss	    dec	    hex	filename
+  39004	    104	   2368	  41476	   a204	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+21:04:26 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-size  centro_de_mando.elf 
+   text	   data	    bss	    dec	    hex	filename
+  39004	    104	   2368	  41476	   a204	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+21:05:16 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-size  centro_de_mando.elf 
+   text	   data	    bss	    dec	    hex	filename
+  39004	    104	   2368	  41476	   a204	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+21:06:10 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-size  centro_de_mando.elf 
+   text	   data	    bss	    dec	    hex	filename
+  39004	    104	   2368	  41476	   a204	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+21:08:23 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-size  centro_de_mando.elf 
+   text	   data	    bss	    dec	    hex	filename
+  39004	    104	   2368	  41476	   a204	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+21:10:39 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-size  centro_de_mando.elf 
+   text	   data	    bss	    dec	    hex	filename
+  39004	    104	   2368	  41476	   a204	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+21:11:58 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-size  centro_de_mando.elf 
+   text	   data	    bss	    dec	    hex	filename
+  39004	    104	   2368	  41476	   a204	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+21:12:21 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-size  centro_de_mando.elf 
+   text	   data	    bss	    dec	    hex	filename
+  39004	    104	   2368	  41476	   a204	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+21:13:50 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-size  centro_de_mando.elf 
+   text	   data	    bss	    dec	    hex	filename
+  39004	    104	   2368	  41476	   a204	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+21:16:21 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-size  centro_de_mando.elf 
+   text	   data	    bss	    dec	    hex	filename
+  39004	    104	   2368	  41476	   a204	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+21:20:48 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-size  centro_de_mando.elf 
+   text	   data	    bss	    dec	    hex	filename
+  39004	    104	   2368	  41476	   a204	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+21:32:11 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-gcc "../Core/Src/gpio.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/gpio.d" -MT"Core/Src/gpio.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/gpio.o"
+arm-none-eabi-gcc "../Core/Src/i2c.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/i2c.d" -MT"Core/Src/i2c.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/i2c.o"
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "centro_de_mando.elf" @"objects.list"   -mcpu=cortex-m4 -T"A:\universidad\tesis\control de mando\codigo\centro de mando\centro_de_mando\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="centro_de_mando.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: centro_de_mando.elf
+ 
+arm-none-eabi-size  centro_de_mando.elf 
+arm-none-eabi-objdump -h -S centro_de_mando.elf  > "centro_de_mando.list"
+   text	   data	    bss	    dec	    hex	filename
+  39072	    104	   2368	  41544	   a248	centro_de_mando.elf
+arm-none-eabi-objcopy  -O ihex centro_de_mando.elf  "centro_de_mando.hex"
+Finished building: default.size.stdout
+ 
+Finished building: centro_de_mando.hex
+ 
+Finished building: centro_de_mando.list
+ 
+21:32:48 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-size  centro_de_mando.elf 
+   text	   data	    bss	    dec	    hex	filename
+  39072	    104	   2368	  41544	   a248	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+21:35:01 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-size  centro_de_mando.elf 
+   text	   data	    bss	    dec	    hex	filename
+  39072	    104	   2368	  41544	   a248	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+21:49:35 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-gcc "../Core/Src/gpio.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/gpio.d" -MT"Core/Src/gpio.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/gpio.o"
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "centro_de_mando.elf" @"objects.list"   -mcpu=cortex-m4 -T"A:\universidad\tesis\control de mando\codigo\centro de mando\centro_de_mando\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="centro_de_mando.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: centro_de_mando.elf
+ 
+arm-none-eabi-size  centro_de_mando.elf 
+arm-none-eabi-objdump -h -S centro_de_mando.elf  > "centro_de_mando.list"
+arm-none-eabi-objcopy  -O ihex centro_de_mando.elf  "centro_de_mando.hex"
+   text	   data	    bss	    dec	    hex	filename
+  39072	    104	   2368	  41544	   a248	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+Finished building: centro_de_mando.hex
+ 
+Finished building: centro_de_mando.list
+ 
+21:59:19 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-size  centro_de_mando.elf 
+   text	   data	    bss	    dec	    hex	filename
+  39072	    104	   2368	  41544	   a248	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+22:00:15 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-size  centro_de_mando.elf 
+   text	   data	    bss	    dec	    hex	filename
+  39072	    104	   2368	  41544	   a248	centro_de_mando.elf
+Finished building: default.size.stdout
+ 

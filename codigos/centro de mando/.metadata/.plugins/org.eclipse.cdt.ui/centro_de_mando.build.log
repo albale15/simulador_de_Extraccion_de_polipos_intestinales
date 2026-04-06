@@ -1,0 +1,10 @@
+22:00:15 **** Incremental Build of configuration Debug for project centro_de_mando ****
+make -j16 all 
+arm-none-eabi-size  centro_de_mando.elf 
+   text	   data	    bss	    dec	    hex	filename
+  39072	    104	   2368	  41544	   a248	centro_de_mando.elf
+Finished building: default.size.stdout
+ 
+
+22:00:15 Build Finished. 0 errors, 0 warnings. (took 203ms)
+
