@@ -1,0 +1,49 @@
+bt1	pa3
+bt2	pa4
+bt3	pa6
+bt4	pa8
+bt5	pb0
+
+*********as5600
+primero
+
+scl	PA9
+sda	PA10
+
+
+segundo
+
+
+scl	PA7
+sda	PB4
+
+
+*****Encoder Rotativo:
+
+primero---(cable naranja y verde)
+
+
+clk	PB5 (blanco-verde)
+DT	PA12  (naranja)
+
+vcc	(verde)
+gnd	(blanco-naranja)
+
+segundo (cable cafe y azul)
+
+
+
+clk	PB1  azul
+DT	PB3  cafe blanco
+
+
+vcc	(cafe)
+gnd	(blanco-azul)
+
+vibrador 1
+
+PA0
+
+vibrador 2
+
+PA1
