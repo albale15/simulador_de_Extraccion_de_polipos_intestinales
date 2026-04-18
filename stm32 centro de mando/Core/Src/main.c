@@ -149,20 +149,30 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 // Unity debe enviar mensajes terminados en '\n', ej: "V1:100\n"
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-	if(huart->Instance == USART2) {
-			if(rx_byte == '\n' || rx_index >= 19) {
-				rx_buffer[rx_index] = '\0'; // Terminamos el string
-				mensaje_completo = 1;
-				rx_index = 0;
-			} else {
+    if(huart->Instance == USART2) {
 
-				rx_buffer[rx_index++] = rx_byte;
-			}
-			// Volvemos a escuchar el siguiente byte
-			HAL_UART_Receive_IT(&huart2, &rx_byte, 1);
+        // 1. CASO  pregunta de identificación?
+        if(rx_byte == '?') {
+            // Respondemos con la firma única del proyecto
+            // El \n es vital para que el puerto serial de Unity sepa que terminó la línea
+            printf("ID:ENDOSCOPIO_V1\n");
 
-	}
+            // NO guardamos el '?' en el buffer, simplemente reiniciamos la escucha
+        }
+        // 2. CASO NORMAL: Es un mensaje de control (vibración, etc.)
+        else {
+            if(rx_byte == '\n' || rx_index >= 19) {
+                rx_buffer[rx_index] = '\0'; // Terminamos el string
+                mensaje_completo = 1;
+                rx_index = 0;
+            } else {
+                rx_buffer[rx_index++] = rx_byte;
+            }
+        }
 
+        // 3. CONTINUIDAD: Volvemos a habilitar la escucha del siguiente byte
+        HAL_UART_Receive_IT(&huart2, &rx_byte, 1);
+    }
 }
 /* USER CODE END 0 */
 
@@ -306,7 +316,7 @@ int main(void)
 	  	            encoder_torsion = 0;
 	  	        }
 
-	  	        HAL_Delay(10);
+	  	        HAL_Delay(20);
 	    }
     /* USER CODE END WHILE */
 
