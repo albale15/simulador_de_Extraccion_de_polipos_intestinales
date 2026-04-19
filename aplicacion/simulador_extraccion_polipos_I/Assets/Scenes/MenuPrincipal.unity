@@ -398,7 +398,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serial: {fileID: 715447882}
   txtEstado: {fileID: 1998563654}
-  txtJson: {fileID: 0}
+  txtJson: {fileID: 614441421}
 --- !u!4 &715447884
 Transform:
   m_ObjectHideFlags: 0

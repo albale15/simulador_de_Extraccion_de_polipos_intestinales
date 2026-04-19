@@ -16,11 +16,11 @@ public class ConnectivityUI : MonoBehaviour
         // Actualizar Texto 1 (Estado)
         if (serial.estaConectado)
         {
-            txtEstado.text = "Centro de mando:: <color=green>CONECTADO</color> (" + serial.puertoActivo + ")";
+            txtEstado.text = "Centro de mando: <color=green>CONECTADO</color> (" + serial.puertoActivo + ")";
         }
         else
         {
-            txtEstado.text = "Centro de mando:: <color=yellow>BUSCANDO CONTROL...</color>";
+            txtEstado.text = "Centro de mando: <color=yellow>BUSCANDO CONTROL...</color>";
         }
 
         // Actualizar Texto 2 (Monitor JSON)
