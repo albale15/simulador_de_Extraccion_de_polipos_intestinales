@@ -6,129 +6,174 @@ using System;
 
 public class SerialManager : MonoBehaviour
 {
-    [Header("Configuración de Identidad")]
-    public string firmaEsperada = "ID:ENDOSCOPIO_V1";
+    public enum EstadoConexion { Iniciando, Buscando, Conectado, Error }
 
     [Header("Estado del Hardware")]
-    public bool estaConectado = false;
+    public EstadoConexion estadoActual = EstadoConexion.Iniciando;
+    public string mensajeInterfaz = "Cargando componentes...";
     public string puertoActivo = "";
     public string ultimoJsonRecibido = "";
 
+    [Header("Configuración")]
+    public string firmaEsperada = "ID:ENDOSCOPIO_V1";
+
     private SerialPort _puerto;
+    // Ahora tenemos DOS hilos secundarios. Uno busca, otro lee.
+    private Thread _hiloBusqueda;
     private Thread _hiloLectura;
     private bool _ejecutando = false;
     private ConcurrentQueue<string> _colaMensajes = new ConcurrentQueue<string>();
 
     void Start()
     {
-        StartCoroutine(RutinaBusquedaAsincrona());
+        Invoke(nameof(IniciarBusqueda), 2.5f);
     }
 
-    // 1. BÚSQUEDA FLUIDA: Escanea sin congelar Unity
-    System.Collections.IEnumerator RutinaBusquedaAsincrona()
+    public void IniciarBusqueda()
     {
-        while (!estaConectado)
+        if (estadoActual == EstadoConexion.Buscando) return;
+
+        // LA MAGIA OCURRE AQUÍ: 
+        // Despachamos la tarea pesada a un hilo completamente separado de Unity.
+        _hiloBusqueda = new Thread(RutinaBusquedaEnFondo);
+        _hiloBusqueda.IsBackground = true;
+        _hiloBusqueda.Start();
+    }
+
+    // --- ESTA FUNCIÓN CORRE FUERA DE UNITY ---
+    void RutinaBusquedaEnFondo()
+    {
+        estadoActual = EstadoConexion.Buscando;
+        mensajeInterfaz = "Iniciando escaneo de puertos...";
+
+        // El Cooldown para Windows ahora usa Thread.Sleep 
+        // Como estamos fuera de Unity, esto NO congela tu pantalla.
+        Thread.Sleep(1500);
+
+        string[] puertos = SerialPort.GetPortNames();
+
+        if (puertos.Length == 0)
         {
-            string[] puertos = SerialPort.GetPortNames();
-            foreach (string nombrePuerto in puertos)
-            {
-                // Entramos al intento de conexión esperando que termine, pero sin congelar
-                yield return StartCoroutine(IntentarConexionFluida(nombrePuerto));
-
-                if (estaConectado) yield break; // Si ya conectó, detenemos la búsqueda
-            }
-            // Espera 1 segundo antes de volver a escanear todos los puertos
-            yield return new WaitForSeconds(1f);
+            estadoActual = EstadoConexion.Error;
+            mensajeInterfaz = "No se detectaron puertos USB.";
+            return;
         }
+
+        foreach (string nombrePuerto in puertos)
+        {
+            mensajeInterfaz = "Verificando " + nombrePuerto + "...";
+
+            if (IntentarConexionFondo(nombrePuerto))
+            {
+                puertoActivo = nombrePuerto;
+                mensajeInterfaz = "Sistema listo en " + nombrePuerto;
+                estadoActual = EstadoConexion.Conectado;
+
+                // Si conectó con éxito, iniciamos el hilo de lectura continua
+                _ejecutando = true;
+                _hiloLectura = new Thread(LecturaDeFondo) { IsBackground = true };
+                _hiloLectura.Start();
+                return; // Terminamos la búsqueda
+            }
+        }
+
+        // Si terminó de revisar todos los puertos y no conectó
+        estadoActual = EstadoConexion.Error;
+        mensajeInterfaz = "Endoscopio no encontrado.";
     }
 
-    // 2. EL APRETÓN DE MANOS SIN LAG
-    System.Collections.IEnumerator IntentarConexionFluida(string nombrePuerto)
+    bool IntentarConexionFondo(string nombrePuerto)
     {
-        bool conexionExitosa = false;
-
         try
         {
-            _puerto = new SerialPort(nombrePuerto, 115200) { ReadTimeout = 20, WriteTimeout = 20 };
+            _puerto = new SerialPort(nombrePuerto, 115200) { ReadTimeout = 50, WriteTimeout = 50 };
+
+            // EL ASESINO DEL LAG: Esta línea ya no congela Unity
             _puerto.Open();
+
             _puerto.DiscardInBuffer();
             _puerto.Write("?");
         }
         catch
         {
-            if (_puerto != null && _puerto.IsOpen) _puerto.Close();
-            yield break; // Salimos de esta corrutina y pasa al siguiente puerto
+            CerrarPuerto();
+            return false;
         }
 
-        // AQUÍ ESTÁ LA MAGIA: Esperamos 0.1 segundos SIN detener a Unity
-        yield return new WaitForSecondsRealtime(0.1f);
+        Thread.Sleep(150); // Pausa física para que la STM32 responda
 
         try
         {
             if (_puerto != null && _puerto.IsOpen && _puerto.BytesToRead > 0)
             {
                 string respuesta = _puerto.ReadExisting();
-
                 if (respuesta.Contains(firmaEsperada))
                 {
-                    puertoActivo = nombrePuerto;
-                    estaConectado = true;
-                    _ejecutando = true;
-
-                    // Iniciamos el hilo veloz para leer datos
-                    _hiloLectura = new Thread(LecturaDeFondo);
-                    _hiloLectura.IsBackground = true;
-                    _hiloLectura.Start();
-                    conexionExitosa = true;
+                    return true; // ¡Conectado!
                 }
             }
         }
         catch { }
 
-        // Si no era el endoscopio, cerramos el puerto amablemente
-        if (!conexionExitosa)
-        {
-            if (_puerto != null && _puerto.IsOpen) _puerto.Close();
-        }
+        CerrarPuerto();
+        return false;
     }
 
-    // 3. EL HILO SECUNDARIO (Se mantiene igual, funcionaba perfecto)
+    // --- EL HILO DE LECTURA (Se mantiene igual) ---
     void LecturaDeFondo()
     {
         while (_ejecutando && _puerto != null && _puerto.IsOpen)
         {
             try
             {
-                if (_puerto.BytesToRead > 0)
-                {
-                    string dato = _puerto.ReadLine();
-                    _colaMensajes.Enqueue(dato);
-                }
+                string dato = _puerto.ReadLine();
+                _colaMensajes.Enqueue(dato);
+            }
+            catch (System.IO.IOException)
+            {
+                estadoActual = EstadoConexion.Error;
+                mensajeInterfaz = "¡CONEXIÓN PERDIDA! El cable se desconectó.";
+                CerrarTodo();
+                break;
             }
             catch (TimeoutException) { }
             catch (Exception) { break; }
         }
     }
 
-    // 4. EL DIBUJADO SEGURO
+    // --- HILO PRINCIPAL DE UNITY (Solo actualiza datos visuales) ---
     void Update()
     {
         string mensajeFresco = "";
-        while (_colaMensajes.TryDequeue(out string mensaje))
-        {
-            mensajeFresco = mensaje;
-        }
+        while (_colaMensajes.TryDequeue(out string mensaje)) mensajeFresco = mensaje;
+        if (!string.IsNullOrEmpty(mensajeFresco)) ultimoJsonRecibido = mensajeFresco;
+    }
 
-        if (!string.IsNullOrEmpty(mensajeFresco))
+    void CerrarPuerto()
+    {
+        if (_puerto != null)
         {
-            ultimoJsonRecibido = mensajeFresco;
+            try
+            {
+                if (_puerto.IsOpen) _puerto.Close();
+                _puerto.Dispose();
+            }
+            catch { }
+            finally { _puerto = null; }
         }
     }
 
-    void OnDisable()
+    void CerrarTodo()
     {
         _ejecutando = false;
-        if (_hiloLectura != null && _hiloLectura.IsAlive) _hiloLectura.Join(200);
-        if (_puerto != null && _puerto.IsOpen) _puerto.Close();
+        // Evitamos que el hilo intente matarse a sí mismo y cause un deadlock
+        if (_hiloLectura != null && _hiloLectura.IsAlive && Thread.CurrentThread != _hiloLectura)
+        {
+            _hiloLectura.Join(200);
+        }
+        CerrarPuerto();
     }
+
+    void OnDestroy() => CerrarTodo();
+    void OnApplicationQuit() => CerrarTodo();
 }
