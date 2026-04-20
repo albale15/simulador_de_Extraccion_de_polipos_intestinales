@@ -173,6 +173,22 @@ public class SerialManager : MonoBehaviour
         }
         CerrarPuerto();
     }
+    // funcion para enviar datos a la stm32
+    public void EnviarDato(string mensaje)
+    {
+        // Solo enviamos si la máquina de estados dice que estamos conectados
+        if (estadoActual == EstadoConexion.Conectado && _puerto != null && _puerto.IsOpen)
+        {
+            try
+            {
+                _puerto.Write(mensaje);
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning("Error al enviar dato al hardware: " + e.Message);
+            }
+        }
+    }
 
     void OnDestroy() => CerrarTodo();
     void OnApplicationQuit() => CerrarTodo();
