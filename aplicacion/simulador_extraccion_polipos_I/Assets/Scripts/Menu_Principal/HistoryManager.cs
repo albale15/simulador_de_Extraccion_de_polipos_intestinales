@@ -10,6 +10,9 @@ public class HistoryManager : MonoBehaviour
     [HideInInspector] public string rutaBase;
     [HideInInspector] public string rutaCursoActual;
 
+    // EL MEGÁFONO: Avisará a toda la UI cuando haya cambios en las carpetas
+    public event Action AlActualizarDirectorios;
+
     void Awake()
     {
         if (instancia == null)
@@ -32,6 +35,9 @@ public class HistoryManager : MonoBehaviour
         {
             Directory.CreateDirectory(nuevaRuta);
             Debug.Log("Curso creado en: " + nuevaRuta);
+
+            // GRITAMOS: ¡Nueva carpeta creada!
+            AlActualizarDirectorios?.Invoke();
         }
     }
 
@@ -54,20 +60,16 @@ public class HistoryManager : MonoBehaviour
         catch { return null; }
     }
 
-    // --- LA CORRECCIÓN: EXPORTAR CARPETA COMPLETA ---
     public void ExportarCursoAExcel()
     {
-        // 1. Buscamos TODOS los archivos json en la carpeta del curso actual
         string[] archivosJson = Directory.GetFiles(rutaCursoActual, "*.json");
 
-        if (archivosJson.Length == 0) return; // Si la carpeta está vacía, no hace nada
+        if (archivosJson.Length == 0) return;
 
         StringBuilder csv = new StringBuilder();
 
-        // Fila 1: Títulos de las columnas
         csv.AppendLine("Nombre,Fecha,Puntaje Total,Traumas,Yamada Correcto,Puntos Perdidos");
 
-        // 2. Bucle: Por cada archivo encontrado, extraemos los datos y los sumamos a la lista
         foreach (string ruta in archivosJson)
         {
             SesionPractica sesion = CargarArchivoEspecifico(ruta);
@@ -80,16 +82,13 @@ public class HistoryManager : MonoBehaviour
             }
         }
 
-        // 3. Obtenemos el nombre de la carpeta actual para nombrar el Excel
         string nombreCurso = new DirectoryInfo(rutaCursoActual).Name;
 
-        // 4. Lo guardamos en el Escritorio
         string rutaExport = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), $"Reporte_Curso_{nombreCurso}.csv");
         File.WriteAllText(rutaExport, csv.ToString(), Encoding.UTF8);
         Debug.Log("Exportado a Excel en: " + rutaExport);
     }
 
-    // SISTEMA DE ELIMINACIÓN FÍSICA 
     public void EliminarElemento(string ruta, bool esCarpeta)
     {
         try
@@ -98,6 +97,9 @@ public class HistoryManager : MonoBehaviour
             {
                 if (Directory.Exists(ruta)) Directory.Delete(ruta, true);
                 Debug.Log("Carpeta eliminada: " + ruta);
+
+                // GRITAMOS: ¡Carpeta eliminada!
+                AlActualizarDirectorios?.Invoke();
             }
             else
             {

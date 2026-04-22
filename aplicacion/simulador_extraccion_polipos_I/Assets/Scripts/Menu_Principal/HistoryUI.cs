@@ -39,12 +39,40 @@ public class HistoryUI : MonoBehaviour
     void Start()
     {
         panelDetalles.SetActive(false);
-        btnExportarExcel.SetActive(false); // Oculto al iniciar
+        btnExportarExcel.SetActive(false);
         panelConfirmacion.SetActive(false);
 
         if (inputBusqueda != null) inputBusqueda.onValueChanged.AddListener(FiltrarLista);
         IrARaiz();
     }
+
+    // --- NUEVO: SISTEMA DE ESCUCHA ---
+    void OnEnable()
+    {
+        if (HistoryManager.instancia != null)
+        {
+            HistoryManager.instancia.AlActualizarDirectorios += ReaccionarACambioDeCarpetas;
+            IrARaiz();
+        }
+    }
+
+    void OnDisable()
+    {
+        if (HistoryManager.instancia != null)
+        {
+            HistoryManager.instancia.AlActualizarDirectorios -= ReaccionarACambioDeCarpetas;
+        }
+    }
+
+    private void ReaccionarACambioDeCarpetas()
+    {
+        // Si estamos viendo los cursos (la raíz), redibujamos la lista porque algo cambió
+        if (estamosEnRaiz)
+        {
+            RefrescarLista();
+        }
+    }
+    // ---------------------------------
 
     public void IrARaiz()
     {
@@ -54,8 +82,6 @@ public class HistoryUI : MonoBehaviour
 
         btnVolverRaiz.SetActive(false);
         panelDetalles.SetActive(false);
-
-        // Apagamos el botón de exportar porque estamos viendo las carpetas
         btnExportarExcel.SetActive(false);
 
         txtFeedback.text = "Mostrando todos los Cursos.";
@@ -69,8 +95,6 @@ public class HistoryUI : MonoBehaviour
 
         btnVolverRaiz.SetActive(true);
         panelDetalles.SetActive(false);
-
-        // Encendemos el botón de exportar porque ya entramos a un curso
         btnExportarExcel.SetActive(true);
 
         txtFeedback.text = $"Curso: {Path.GetFileName(rutaCarpeta)}";
@@ -84,7 +108,7 @@ public class HistoryUI : MonoBehaviour
             HistoryManager.instancia.CrearCarpetaCurso(inputNuevoCurso.text);
             txtFeedback.text = $"<color=green>Curso '{inputNuevoCurso.text}' creado.</color>";
             inputNuevoCurso.text = "";
-            if (estamosEnRaiz) RefrescarLista();
+            // RefrescarLista() ya no es necesario aquí, ¡el evento lo hace!
         }
     }
 
@@ -164,7 +188,9 @@ public class HistoryUI : MonoBehaviour
             panelDetalles.SetActive(false);
         }
 
-        RefrescarLista();
+        // RefrescarLista() ya no es necesario si borramos una carpeta, el evento lo hace. 
+        // Pero si borramos un archivo, lo refrescamos manual porque el megáfono solo avisa de carpetas.
+        if (!esCarpetaAEliminarTemporal) RefrescarLista();
     }
 
     public void CancelarEliminacion()
@@ -204,7 +230,6 @@ public class HistoryUI : MonoBehaviour
             $"<b>PENALIZACIONES:</b>\n<color=#FF7777>{string.Join("\n", sesion.penalizaciones)}</color>";
     }
 
-    // --- LA CORRECCIÓN: BOTÓN AHORA EXPORTA TODO ---
     public void BotonExportarExcel()
     {
         if (HistoryManager.instancia != null)
