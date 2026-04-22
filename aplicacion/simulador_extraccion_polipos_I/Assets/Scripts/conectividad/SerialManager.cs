@@ -55,7 +55,7 @@ public class SerialManager : MonoBehaviour
 
     void Start()
     {
-        Invoke(nameof(IniciarBusqueda), 2.5f);
+        //Invoke(nameof(IniciarBusqueda), 2.5f);
     }
 
     public void IniciarBusqueda()

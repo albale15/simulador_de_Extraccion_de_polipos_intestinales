@@ -5,13 +5,14 @@ public class ConnectivityUI : MonoBehaviour
 {
     [Header("Conexiones Directas")]
     public SerialManager serial;
-    public ConfigManager config; 
+    public ConfigManager config;
 
     [Header("UI Elements")]
     public TextMeshProUGUI txtEstado;
     public TextMeshProUGUI txtFeedbackAcciones;
     public GameObject botonReconectar;
-    public GameObject panelCargando;
+
+    // ELIMINAMOS public GameObject panelCargando; porque el ControladorMenuPrincipal ya se encarga de la carga.
 
     private float _tiempoConectado = 0f;
     private SerialManager.EstadoConexion _estadoAnterior;
@@ -79,7 +80,7 @@ public class ConnectivityUI : MonoBehaviour
             _tiempoConectado = 0f;
         }
 
-        if (panelCargando != null) panelCargando.SetActive(serial.estadoActual == SerialManager.EstadoConexion.Iniciando);
+        // ELIMINAMOS la línea que activaba el panelCargando aquí.
 
         switch (serial.estadoActual)
         {
@@ -100,6 +101,12 @@ public class ConnectivityUI : MonoBehaviour
                 txtEstado.text = "Centro de mando: <color=red>DESCONECTADO</color>\n<size=20>Por favor, revisa el cable USB.</size>";
                 botonReconectar.SetActive(true);
                 if (txtFeedbackAcciones.text != "") txtFeedbackAcciones.text = "";
+                break;
+
+            case SerialManager.EstadoConexion.Iniciando:
+                // Ahora, mientras inicia, simplemente no muestra nada (porque la pantalla Splash lo está tapando)
+                txtEstado.text = "";
+                botonReconectar.SetActive(false);
                 break;
         }
     }
