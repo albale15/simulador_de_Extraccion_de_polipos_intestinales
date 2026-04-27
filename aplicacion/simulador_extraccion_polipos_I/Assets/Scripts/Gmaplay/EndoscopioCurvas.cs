@@ -7,6 +7,12 @@ public class EndoscopioCurvas : MonoBehaviour
     [Header("Los Huesos (0=Punta, Último=Base)")]
     public Transform[] huesos;
 
+    [Header("Conexión de Hardware")]
+    [Tooltip("Activa para ignorar el teclado y usar el control físico (STM32)")]
+    public bool usarControlHardware = false;
+    private DatosProcesados datosHardware;
+    private float tiempoUltimoDatoHardware = 0f;
+
     [Header("Configuración de Controles")]
     public float velocidadInsercion = 0.5f;
     [Tooltip("Velocidad al retroceder (tecla S)")]
@@ -22,7 +28,7 @@ public class EndoscopioCurvas : MonoBehaviour
     [Tooltip("Grados por segundo que la punta cae por gravedad al avanzar si no hay torque")]
     public float caidaGravedad = 8f;
 
-    [Header("Flexibilidad Dinámica (NUEVO)")]
+    [Header("Flexibilidad Dinámica")]
     [Tooltip("Límite de doblez al empujar (W)")]
     public float limiteFlexionNormal = 90f;
     [Tooltip("Límite máximo al jalar o estar quieto (Retroflexión)")]
@@ -66,6 +72,32 @@ public class EndoscopioCurvas : MonoBehaviour
     private LineRenderer lr;
     private List<Vector3> rutaTubo = new List<Vector3>();
 
+    // ==========================================
+    // --- ENCHUFE CON EL HARDWARE ---
+    // ==========================================
+    void OnEnable()
+    {
+        if (ConfigManager.instancia != null)
+        {
+            ConfigManager.instancia.AlRecibirDatosProcesados += ActualizarDatosHardware;
+        }
+    }
+
+    void OnDisable()
+    {
+        if (ConfigManager.instancia != null)
+        {
+            ConfigManager.instancia.AlRecibirDatosProcesados -= ActualizarDatosHardware;
+        }
+    }
+
+    private void ActualizarDatosHardware(DatosProcesados nuevosDatos)
+    {
+        datosHardware = nuevosDatos;
+        tiempoUltimoDatoHardware = Time.time;
+    }
+    // ==========================================
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -102,16 +134,54 @@ public class EndoscopioCurvas : MonoBehaviour
     {
         if (juegoTerminado || huesos.Length == 0) return;
 
-        // --- LECTURA DE INPUTS ---
-        empujeFisico = 0;
-        if (Input.GetKey(KeyCode.W)) empujeFisico = 1;
-        if (Input.GetKey(KeyCode.S)) empujeFisico = -1;
-
+        empujeFisico = 0f;
+        inputTorqueActivo = 0f;
         bool tocandoFlechas = false;
-        if (Input.GetKey(KeyCode.UpArrow)) { rotX -= velocidadGiroPunta * Time.deltaTime; tocandoFlechas = true; }
-        if (Input.GetKey(KeyCode.DownArrow)) { rotX += velocidadGiroPunta * Time.deltaTime; tocandoFlechas = true; }
-        if (Input.GetKey(KeyCode.LeftArrow)) { rotZ += velocidadGiroPunta * Time.deltaTime; tocandoFlechas = true; }
-        if (Input.GetKey(KeyCode.RightArrow)) { rotZ -= velocidadGiroPunta * Time.deltaTime; tocandoFlechas = true; }
+
+        if (!usarControlHardware || datosHardware == null)
+        {
+            // --- 1. LÓGICA PC (Teclado) ---
+            if (Input.GetKey(KeyCode.W)) empujeFisico = 1f;
+            if (Input.GetKey(KeyCode.S)) empujeFisico = -1f;
+
+            if (Input.GetKey(KeyCode.UpArrow)) { rotX -= velocidadGiroPunta * Time.deltaTime; tocandoFlechas = true; }
+            if (Input.GetKey(KeyCode.DownArrow)) { rotX += velocidadGiroPunta * Time.deltaTime; tocandoFlechas = true; }
+            if (Input.GetKey(KeyCode.LeftArrow)) { rotZ += velocidadGiroPunta * Time.deltaTime; tocandoFlechas = true; }
+            if (Input.GetKey(KeyCode.RightArrow)) { rotZ -= velocidadGiroPunta * Time.deltaTime; tocandoFlechas = true; }
+
+            if (Input.GetKey(KeyCode.A)) inputTorqueActivo = -1f;
+            if (Input.GetKey(KeyCode.D)) inputTorqueActivo = 1f;
+        }
+        else
+        {
+            // --- 2. LÓGICA ENDOSCOPIO FÍSICO (Hardware) ---
+            if (Time.time - tiempoUltimoDatoHardware > 0.15f)
+            {
+                datosHardware.insercionFinal = 0f;
+                datosHardware.torsionFinal = 0f;
+                datosHardware.volanteXFinal = 0f;
+                datosHardware.volanteYFinal = 0f;
+            }
+
+            // [NUEVO] FILTRO DE ZONA MUERTA PARA LOS SENSORES
+            empujeFisico = Mathf.Clamp(datosHardware.insercionFinal, -1f, 1f);
+            if (Mathf.Abs(empujeFisico) < 0.05f) empujeFisico = 0f;
+
+            inputTorqueActivo = Mathf.Clamp(datosHardware.torsionFinal, -1f, 1f);
+            if (Mathf.Abs(inputTorqueActivo) < 0.05f) inputTorqueActivo = 0f;
+
+            if (Mathf.Abs(datosHardware.volanteYFinal) > 0.05f)
+            {
+                rotX -= datosHardware.volanteYFinal * velocidadGiroPunta * Time.deltaTime;
+                tocandoFlechas = true;
+            }
+
+            if (Mathf.Abs(datosHardware.volanteXFinal) > 0.05f)
+            {
+                rotZ += datosHardware.volanteXFinal * velocidadGiroPunta * Time.deltaTime;
+                tocandoFlechas = true;
+            }
+        }
 
         // --- CAÍDA NATURAL POR GRAVEDAD ---
         if (empujeFisico > 0 && !tocandoFlechas)
@@ -126,24 +196,16 @@ public class EndoscopioCurvas : MonoBehaviour
             rotZ = Mathf.Lerp(rotZ, 0f, Time.deltaTime * 2f);
         }
 
-        // --- NUEVO: LÍMITES DE FLEXIÓN DINÁMICOS ---
-        // Si empujamos (W), la malla está rígida (90°). Si jalamos (S) o soltamos W, la malla se relaja permitiendo retroflexión.
+        // --- LÍMITES DE FLEXIÓN DINÁMICOS ---
         float limiteActual = (empujeFisico > 0) ? limiteFlexionNormal : limiteFlexionRelajada;
-
         rotX = Mathf.Clamp(rotX, -limiteActual, limiteActual);
         rotZ = Mathf.Clamp(rotZ, -limiteActual, limiteActual);
 
         // --- FATIGA POR TORQUE ---
-        inputTorqueActivo = 0f;
-        if (Input.GetKey(KeyCode.A)) inputTorqueActivo = -1f;
-        if (Input.GetKey(KeyCode.D)) inputTorqueActivo = 1f;
-
         if (inputTorqueActivo != 0)
         {
             float nuevoTorque = torqueGiro + (inputTorqueActivo * velocidadTorque * Time.deltaTime);
-
             string estado = Mathf.Abs(nuevoTorque) < 20f ? "<color=green>FLEXIBLE</color>" : "<color=orange>RÍGIDO</color>";
-            Debug.Log($"Tensión Acumulada: {(int)nuevoTorque}° -> Estado: {estado}");
 
             if (Mathf.Abs(nuevoTorque) > maxTorquePermitido)
             {
@@ -183,7 +245,6 @@ public class EndoscopioCurvas : MonoBehaviour
     {
         if (juegoTerminado || huesos.Length < 2) return;
 
-        // --- 1. DETECTOR DE BUCLES (AL ENTRAR) ---
         float anguloBucle = Vector3.Angle(huesos[huesos.Length - 1].up, huesos[0].up);
         float multiplicadorAvance = 1f;
 
@@ -208,7 +269,6 @@ public class EndoscopioCurvas : MonoBehaviour
             else tiempoForzandoBucle = Mathf.Max(0, tiempoForzandoBucle - (Time.fixedDeltaTime * 2f));
         }
 
-        // --- 2. FRICCIÓN Y DESGARRO EN CURVAS (AL SALIR) ---
         if (empujeFisico < 0)
         {
             float curvaturaCuerpo = 0f;
@@ -248,7 +308,6 @@ public class EndoscopioCurvas : MonoBehaviour
             tiempoExtraccionBrusca = Mathf.Max(0, tiempoExtraccionBrusca - (Time.fixedDeltaTime * 4f));
         }
 
-        // --- DETECTOR POR PLANO MATEMÁTICO ---
         Vector3 direccionHaciaPunta = huesos[0].position - huesos[huesos.Length - 1].position;
         float productoPuntoPlano = Vector3.Dot(huesos[huesos.Length - 1].up, direccionHaciaPunta.normalized);
 
@@ -257,7 +316,6 @@ public class EndoscopioCurvas : MonoBehaviour
             ProcesarGameOver("AUTO-INTERSECCIÓN FATAL: El endoscopio cruzó su propio plano de entrada.");
         }
 
-        // --- DETECTOR DE RETROFLEXIÓN CLÁSICO ---
         if (dibujarTuboExterior && rutaTubo.Count > 10 && !juegoTerminado)
         {
             int puntosCuerpo = Mathf.CeilToInt(((huesos.Length - 1) * longitudHueso) / 0.04f) + 5;
@@ -313,7 +371,6 @@ public class EndoscopioCurvas : MonoBehaviour
                 distanciaAcumulada += longitudHueso;
             }
 
-            // --- GESTIÓN DE LA RUTA VISUAL (Con filtro direccional puro) ---
             if (dibujarTuboExterior)
             {
                 Transform baseHueso = huesos[huesos.Length - 1];
@@ -341,6 +398,13 @@ public class EndoscopioCurvas : MonoBehaviour
                 lr.SetPositions(rutaTubo.ToArray());
                 lr.SetPosition(rutaTubo.Count - 1, baseHueso.position);
             }
+        }
+        else
+        {
+            // [NUEVO] ANCLA MAGNÉTICA: Si no hay empuje intencional, matamos la velocidad física
+            // Esto anula cualquier deslizamiento por culpa del material resbaladizo del intestino
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
         }
     }
 
