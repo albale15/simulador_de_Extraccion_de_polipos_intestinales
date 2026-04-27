@@ -42,6 +42,7 @@ public class ControladorMenuPrincipal : MonoBehaviour
         SerialManager serial = SerialManager.instancia;
         if (serial != null)
         {
+            pantallaSplashCarga.SetActive(true);
             if (txtEstadoCarga != null) txtEstadoCarga.text = "Escaneando puertos USB físicos...";
             if (barraDeCarga != null) barraDeCarga.value = 0.6f;
 

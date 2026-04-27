@@ -16,8 +16,6 @@ public class PoliposManager : MonoBehaviour
     [Tooltip("Selecciona aquí la capa 'Intestino' para que el láser solo choque con las paredes")]
     public LayerMask capaIntestino;
 
-    [Header("UI (Opcional)")]
-    public GameObject pantallaDeCarga;
 
     private List<Transform> puntosDisponibles = new List<Transform>();
     private GameObject[] prefabDiccionario;
@@ -27,7 +25,6 @@ public class PoliposManager : MonoBehaviour
 
     void Start()
     {
-        if (pantallaDeCarga != null) pantallaDeCarga.SetActive(true);
 
         prefabDiccionario = new GameObject[] { prefabYamada1, prefabYamada2, prefabYamada3, prefabYamada4 };
 
@@ -99,7 +96,6 @@ public class PoliposManager : MonoBehaviour
             }
         }
 
-        if (pantallaDeCarga != null) pantallaDeCarga.SetActive(false);
         Debug.Log($"<color=green>Generación Completa: {poliposActivos.Count} pólipos pegados a las paredes.</color>");
     }
 }
