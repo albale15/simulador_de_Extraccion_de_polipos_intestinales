@@ -10,7 +10,7 @@ public class EndoscopioCurvas : MonoBehaviour
     [Header("Configuración de Controles")]
     public float velocidadInsercion = 0.5f;
     [Tooltip("Velocidad al retroceder (tecla S)")]
-    public float velocidadExtraccion = 0.8f; // NUEVO: Velocidad independiente para sacar
+    public float velocidadExtraccion = 0.8f;
     public float velocidadTorque = 100f;
     public float velocidadGiroPunta = 80f;
     public float suavidadGiroHuesos = 15f;
@@ -19,6 +19,14 @@ public class EndoscopioCurvas : MonoBehaviour
     public float fuerzaRigidezTorque = 1.5f;
     public float fuerzaArrectar = 5.0f;
     public float umbralBucleAtasco = 140f;
+    [Tooltip("Grados por segundo que la punta cae por gravedad al avanzar si no hay torque")]
+    public float caidaGravedad = 8f;
+
+    [Header("Flexibilidad Dinámica (NUEVO)")]
+    [Tooltip("Límite de doblez al empujar (W)")]
+    public float limiteFlexionNormal = 90f;
+    [Tooltip("Límite máximo al jalar o estar quieto (Retroflexión)")]
+    public float limiteFlexionRelajada = 160f;
 
     [Header("Límites de Seguridad (Fatal Errors)")]
     public float maxTorquePermitido = 540f;
@@ -105,14 +113,25 @@ public class EndoscopioCurvas : MonoBehaviour
         if (Input.GetKey(KeyCode.LeftArrow)) { rotZ += velocidadGiroPunta * Time.deltaTime; tocandoFlechas = true; }
         if (Input.GetKey(KeyCode.RightArrow)) { rotZ -= velocidadGiroPunta * Time.deltaTime; tocandoFlechas = true; }
 
+        // --- CAÍDA NATURAL POR GRAVEDAD ---
+        if (empujeFisico > 0 && !tocandoFlechas)
+        {
+            float factorFlexibilidad = 1f - Mathf.Clamp01(Mathf.Abs(torqueGiro) / 40f);
+            rotX += caidaGravedad * factorFlexibilidad * Time.deltaTime;
+        }
+
         if (empujeFisico < 0 && !tocandoFlechas)
         {
             rotX = Mathf.Lerp(rotX, 0f, Time.deltaTime * 2f);
             rotZ = Mathf.Lerp(rotZ, 0f, Time.deltaTime * 2f);
         }
 
-        rotX = Mathf.Clamp(rotX, -90f, 90f);
-        rotZ = Mathf.Clamp(rotZ, -90f, 90f);
+        // --- NUEVO: LÍMITES DE FLEXIÓN DINÁMICOS ---
+        // Si empujamos (W), la malla está rígida (90°). Si jalamos (S) o soltamos W, la malla se relaja permitiendo retroflexión.
+        float limiteActual = (empujeFisico > 0) ? limiteFlexionNormal : limiteFlexionRelajada;
+
+        rotX = Mathf.Clamp(rotX, -limiteActual, limiteActual);
+        rotZ = Mathf.Clamp(rotZ, -limiteActual, limiteActual);
 
         // --- FATIGA POR TORQUE ---
         inputTorqueActivo = 0f;
@@ -269,7 +288,6 @@ public class EndoscopioCurvas : MonoBehaviour
             }
 
             Vector3 direccionFinal = huesos[1].up;
-            // NUEVO: Usamos la velocidad correcta dependiendo de si entra (W) o sale (S)
             float velActual = (empujeFisico > 0) ? velocidadInsercion : velocidadExtraccion;
             float distanciaAvanzada = empujeFisico * (velActual * multiplicadorAvance) * Time.fixedDeltaTime;
 
@@ -306,8 +324,6 @@ public class EndoscopioCurvas : MonoBehaviour
 
                     if (direccionMovimiento.magnitude > 0.04f)
                     {
-                        // EL FILTRO: Solo dibuja el punto si el movimiento fue realmente hacia el frente.
-                        // Ignora los rebotes laterales o temblores de colisión.
                         if (Vector3.Dot(baseHueso.up, direccionMovimiento.normalized) > 0.2f)
                         {
                             rutaTubo.Add(baseHueso.position);
