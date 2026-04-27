@@ -770,8 +770,8 @@ MonoBehaviour:
   - {fileID: 1068188858}
   - {fileID: 535037705}
   - {fileID: 423532366}
-  usarControlHardware: 0
   velocidadInsercion: 3
+  velocidadExtraccion: 3
   velocidadTorque: 100
   velocidadGiroPunta: 80
   suavidadGiroHuesos: 15
@@ -782,9 +782,9 @@ MonoBehaviour:
   maxIntentosTorque: 3
   tiempoMaximoTorque: 2
   tiempoMaximoForzandoBucle: 3
-  tiempoMaximoTiron: 4
+  tiempoMaximoTiron: 30
   dibujarTuboExterior: 1
-  grosorTubo: 0.12
+  grosorTubo: 0.5
 --- !u!54 &1325639775
 Rigidbody:
   m_ObjectHideFlags: 0
