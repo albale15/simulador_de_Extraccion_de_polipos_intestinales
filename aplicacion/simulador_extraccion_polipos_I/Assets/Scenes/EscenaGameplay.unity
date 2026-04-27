@@ -27,7 +27,7 @@ RenderSettings:
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
   m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
-  m_HaloStrength: 0.5
+  m_HaloStrength: 0
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
   m_HaloTexture: {fileID: 0}
@@ -278,7 +278,7 @@ SphereCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 414682422}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 8eb7dd7c15dcceb43b9a6dceecbeba12, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -309,7 +309,7 @@ SphereCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 423532365}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 8eb7dd7c15dcceb43b9a6dceecbeba12, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -340,7 +340,7 @@ SphereCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 535037704}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 8eb7dd7c15dcceb43b9a6dceecbeba12, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -371,7 +371,7 @@ SphereCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 659821935}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 8eb7dd7c15dcceb43b9a6dceecbeba12, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -445,7 +445,7 @@ Camera:
     height: 1
   near clip plane: 0.1
   far clip plane: 1000
-  field of view: 50
+  field of view: 60
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -486,7 +486,7 @@ SphereCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 808759703}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 8eb7dd7c15dcceb43b9a6dceecbeba12, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -496,7 +496,7 @@ SphereCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_Radius: 0.22
   m_Center: {x: 0, y: 0, z: 0}
@@ -669,7 +669,7 @@ SphereCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1068188857}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 8eb7dd7c15dcceb43b9a6dceecbeba12, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -770,9 +770,21 @@ MonoBehaviour:
   - {fileID: 1068188858}
   - {fileID: 535037705}
   - {fileID: 423532366}
-  velocidadInsercion: 0.5
+  usarControlHardware: 0
+  velocidadInsercion: 3
   velocidadTorque: 100
   velocidadGiroPunta: 80
+  suavidadGiroHuesos: 15
+  fuerzaRigidezTorque: 1.5
+  fuerzaArrectar: 5
+  umbralBucleAtasco: 90
+  maxTorquePermitido: 540
+  maxIntentosTorque: 3
+  tiempoMaximoTorque: 2
+  tiempoMaximoForzandoBucle: 3
+  tiempoMaximoTiron: 4
+  dibujarTuboExterior: 1
+  grosorTubo: 0.12
 --- !u!54 &1325639775
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -798,7 +810,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 112
+  m_Constraints: 48
   m_CollisionDetection: 2
 --- !u!1001 &1331364955
 PrefabInstance:
@@ -1255,7 +1267,7 @@ SphereCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1969158191}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 8eb7dd7c15dcceb43b9a6dceecbeba12, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0

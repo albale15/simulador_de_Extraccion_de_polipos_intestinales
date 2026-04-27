@@ -4,21 +4,21 @@ using System.Collections.Generic;
 [RequireComponent(typeof(Rigidbody))]
 public class EndoscopioCurvas : MonoBehaviour
 {
-    [Header("Los Huesos (0=Punta, Último=Base)")]
+    [Header("Los Huesos (0=Punta, ?ltimo=Base)")]
     public Transform[] huesos;
 
-    [Header("Configuración de Controles")]
+    [Header("Configuraci?n de Controles")]
     public float velocidadInsercion = 0.5f;
     public float velocidadTorque = 100f;
     public float velocidadGiroPunta = 80f;
     public float suavidadGiroHuesos = 15f;
 
-    [Header("Mecánicas Médicas")]
+    [Header("Mec?nicas M?dicas")]
     public float fuerzaRigidezTorque = 1.5f;
     public float fuerzaArrectar = 5.0f;
     public float umbralBucleAtasco = 140f;
 
-    [Header("Límites de Seguridad (Fatal Errors)")]
+    [Header("L?mites de Seguridad (Fatal Errors)")]
     public float maxTorquePermitido = 540f;
     public int maxIntentosTorque = 3;
     public float tiempoMaximoTorque = 2f;
@@ -26,7 +26,7 @@ public class EndoscopioCurvas : MonoBehaviour
     [Tooltip("Segundos jalando bruscamente en una curva antes de desgarrar el tejido")]
     public float tiempoMaximoTiron = 4f;
 
-    [Header("Visualización del Tubo")]
+    [Header("Visualizaci?n del Tubo")]
     public bool dibujarTuboExterior = true;
     public float grosorTubo = 0.012f;
 
@@ -40,7 +40,7 @@ public class EndoscopioCurvas : MonoBehaviour
     private float tiempoForzandoBucle = 0f;
     private float tiempoExtraccionBrusca = 0f; // NUEVO CONTADOR
 
-    // Cinemática
+    // Cinem?tica
     private Quaternion[] rotacionesGlobalesIniciales;
     private Quaternion[] olaDeCurvas;
     private float longitudHueso;
@@ -121,8 +121,8 @@ public class EndoscopioCurvas : MonoBehaviour
         {
             float nuevoTorque = torqueGiro + (inputTorqueActivo * velocidadTorque * Time.deltaTime);
 
-            string estado = Mathf.Abs(nuevoTorque) < 20f ? "<color=green>FLEXIBLE</color>" : "<color=orange>RÍGIDO</color>";
-            Debug.Log($"Tensión Acumulada: {(int)nuevoTorque}° -> Estado: {estado}");
+            string estado = Mathf.Abs(nuevoTorque) < 20f ? "<color=green>FLEXIBLE</color>" : "<color=orange>R?GIDO</color>";
+            Debug.Log($"Tensi?n Acumulada: {(int)nuevoTorque}? -> Estado: {estado}");
 
             if (Mathf.Abs(nuevoTorque) > maxTorquePermitido)
             {
@@ -131,14 +131,14 @@ public class EndoscopioCurvas : MonoBehaviour
                     contadorAvisoRoturaTorque++;
                     teclaPresionadaEnLimite = true;
                     if (contadorAvisoRoturaTorque >= maxIntentosTorque)
-                        ProcesarGameOver("Rompiste la fibra óptica por forzar el límite de torque.");
+                        ProcesarGameOver("Rompiste la fibra ?ptica por forzar el l?mite de torque.");
                     else
                         Debug.LogWarning($"<color=orange>CUIDADO: Forzando Torque. Toques: ({contadorAvisoRoturaTorque}/{maxIntentosTorque}). Suelta y gira al otro lado para relajar.</color>");
                 }
 
                 tiempoForzandoTorque += Time.deltaTime;
                 if (tiempoForzandoTorque >= tiempoMaximoTorque)
-                    ProcesarGameOver("Rompiste la fibra óptica por mantener tensión extrema.");
+                    ProcesarGameOver("Rompiste la fibra ?ptica por mantener tensi?n extrema.");
 
                 torqueGiro = Mathf.Clamp(nuevoTorque, -maxTorquePermitido, maxTorquePermitido);
             }
@@ -173,11 +173,11 @@ public class EndoscopioCurvas : MonoBehaviour
             {
                 tiempoForzandoBucle += Time.fixedDeltaTime;
                 if (tiempoForzandoBucle > tiempoMaximoForzandoBucle)
-                    ProcesarGameOver("PERFORACIÓN INTESTINAL: Forzaste el avance durante un bucle.");
+                    ProcesarGameOver("PERFORACI?N INTESTINAL: Forzaste el avance durante un bucle.");
                 else
                 {
                     int porcentaje = (int)((tiempoForzandoBucle / tiempoMaximoForzandoBucle) * 100);
-                    Debug.LogWarning($"<color=orange>¡ATASCO! Ángulo ({anguloBucle}°). USA S + A/D PARA ARRECTAR. Daño: {porcentaje}%</color>");
+                    Debug.LogWarning($"<color=orange>?ATASCO! ?ngulo ({anguloBucle}?). USA S + A/D PARA ARRECTAR. Da?o: {porcentaje}%</color>");
                 }
             }
         }
@@ -187,7 +187,7 @@ public class EndoscopioCurvas : MonoBehaviour
             else tiempoForzandoBucle = Mathf.Max(0, tiempoForzandoBucle - (Time.fixedDeltaTime * 2f));
         }
 
-        // --- 2. FRICCIÓN Y DESGARRO EN CURVAS (AL SALIR) ---
+        // --- 2. FRICCI?N Y DESGARRO EN CURVAS (AL SALIR) ---
         if (empujeFisico < 0)
         {
             float curvaturaCuerpo = 0f;
@@ -205,16 +205,16 @@ public class EndoscopioCurvas : MonoBehaviour
                 {
                     tiempoExtraccionBrusca += Time.fixedDeltaTime;
                     if (tiempoExtraccionBrusca > tiempoMaximoTiron)
-                        ProcesarGameOver("LACERACIÓN DE MUCOSA: Mantuviste un jalón prolongado sin pausas en una curva cerrada.");
+                        ProcesarGameOver("LACERACI?N DE MUCOSA: Mantuviste un jal?n prolongado sin pausas en una curva cerrada.");
                     else
                     {
                         int dolor = (int)((tiempoExtraccionBrusca / tiempoMaximoTiron) * 100);
-                        Debug.LogWarning($"<color=orange>¡PACIENTE CON DOLOR! Fricción alta. Daño tisular: {dolor}% (Suelta S un momento para relajar)</color>");
+                        Debug.LogWarning($"<color=orange>?PACIENTE CON DOLOR! Fricci?n alta. Da?o tisular: {dolor}% (Suelta S un momento para relajar)</color>");
                     }
                 }
                 else
                 {
-                    // Si la curva no es tan grave, el tejido se relaja rapidísimo
+                    // Si la curva no es tan grave, el tejido se relaja rapid?simo
                     tiempoExtraccionBrusca = Mathf.Max(0, tiempoExtraccionBrusca - (Time.fixedDeltaTime * 4f));
                 }
             }
@@ -225,20 +225,20 @@ public class EndoscopioCurvas : MonoBehaviour
         }
         else
         {
-            // En cuanto sueltas la S, el tejido recupera su elasticidad súper rápido (x4)
+            // En cuanto sueltas la S, el tejido recupera su elasticidad s?per r?pido (x4)
             tiempoExtraccionBrusca = Mathf.Max(0, tiempoExtraccionBrusca - (Time.fixedDeltaTime * 4f));
         }
 
-        // --- DETECTOR POR PLANO MATEMÁTICO ---
+        // --- DETECTOR POR PLANO MATEM?TICO ---
         Vector3 direccionHaciaPunta = huesos[0].position - huesos[huesos.Length - 1].position;
         float productoPuntoPlano = Vector3.Dot(huesos[huesos.Length - 1].up, direccionHaciaPunta.normalized);
 
         if (productoPuntoPlano < -0.1f && anguloBucle > 90f)
         {
-            ProcesarGameOver("AUTO-INTERSECCIÓN FATAL: El endoscopio cruzó su propio plano de entrada.");
+            ProcesarGameOver("AUTO-INTERSECCI?N FATAL: El endoscopio cruz? su propio plano de entrada.");
         }
 
-        // --- DETECTOR DE RETROFLEXIÓN CLÁSICO ---
+        // --- DETECTOR DE RETROFLEXI?N CL?SICO ---
         if (dibujarTuboExterior && rutaTubo.Count > 10 && !juegoTerminado)
         {
             int puntosCuerpo = Mathf.CeilToInt(((huesos.Length - 1) * longitudHueso) / 0.04f) + 5;
@@ -248,14 +248,14 @@ public class EndoscopioCurvas : MonoBehaviour
                 {
                     if (Vector3.Distance(huesos[0].position, rutaTubo[i]) < 0.04f && empujeFisico > 0)
                     {
-                        ProcesarGameOver("AUTO-INTERSECCIÓN: El endoscopio se anudó sobre sí mismo y chocó con su cable.");
+                        ProcesarGameOver("AUTO-INTERSECCI?N: El endoscopio se anud? sobre s? mismo y choc? con su cable.");
                         break;
                     }
                 }
             }
         }
 
-        // --- MOVIMIENTO FÍSICO Y LÓGICA DE TENSIÓN ---
+        // --- MOVIMIENTO F?SICO Y L?GICA DE TENSI?N ---
         if (empujeFisico != 0)
         {
             float nivelDeTension = Mathf.Abs(torqueGiro);
@@ -293,7 +293,7 @@ public class EndoscopioCurvas : MonoBehaviour
                 distanciaAcumulada += longitudHueso;
             }
 
-            // --- GESTIÓN DE LA RUTA VISUAL ---
+            // --- GESTI?N DE LA RUTA VISUAL ---
             if (dibujarTuboExterior)
             {
                 Transform baseHueso = huesos[huesos.Length - 1];
