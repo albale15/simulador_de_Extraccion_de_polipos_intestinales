@@ -37,19 +37,25 @@ public class MonitorEndoscopiaUI : MonoBehaviour
     public GameObject pantallaCargaNegra;
 
     private bool estaPausado = false;
-    private float puntosPerdidos = 0f;
+
+    public enum CategoriaEvaluacion { Seguridad, Protocolo, Tecnica }
+
+    private float notaSeguridad = 100f;
+    private float notaProtocolo = 100f;
+    private float notaTecnica = 100f;
 
     void Start()
     {
         panelPausa.SetActive(false);
         pantallaCargaNegra.SetActive(false);
 
+        Time.timeScale = 1f;
+
         string nombreDoc = ManejadorPartida.nombreEstudiante != "" ? ManejadorPartida.nombreEstudiante : "NaN";
         txtDatosDoctor.text = $"Dr/a: {nombreDoc}\n\nDificultad: {ObtenerNombreDificultad()}";
 
-        ActualizarTextosBotones();
+        ActualizarTextosBotones(false);
 
-        // Limpiamos listeners viejos por si recarga la escena y evitamos bugs de doble click
         btnContinuar.onClick.RemoveAllListeners();
         btnContinuar.onClick.AddListener(ReanudarJuego);
 
@@ -58,6 +64,8 @@ public class MonitorEndoscopiaUI : MonoBehaviour
 
         chkModoComputadora.onValueChanged.RemoveAllListeners();
         chkModoComputadora.onValueChanged.AddListener(CambiarModoControl);
+
+        CambiarModoControl(chkModoComputadora.isOn);
     }
 
     void Update()
@@ -84,8 +92,7 @@ public class MonitorEndoscopiaUI : MonoBehaviour
         txtProfundidad.text = $"Cm: {centimetros}";
 
         float giroPuro = endoscopio.torqueGiro;
-
-        txtTorque.text = $"Torque: {Mathf.RoundToInt(endoscopio.torqueGiro)}°";
+        txtTorque.text = $"Torque: {Mathf.RoundToInt(giroPuro)}°";
 
         if (indicadorOctagono != null)
         {
@@ -95,10 +102,17 @@ public class MonitorEndoscopiaUI : MonoBehaviour
         if (herramientas != null)
         {
             ActualizarPanelPolipos();
+
             if (ManejadorPartida.dificultad == 0 || ManejadorPartida.dificultad == 1)
             {
-                float notaFinal = 100f - puntosPerdidos;
-                txtNotaEstudiante.text = $"Seguridad y Navegación:\n{notaFinal:F1} / 100\n\nProtocolo y Diagnóstico:\n{notaFinal:F1} / 100\n\nTécnica Quirúrgica:\n{notaFinal:F1} / 100";
+                txtNotaEstudiante.text =
+                    $"Seguridad y Nav:\n<color={(notaSeguridad > 60 ? "white" : "red")}>{notaSeguridad:F1} / 100</color>\n\n" +
+                    $"Protocolo y Diag:\n<color={(notaProtocolo > 60 ? "white" : "red")}>{notaProtocolo:F1} / 100</color>\n\n" +
+                    $"Técnica Quirúrgica:\n<color={(notaTecnica > 60 ? "white" : "red")}>{notaTecnica:F1} / 100</color>";
+            }
+            else
+            {
+                txtNotaEstudiante.text = "Evaluación en curso...";
             }
         }
     }
@@ -106,7 +120,6 @@ public class MonitorEndoscopiaUI : MonoBehaviour
     private void ActualizarPanelPolipos()
     {
         int totalExtraidos = herramientas.ObtenerTotalEliminados();
-
         int totalPedidos = ManejadorPartida.totalPolipos > 0 ? ManejadorPartida.totalPolipos : 0;
         string tTotal = totalPedidos > 0 ? totalPedidos.ToString() : "NaN";
 
@@ -146,40 +159,53 @@ public class MonitorEndoscopiaUI : MonoBehaviour
     {
         if (SerialManager.instancia != null)
         {
-            // EL FIX: Solo forzamos la pausa por error SI NO están usando la PC.
             if (SerialManager.instancia.estadoActual == SerialManager.EstadoConexion.Error && !chkModoComputadora.isOn)
             {
                 if (!estaPausado)
                 {
                     PausarJuego();
                     txtAlertaConexion.text = "<color=red> ERROR: CONEXIÓN STM32 PERDIDA</color>\nPor favor, revise el cable USB.";
-
-                    chkModoComputadora.isOn = true; // Auto-activamos PC para que puedan continuar
-                    chkModoComputadora.interactable = false; // Castigamos bloqueando el checkbox
+                    chkModoComputadora.isOn = true;
+                    chkModoComputadora.interactable = false;
                 }
             }
             else if (SerialManager.instancia.estadoActual == SerialManager.EstadoConexion.Conectado)
             {
-                if (estaPausado)
+                if (estaPausado && !chkModoComputadora.isOn)
                 {
                     txtAlertaConexion.text = "<color=green>Conexión estable.</color>";
-                    chkModoComputadora.interactable = true; // Liberamos el castigo
+                    chkModoComputadora.interactable = true;
                 }
             }
         }
     }
 
-    private void ActualizarTextosBotones()
+    public void ActualizarTextosBotones(bool enModoSeleccion)
     {
         if (ConfigManager.instancia != null)
         {
             ConfigManager cfg = ConfigManager.instancia;
-            txtListaBotones.text =
-                $"<color=#00FFFF>(Configuración Activa)</color>\n" +
-                $"1: Freeze [{cfg.mapFreeze}]\n" +
-                $"2: Capture [{cfg.mapCapture}]\n" +
-                $"3: Zoom [{cfg.mapZoom}]\n" +
-                $"4: Succión [{cfg.mapSuccion}]";
+
+            if (enModoSeleccion)
+            {
+                txtListaBotones.text =
+                    $"<color=#FFD700>(Elija Herramienta)</color>\n" +
+                    $"1: Pinza Biopsia [{cfg.mapFreeze}]\n" +
+                    $"2: Asa Diatérmica [{cfg.mapCapture}]\n" +
+                    $"<color=#888888>3: ---</color>\n" +
+                    $"<color=#888888>4: ---</color>\n" +
+                    $"5: Cancelar [{cfg.mapAccion}]";
+            }
+            else
+            {
+                txtListaBotones.text =
+                    $"<color=#00FFFF>(Configuración Activa)</color>\n" +
+                    $"1: Freeze [{cfg.mapFreeze}]\n" +
+                    $"2: Capture [{cfg.mapCapture}]\n" +
+                    $"3: Zoom [{cfg.mapZoom}]\n" +
+                    $"4: Succión [{cfg.mapSuccion}]\n" +
+                    $"5: Herramientas [{cfg.mapAccion}]";
+            }
         }
         else
         {
@@ -192,11 +218,22 @@ public class MonitorEndoscopiaUI : MonoBehaviour
         estaPausado = true;
         Time.timeScale = 0f;
         panelPausa.SetActive(true);
+
+        if (SerialManager.instancia != null)
+        {
+            if (SerialManager.instancia.estadoActual == SerialManager.EstadoConexion.Conectado)
+                txtAlertaConexion.text = "<color=white>JUEGO PAUSADO</color>\n<color=green>Hardware Conectado y Listo.</color>";
+            else
+                txtAlertaConexion.text = "<color=white>JUEGO PAUSADO</color>\n<color=red>Advertencia: Hardware Desconectado.</color>";
+        }
+        else
+        {
+            txtAlertaConexion.text = "<color=white>JUEGO PAUSADO</color>";
+        }
     }
 
     public void ReanudarJuego()
     {
-        // EL FIX DE SEGURIDAD: Evitamos que quiten la pausa si el cable sigue roto y no quieren usar PC
         if (!chkModoComputadora.isOn && SerialManager.instancia != null && SerialManager.instancia.estadoActual == SerialManager.EstadoConexion.Error)
         {
             txtAlertaConexion.text = "<color=red>NO SE PUEDE CONTINUAR</color>\nConecte el hardware o active el Modo Computadora.";
@@ -204,7 +241,9 @@ public class MonitorEndoscopiaUI : MonoBehaviour
         }
 
         estaPausado = false;
-        Time.timeScale = 1f;
+        if (herramientas != null && herramientas.estaCongelado) Time.timeScale = 0.0001f;
+        else Time.timeScale = 1f;
+
         panelPausa.SetActive(false);
     }
 
@@ -213,6 +252,7 @@ public class MonitorEndoscopiaUI : MonoBehaviour
         if (endoscopio != null)
         {
             endoscopio.usarControlHardware = !usarPc;
+            if (usarPc && estaPausado) txtAlertaConexion.text = "<color=yellow>Modo Teclado/PC Activado.</color>";
         }
     }
 
@@ -222,10 +262,46 @@ public class MonitorEndoscopiaUI : MonoBehaviour
         UnityEngine.SceneManagement.SceneManager.LoadScene(0);
     }
 
+    void OnDestroy()
+    {
+        Time.timeScale = 1f;
+    }
+
+    // --- FUNCIONES DE EVALUACIÓN (Errores) ---
     public void RegistrarError(string mensajeFallo, float puntosAQuitar)
     {
-        puntosPerdidos += puntosAQuitar;
-        txtRespuestas.text += $"\n<color=red>[-] {mensajeFallo}</color>";
+        notaTecnica -= puntosAQuitar;
+        ImprimirMensajeConsola($"[-] {mensajeFallo} (-{puntosAQuitar} pts)", "red");
+    }
+
+    public void RegistrarErrorEstandarizado(CategoriaEvaluacion categoria, int indiceParametro, string mensajeFallo)
+    {
+        float puntosAQuitar = 1f;
+        if (ManejadorPartida.penalizaciones != null && indiceParametro >= 0 && indiceParametro < ManejadorPartida.penalizaciones.Length)
+        {
+            puntosAQuitar = ManejadorPartida.penalizaciones[indiceParametro];
+        }
+
+        switch (categoria)
+        {
+            case CategoriaEvaluacion.Seguridad: notaSeguridad -= puntosAQuitar; break;
+            case CategoriaEvaluacion.Protocolo: notaProtocolo -= puntosAQuitar; break;
+            case CategoriaEvaluacion.Tecnica: notaTecnica -= puntosAQuitar; break;
+        }
+
+        ImprimirMensajeConsola($"[-] {mensajeFallo} (-{puntosAQuitar} pts)", "red");
+    }
+
+    // --- NUEVO: FUNCIÓN DE FEEDBACK POSITIVO/ACCIÓN ---
+    public void RegistrarAccionInfo(string mensajeInfo, string colorHex = "#00FFFF")
+    {
+        ImprimirMensajeConsola($"[+] {mensajeInfo}", colorHex);
+    }
+
+    // --- MOTOR DE IMPRESIÓN UNIFICADO ---
+    private void ImprimirMensajeConsola(string lineaCompleta, string color)
+    {
+        txtRespuestas.text += $"\n<color={color}>{lineaCompleta}</color>";
 
         string[] lineas = txtRespuestas.text.Split('\n');
         if (lineas.Length > 5)

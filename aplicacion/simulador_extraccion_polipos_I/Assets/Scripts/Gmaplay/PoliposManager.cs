@@ -38,7 +38,8 @@ public class PoliposManager : MonoBehaviour
 
     private IEnumerator GenerarPoliposAleatorios()
     {
-        yield return new WaitForSeconds(0.1f);
+        // EL FIX: Usar 'Realtime' ignora si el juego está en pausa (Time.timeScale = 0)
+        yield return new WaitForSecondsRealtime(0.1f);
 
         int totalPedidos = ManejadorPartida.totalPolipos;
         if (puntosDisponibles.Count < totalPedidos)
@@ -60,39 +61,28 @@ public class PoliposManager : MonoBehaviour
 
                 Vector3 direccionAleatoria = Random.onUnitSphere;
 
-                // Disparamos el rayo láser de hasta 10 metros, PERO SOLO a la capa del Intestino
                 if (Physics.Raycast(puntoCentro.position, direccionAleatoria, out RaycastHit hit, 10f, capaIntestino))
                 {
-                    // 1. Calculamos que la "cabeza" mire al centro del tubo (el spawn flotante)
                     Vector3 direccionHaciaElCentro = (puntoCentro.position - hit.point).normalized;
                     Quaternion rotacionCorregida = Quaternion.FromToRotation(Vector3.up, direccionHaciaElCentro);
 
-                    // 2. Instanciamos el pólipo en el impacto con coordenadas de mundo
                     GameObject nuevoPolipo = Instantiate(prefabDiccionario[tipoPolipo], hit.point, rotacionCorregida);
-
-                    // 3. FORZAMOS la posición de mundo (Mata cualquier bug de desplazamiento del modelo FBX)
                     nuevoPolipo.transform.position = hit.point;
-
-                    // 4. Lo emparentamos para mantener limpia la jerarquía
                     nuevoPolipo.transform.SetParent(contenedorPuntosSpawn, true);
 
                     poliposActivos.Add(nuevoPolipo);
-
-                    // Dibuja una línea verde en la ventana "Scene" de Unity para que veas el éxito
                     Debug.DrawLine(puntoCentro.position, hit.point, Color.green, 15f);
 
-                    // Quitamos el punto de la lista para que no crezcan dos pólipos desde el mismo origen
                     puntosDisponibles.RemoveAt(indiceAleatorio);
                 }
                 else
                 {
-                    // Si el láser falló (apuntó al vacío), dibuja línea roja y vuelve a intentar el mismo pólipo
                     Debug.DrawRay(puntoCentro.position, direccionAleatoria * 3f, Color.red, 5f);
                     i--;
                 }
 
-                // Pausamos brevemente para que no se congele el juego
-                if (i % 2 == 0) yield return null;
+                // El segundo FIX: No pausar si ya estamos congelados
+                if (i % 2 == 0 && Time.timeScale > 0) yield return null;
             }
         }
 

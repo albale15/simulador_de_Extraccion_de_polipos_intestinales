@@ -11,6 +11,7 @@ public class DatosProcesados
     public bool botonFreeze;
     public bool botonCapture;
     public bool botonZoom;
+    public bool botonAccion;
     public bool botonSuccion;
 }
 // Obligamos a este script a iniciar primero
@@ -42,6 +43,7 @@ public class ConfigManager : MonoBehaviour
     public string mapFreeze = "B1";
     public string mapCapture = "B2";
     public string mapZoom = "B3";
+    public string mapAccion = "B4";
     public string mapSuccion = "Su";
 
     void Awake()
@@ -85,6 +87,7 @@ public class ConfigManager : MonoBehaviour
         limpios.botonFreeze = ObtenerBoton(mapFreeze, d);
         limpios.botonCapture = ObtenerBoton(mapCapture, d);
         limpios.botonZoom = ObtenerBoton(mapZoom, d);
+        limpios.botonAccion = ObtenerBoton(mapAccion, d);
         limpios.botonSuccion = ObtenerBoton(mapSuccion, d);
         // Una vez que tenemos los datos limpios y listos, los enviamos a través de nuestro propio evento para que cualquier otro script pueda usarlos sin preocuparse por el hardware
         AlRecibirDatosProcesados?.Invoke(limpios);
@@ -131,6 +134,7 @@ public class ConfigManager : MonoBehaviour
         PlayerPrefs.SetString("M_BtnF", mapFreeze);
         PlayerPrefs.SetString("M_BtnC", mapCapture);
         PlayerPrefs.SetString("M_BtnZ", mapZoom);
+        PlayerPrefs.SetString("M_BtnA", mapAccion);
         PlayerPrefs.SetString("M_BtnS", mapSuccion);
         PlayerPrefs.Save();
     }
@@ -153,6 +157,7 @@ public class ConfigManager : MonoBehaviour
         mapFreeze = PlayerPrefs.GetString("M_BtnF", "B1");
         mapCapture = PlayerPrefs.GetString("M_BtnC", "B2");
         mapZoom = PlayerPrefs.GetString("M_BtnZ", "B3");
+        mapAccion = PlayerPrefs.GetString("M_BtnA", "B4");
         mapSuccion = PlayerPrefs.GetString("M_BtnS", "Su");
     }
     // Esta función se puede llamar desde el menú de configuración para restablecer todos los ajustes a sus valores predeterminados de fábrica, y luego guardarlos.
@@ -163,7 +168,7 @@ public class ConfigManager : MonoBehaviour
         mapTorDer = "TOR_+"; mapTorIzq = "TOR_-";
         mapVolXDer = "E1_+"; mapVolXIzq = "E1_-";
         mapVolYArr = "E2_+"; mapVolYAba = "E2_-";
-        mapFreeze = "B1"; mapCapture = "B2"; mapZoom = "B3"; mapSuccion = "Su";
+        mapFreeze = "B1"; mapCapture = "B2"; mapZoom = "B3"; mapAccion = "B4"; mapSuccion = "Su";
         GuardarAjustes();
     }
 }

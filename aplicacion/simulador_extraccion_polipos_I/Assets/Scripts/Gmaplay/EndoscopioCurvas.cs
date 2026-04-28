@@ -128,7 +128,10 @@ public class EndoscopioCurvas : MonoBehaviour
         inputTorqueActivo = 0f;
         bool tocandoFlechas = false;
 
-        if (!usarControlHardware || datosHardware == null)
+        // EL FIX: Obediencia Estricta. Si usarControlHardware es TRUE, modoPC es FALSE y punto.
+        bool modoPC = !usarControlHardware;
+
+        if (modoPC)
         {
             if (Input.GetKey(KeyCode.W)) empujeFisico = 1f;
             if (Input.GetKey(KeyCode.S)) empujeFisico = -1f;
@@ -140,33 +143,44 @@ public class EndoscopioCurvas : MonoBehaviour
 
             if (Input.GetKey(KeyCode.A)) inputTorqueActivo = -1f;
             if (Input.GetKey(KeyCode.D)) inputTorqueActivo = 1f;
+
+            // LOGS DE DIAGNÓSTICO
+            if (Input.GetKeyDown(KeyCode.W)) Debug.Log("[PC] Avanzando tubo (W)");
+            if (Input.GetKeyDown(KeyCode.S)) Debug.Log("[PC] Retrayendo tubo (S)");
+            if (Input.GetKeyDown(KeyCode.A)) Debug.Log("[PC] Torque Izquierda (A)");
+            if (Input.GetKeyDown(KeyCode.D)) Debug.Log("[PC] Torque Derecha (D)");
+            if (Input.GetKeyDown(KeyCode.UpArrow)) Debug.Log("[PC] Moviendo Punta (Flechas)");
         }
         else
         {
-            if (Time.time - tiempoUltimoDatoHardware > 0.15f)
+            // Solo procesamos hardware si nos aseguramos que hayan datos
+            if (datosHardware != null)
             {
-                datosHardware.insercionFinal = 0f;
-                datosHardware.torsionFinal = 0f;
-                datosHardware.volanteXFinal = 0f;
-                datosHardware.volanteYFinal = 0f;
-            }
+                if (Time.time - tiempoUltimoDatoHardware > 0.15f)
+                {
+                    datosHardware.insercionFinal = 0f;
+                    datosHardware.torsionFinal = 0f;
+                    datosHardware.volanteXFinal = 0f;
+                    datosHardware.volanteYFinal = 0f;
+                }
 
-            empujeFisico = Mathf.Clamp(datosHardware.insercionFinal, -1f, 1f);
-            if (Mathf.Abs(empujeFisico) < 0.05f) empujeFisico = 0f;
+                empujeFisico = Mathf.Clamp(datosHardware.insercionFinal, -1f, 1f);
+                if (Mathf.Abs(empujeFisico) < 0.05f) empujeFisico = 0f;
 
-            inputTorqueActivo = Mathf.Clamp(datosHardware.torsionFinal, -1f, 1f);
-            if (Mathf.Abs(inputTorqueActivo) < 0.05f) inputTorqueActivo = 0f;
+                inputTorqueActivo = Mathf.Clamp(datosHardware.torsionFinal, -1f, 1f);
+                if (Mathf.Abs(inputTorqueActivo) < 0.05f) inputTorqueActivo = 0f;
 
-            if (Mathf.Abs(datosHardware.volanteYFinal) > 0.05f)
-            {
-                rotX -= datosHardware.volanteYFinal * velocidadGiroPunta * Time.deltaTime;
-                tocandoFlechas = true;
-            }
+                if (Mathf.Abs(datosHardware.volanteYFinal) > 0.05f)
+                {
+                    rotX -= datosHardware.volanteYFinal * velocidadGiroPunta * Time.deltaTime;
+                    tocandoFlechas = true;
+                }
 
-            if (Mathf.Abs(datosHardware.volanteXFinal) > 0.05f)
-            {
-                rotZ += datosHardware.volanteXFinal * velocidadGiroPunta * Time.deltaTime;
-                tocandoFlechas = true;
+                if (Mathf.Abs(datosHardware.volanteXFinal) > 0.05f)
+                {
+                    rotZ += datosHardware.volanteXFinal * velocidadGiroPunta * Time.deltaTime;
+                    tocandoFlechas = true;
+                }
             }
         }
 

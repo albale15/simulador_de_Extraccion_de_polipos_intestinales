@@ -35,6 +35,7 @@ public class ConfigUI : MonoBehaviour
     public TextMeshProUGUI txtMapCapture;
     public TextMeshProUGUI txtMapZoom;
     public TextMeshProUGUI txtMapSuccion;
+    public TextMeshProUGUI txtMapAccion; // NUEVO: El texto para el botón de Acción
 
     [Header("Feedback al Usuario")]
     public TextMeshProUGUI txtFeedback;
@@ -45,7 +46,6 @@ public class ConfigUI : MonoBehaviour
 
     void Awake()
     {
-        // Ignoramos los cadáveres del Inspector.
         serial = SerialManager.instancia;
         config = ConfigManager.instancia;
     }
@@ -55,12 +55,10 @@ public class ConfigUI : MonoBehaviour
         if (serial == null) serial = SerialManager.instancia;
         if (config == null) config = ConfigManager.instancia;
         ActualizarUI();
-
     }
 
     void OnEnable()
     {
-        // Doble validación al entrar a esta pestaña
         if (serial == null) serial = SerialManager.instancia;
         if (config == null) config = ConfigManager.instancia;
 
@@ -98,6 +96,9 @@ public class ConfigUI : MonoBehaviour
         if (txtMapCapture) txtMapCapture.text = config.mapCapture;
         if (txtMapZoom) txtMapZoom.text = config.mapZoom;
         if (txtMapSuccion) txtMapSuccion.text = config.mapSuccion;
+
+        // NUEVO: Mostrar el mapeo guardado para Acción
+        if (txtMapAccion) txtMapAccion.text = config.mapAccion;
 
         txtFeedback.text = "Modifica los valores y presiona 'Guardar' para aplicar.";
         ActualizarTextosSensibilidad();
@@ -142,6 +143,9 @@ public class ConfigUI : MonoBehaviour
     public void MapearCapture() { PrepararMapeo("Capture", false, txtMapCapture); }
     public void MapearZoom() { PrepararMapeo("Zoom", false, txtMapZoom); }
     public void MapearSuccion() { PrepararMapeo("Succion", false, txtMapSuccion); }
+
+    // NUEVO: Botón en la UI para re-mapear la Acción
+    public void MapearAccion() { PrepararMapeo("Accion", false, txtMapAccion); }
 
     private void PrepararMapeo(string accion, bool requiereEje, TextMeshProUGUI textoUI)
     {
@@ -213,6 +217,7 @@ public class ConfigUI : MonoBehaviour
             case "Capture": config.mapCapture = inputDetectado; break;
             case "Zoom": config.mapZoom = inputDetectado; break;
             case "Succion": config.mapSuccion = inputDetectado; break;
+            case "Accion": config.mapAccion = inputDetectado; break; // NUEVO: Asignar en memoria
         }
     }
 

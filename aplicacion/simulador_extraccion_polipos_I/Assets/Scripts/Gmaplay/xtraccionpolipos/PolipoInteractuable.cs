@@ -8,7 +8,9 @@ public class PolipoInteractuable : MonoBehaviour
     [Header("Configuración del Pólipo")]
     public TipoPolipo tipo;
     public EstadoPolipo estadoActual = EstadoPolipo.Intacto;
-
+    // Bandera para protocolo médico
+    [HideInInspector]
+    public bool fueFotografiado = false;
     // Se llama cuando la pinza o asa terminan de cortar
     public void ProcesarCorte()
     {
