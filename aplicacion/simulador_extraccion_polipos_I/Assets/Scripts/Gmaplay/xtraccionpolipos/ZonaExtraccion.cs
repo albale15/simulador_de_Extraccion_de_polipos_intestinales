@@ -8,6 +8,7 @@ public class ZonaExtraccion : MonoBehaviour
         if (herramientas != null)
         {
             herramientas.enZonaExtraccion = true;
+            herramientas.RefrescarUIBotones();
             Debug.Log("<color=white>[Zona Extracción]: Punta en posición. Apague la succión (Botón 4) para depositar la muestra.</color>");
         }
     }
@@ -18,6 +19,7 @@ public class ZonaExtraccion : MonoBehaviour
         if (herramientas != null)
         {
             herramientas.enZonaExtraccion = false;
+            herramientas.RefrescarUIBotones();
         }
     }
 }

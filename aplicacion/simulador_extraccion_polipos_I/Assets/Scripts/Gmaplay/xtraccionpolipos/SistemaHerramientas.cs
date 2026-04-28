@@ -58,6 +58,8 @@ public class SistemaHerramientas : MonoBehaviour
 
     private DatosProcesados datosHardware;
     private bool ultimoF, ultimoC, ultimoZ, ultimoS, ultimoA;
+    [Header("Fin de Procedimiento")]
+    public bool enModoConfirmarSalida = false;
 
     void Start()
     {
@@ -205,12 +207,8 @@ public class SistemaHerramientas : MonoBehaviour
                     }
                     else
                     {
-                        EnviarErrorUI(MonitorEndoscopiaUI.CategoriaEvaluacion.Tecnica, 9, "Contaminación: Apagó la succión y soltó el pólipo dentro del tracto intestinal.");
-                        llevandoPolipo = false;
-                        foreach (Transform hijo in canalDeTrabajo)
-                        {
-                            Destroy(hijo.gameObject);
-                        }
+                        // Solo penalizamos, pero NO cambiamos llevandoPolipo a false 
+                        EnviarErrorUI(MonitorEndoscopiaUI.CategoriaEvaluacion.Tecnica, 9, "Contaminación: Intentó apagar la succión dentro del paciente. Manténgala encendida hasta salir.");
                     }
                 }
                 else
@@ -276,6 +274,35 @@ public class SistemaHerramientas : MonoBehaviour
             polipoEnMira = null;
             if (enModoSeleccion) ActivarModoSeleccion(false);
         }
+
+        if (enModoConfirmarSalida)
+        {
+            // Si el médico mueve el endoscopio, cancelamos la salida por precaución
+            if (moviendo && !endoscopioEstabaMoviendo)
+            {
+                if (monitorUI != null) monitorUI.BotonConfirmarNo();
+                EnviarInfoUI("Confirmación cancelada por movimiento.", "#FF8C00");
+            }
+            else if (btnFreeze) // Botón 1 = SÍ (Aceptar)
+            {
+                if (monitorUI != null) monitorUI.BotonConfirmarSi();
+            }
+            else if (btnCapture || btnAccion) // Botón 2 o Accion = NO (Cancelar)
+            {
+                if (monitorUI != null) monitorUI.BotonConfirmarNo();
+            }
+
+            endoscopioEstabaMoviendo = moviendo;
+            return; // Evita que se activen otras herramientas mientras el popup esté abierto
+        }
+
+        // Y para invocarlo cuando esté en la zona:
+        if (enZonaExtraccion && btnAccion && polipoEnMira == null && !enModoSeleccion && !llevandoPolipo)
+        {
+            ActivarModoSalida(true);
+            return;
+        }
+
     }
 
     private void ActivarModoSeleccion(bool activar)
@@ -414,6 +441,7 @@ public class SistemaHerramientas : MonoBehaviour
     private void SoltarPolipoEnLaboratorio()
     {
         llevandoPolipo = false;
+        RefrescarUIBotones();
         int poliposBorrados = 0;
 
         foreach (Transform hijo in canalDeTrabajo)
@@ -578,4 +606,30 @@ public class SistemaHerramientas : MonoBehaviour
         Debug.Log($"<color={colorHex}>{mensaje}</color>");
         if (monitorUI != null) monitorUI.RegistrarAccionInfo(mensaje, colorHex);
     }
+    public void ActivarModoSalida(bool activar)
+    {
+        enModoConfirmarSalida = activar;
+        RefrescarUIBotones();
+        if (activar)
+        {
+            EnviarInfoUI("¿FINALIZAR PROCEDIMIENTO?\n1 (Freeze): SÍ\n2 (Capture): NO", "#FFD700");
+            if (monitorUI != null) monitorUI.MostrarPopupConfirmacion(MonitorEndoscopiaUI.TipoConfirmacion.FinalizarProcedimiento);
+        }
+        else
+        {
+            if (monitorUI != null) monitorUI.OcultarPopupConfirmacion();
+        }
+    }
+    public void RefrescarUIBotones()
+    {
+        if (monitorUI != null)
+        {
+            // Solo habilitamos el texto rojo si está en la zona, NO está seleccionando herramienta,
+            // NO está llevando un pólipo y NO está apuntando a un pólipo vivo.
+            bool puedeSalir = enZonaExtraccion && !llevandoPolipo && !enModoSeleccion && polipoEnMira == null;
+
+            monitorUI.ActualizarTextosBotones(enModoSeleccion, puedeSalir);
+        }
+    }
+    
 }

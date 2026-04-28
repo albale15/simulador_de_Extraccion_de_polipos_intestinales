@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System;
+using System.Text;
 
 public class MonitorEndoscopiaUI : MonoBehaviour
 {
@@ -46,11 +47,46 @@ public class MonitorEndoscopiaUI : MonoBehaviour
     private float notaSeguridad = 100f;
     private float notaProtocolo = 100f;
     private float notaTecnica = 100f;
+    [Header("Popups y Fin de Juego")]
 
+    public GameObject panelConfirmarSalida; // Arrastra aquí un Panel oscuro con el texto "¿Desea finalizar la endoscopia?"
+    public TextMeshProUGUI txtPreguntaConfirmacion;// Un texto dentro del panel para cambiar la pregunta según el caso
+
+    public enum TipoConfirmacion { Ninguno, FinalizarProcedimiento, SalirAlMenu }
+    private TipoConfirmacion contextoConfirmacion = TipoConfirmacion.Ninguno;
+
+    private float profundidadMaximaAlcanzada = 0f;
+    private const float META_PROFUNDIDAD = 400f;
+    [Header("Reporte de Errores")]
+    public GameObject panelResultadosFinales; // El panel que mostrará la nota final
+    public TextMeshProUGUI txtResultadosFinales;
+    public TextMeshProUGUI txtDetallePenalizaciones; // Arrastra aquí el texto dentro del ScrollView
+    public Button btnFinalizarReporte; // Botón para volver al menú desde los resultados
+
+    // Array para guardar cuántos puntos se perdieron por cada índice (0 al 9)
+    private float[] puntosPerdidosTally = new float[10];
+
+    // Nombres amigables para el reporte final
+    private string[] nombresParametros = new string[] {
+        "Trauma Tisular",            // Indice 0
+        "Suavidad de Desplazamiento", // Indice 1
+        "Exploración Visual",        // Indice 2
+        "Seguridad en Retirada",     // Indice 3
+        "Documentación de Hallazgos",// Indice 4
+        "Calidad de Captura",        // Indice 5
+        "Regla de Yamada",           // Indice 6
+        "Estabilidad de Abordaje",   // Indice 7
+        "Alineación de Canal",       // Indice 8
+        "Higiene / Contaminación"    // Indice 9
+    };
+    public ScrollRect scrollRespuestas;
     void Start()
     {
         panelPausa.SetActive(false);
         pantallaCargaNegra.SetActive(false);
+        if (panelConfirmarSalida != null) panelConfirmarSalida.SetActive(false);
+        if (panelResultadosFinales != null) panelResultadosFinales.SetActive(false);
+
         Time.timeScale = 1f;
 
         string nombreDoc = ManejadorPartida.nombreEstudiante != "" ? ManejadorPartida.nombreEstudiante : "NaN";
@@ -61,20 +97,25 @@ public class MonitorEndoscopiaUI : MonoBehaviour
         btnContinuar.onClick.RemoveAllListeners();
         btnContinuar.onClick.AddListener(ReanudarJuego);
 
+        // CAMBIO AQUÍ: Ahora el botón del menú abre el popup, no carga la escena directo
         btnMenuPrincipal.onClick.RemoveAllListeners();
-        btnMenuPrincipal.onClick.AddListener(IrAlMenuPrincipal);
+        btnMenuPrincipal.onClick.AddListener(() => MostrarPopupConfirmacion(TipoConfirmacion.SalirAlMenu));
 
         chkModoComputadora.onValueChanged.RemoveAllListeners();
         chkModoComputadora.onValueChanged.AddListener(CambiarModoControl);
 
         CambiarModoControl(chkModoComputadora.isOn);
 
-        // Inicializar texto de daño
         if (txtDanioPaciente != null) txtDanioPaciente.text = "Daño: 0%";
+        if (btnFinalizarReporte != null)
+        {
+            btnFinalizarReporte.onClick.AddListener(IrAlMenuPrincipal);
+        }
     }
 
     void Update()
     {
+        float profundidadActualCm = endoscopio.distanciaTotalInsertada * 10f;
         txtReloj.text = DateTime.Now.ToString("dd/MM/yyyy\nHH:mm:ss");
 
         if (!estaPausado && endoscopio != null)
@@ -88,6 +129,10 @@ public class MonitorEndoscopiaUI : MonoBehaviour
         {
             if (estaPausado) ReanudarJuego();
             else PausarJuego();
+        }
+        if (profundidadActualCm > profundidadMaximaAlcanzada)
+        {
+            profundidadMaximaAlcanzada = profundidadActualCm;
         }
     }
 
@@ -197,7 +242,7 @@ public class MonitorEndoscopiaUI : MonoBehaviour
         }
     }
 
-    public void ActualizarTextosBotones(bool enModoSeleccion)
+    public void ActualizarTextosBotones(bool enModoSeleccion, bool habilitarSalida = false)
     {
         if (ConfigManager.instancia != null)
         {
@@ -214,13 +259,16 @@ public class MonitorEndoscopiaUI : MonoBehaviour
             }
             else
             {
+                string textoBoton5 = habilitarSalida
+                ? $"<color=red><b>5: Finalizar Endoscopia [{cfg.mapAccion}]</b></color>"
+                : $"5: Herramientas [{cfg.mapAccion}]";
                 txtListaBotones.text =
                     $"<color=#00FFFF>(Configuración Activa)</color>\n" +
                     $"1: Freeze [{cfg.mapFreeze}]\n" +
                     $"2: Capture [{cfg.mapCapture}]\n" +
                     $"3: Zoom [{cfg.mapZoom}]\n" +
                     $"4: Succión [{cfg.mapSuccion}]\n" +
-                    $"5: Herramientas [{cfg.mapAccion}]";
+                    textoBoton5; ;
             }
         }
     }
@@ -256,22 +304,37 @@ public class MonitorEndoscopiaUI : MonoBehaviour
         float puntosAQuitar = 1f;
         if (ManejadorPartida.penalizaciones != null && indiceParametro >= 0 && indiceParametro < ManejadorPartida.penalizaciones.Length)
             puntosAQuitar = ManejadorPartida.penalizaciones[indiceParametro];
-
+        // Guardamos cuánto se perdió en este parámetro específico para el reporte final
+        if (indiceParametro >= 0 && indiceParametro < puntosPerdidosTally.Length)
+        {
+            puntosPerdidosTally[indiceParametro] += puntosAQuitar;
+        }
         switch (categoria)
         {
-            case CategoriaEvaluacion.Seguridad: notaSeguridad -= puntosAQuitar; break;
-            case CategoriaEvaluacion.Protocolo: notaProtocolo -= puntosAQuitar; break;
-            case CategoriaEvaluacion.Tecnica: notaTecnica -= puntosAQuitar; break;
+            case CategoriaEvaluacion.Seguridad:
+                notaSeguridad = Mathf.Max(0, notaSeguridad - puntosAQuitar);
+                break;
+            case CategoriaEvaluacion.Protocolo:
+                notaProtocolo = Mathf.Max(0, notaProtocolo - puntosAQuitar);
+                break;
+            case CategoriaEvaluacion.Tecnica:
+                notaTecnica = Mathf.Max(0, notaTecnica - puntosAQuitar);
+                break;
         }
         ImprimirMensajeConsola($"[-] {mensajeFallo} (-{puntosAQuitar} pts)", "red");
     }
 
     private void ImprimirMensajeConsola(string lineaCompleta, string color)
     {
+        // 1. Simplemente agregamos la nueva línea de texto
         txtRespuestas.text += $"\n<color={color}>{lineaCompleta}</color>";
-        string[] lineas = txtRespuestas.text.Split('\n');
-        if (lineas.Length > 5)
-            txtRespuestas.text = "Respuestas:" + string.Join("\n", lineas, lineas.Length - 4, 4);
+
+        // 2. (Opcional) Llamamos a la corrutina de auto-scroll que hicimos antes
+        // Si no implementaste la corrutina aún, puedes borrar este 'if'
+        if (gameObject.activeInHierarchy)
+        {
+            StartCoroutine(ForzarScrollHaciaAbajo());
+        }
     }
 
     public void RegistrarAccionInfo(string mensajeInfo, string colorHex = "#00FFFF")
@@ -288,6 +351,174 @@ public class MonitorEndoscopiaUI : MonoBehaviour
             case 2: return "Normal";
             case 3: return "Realista";
             default: return "NaN";
+        }
+    }
+    public void MostrarPopupSalida(bool mostrar)
+    {
+        if (panelConfirmarSalida != null)
+            panelConfirmarSalida.SetActive(mostrar);
+    }
+
+    public void FinalizarSimulacion()
+    {
+        Time.timeScale = 0f;
+        if (panelConfirmarSalida != null) panelConfirmarSalida.SetActive(false);
+        if (panelResultadosFinales != null) panelResultadosFinales.SetActive(true);
+
+        // --- CÁLCULO DE PENALIZACIÓN POR EXPLORACIÓN (ÍNDICE 2) ---
+        float puntosPerdidosExploracion = 0f;
+        float penalizacionBase = ManejadorPartida.penalizaciones[2];
+        int poliposRestantes = ManejadorPartida.totalPolipos - herramientas.ObtenerTotalEliminados();
+
+        // Condición A: Pólipos faltantes
+        if (poliposRestantes > 0)
+        {
+            puntosPerdidosExploracion += (poliposRestantes * penalizacionBase);
+            ImprimirMensajeConsola($"[-] Omisión: {poliposRestantes} pólipos no detectados.", "red");
+        }
+
+        // Condición B: Profundidad insuficiente (Meta 400cm)
+        if (profundidadMaximaAlcanzada < META_PROFUNDIDAD)
+        {
+            float distanciaFaltante = META_PROFUNDIDAD - profundidadMaximaAlcanzada;
+            int bloquesDeDiez = Mathf.CeilToInt(distanciaFaltante / 10f);
+            puntosPerdidosExploracion += (bloquesDeDiez * penalizacionBase);
+            ImprimirMensajeConsola($"[-] Exploración incompleta: Faltaron {distanciaFaltante:F1}cm para cubrir el tracto.", "red");
+        }
+
+        puntosPerdidosTally[2] += puntosPerdidosExploracion;
+        notaSeguridad -= puntosPerdidosExploracion;
+
+        // ====================================================================
+        // --- NUEVO: PENALIZACIÓN POR INACCIÓN (Protocolo y Técnica) ---
+        // ====================================================================
+        if (poliposRestantes > 0 && ManejadorPartida.totalPolipos > 0)
+        {
+            // Calculamos el valor de cada pólipo (Ej: 100 / 5 = 20 puntos por pólipo)
+            float penalizacionPorInaccion = (100f / ManejadorPartida.totalPolipos) * poliposRestantes;
+
+            notaProtocolo -= penalizacionPorInaccion;
+            notaTecnica -= penalizacionPorInaccion;
+
+            ImprimirMensajeConsola($"[-] Ausencia de Procedimiento: -{penalizacionPorInaccion:F1} pts en Protocolo y Técnica por pólipos ignorados.", "orange");
+        }
+
+        // --- NUEVO: ABANDONO PREMATURO (Seguridad a 0) ---
+        // Si no avanzó ni el 20% (80cm) y no sacó nada, reprueba Seguridad automáticamente
+        if (profundidadMaximaAlcanzada < 80f && herramientas.ObtenerTotalEliminados() == 0)
+        {
+            notaSeguridad = 0f;
+            ImprimirMensajeConsola("[-] ABANDONO CRÍTICO: Procedimiento abortado sin exploración inicial. Seguridad anulada.", "red");
+        }
+        // ====================================================================
+
+        // --- CIERRE DE NOTAS ---
+        notaSeguridad = Mathf.Max(0, notaSeguridad);
+        notaProtocolo = Mathf.Max(0, notaProtocolo);
+        notaTecnica = Mathf.Max(0, notaTecnica);
+
+        float notaFinal = ((notaSeguridad * ManejadorPartida.pesoSeguridad) +
+                           (notaProtocolo * ManejadorPartida.pesoProtocolo) +
+                           (notaTecnica * ManejadorPartida.pesoTecnica)) / 100f;
+
+        // --- REPORTE FINAL ---
+        if (txtResultadosFinales != null)
+        {
+            txtResultadosFinales.text =
+                $"<b>REPORTE FINAL DE ENDOSCOPIA</b>\n" +
+                $"<b>CALIFICACIÓN TOTAL: {notaFinal:F1} / 100</b>\n" +
+                $"Estudiante: {ManejadorPartida.nombreEstudiante}\n" +
+                $"Profundidad Máxima: {profundidadMaximaAlcanzada:F1} / {META_PROFUNDIDAD} cm\n" +
+                $"Pólipos Extraídos: {herramientas.ObtenerTotalEliminados()} / {ManejadorPartida.totalPolipos}\n\n" +
+                $"Seguridad y Nav: {notaSeguridad:F1}%\n" +
+                $"Protocolo y Diag: {notaProtocolo:F1}%\n" +
+                $"Técnica Quirúrgica: {notaTecnica:F1}%\n\n";
+        }
+
+        if (txtDetallePenalizaciones != null)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("<color=#DEFF9A><b>DESGLOSE DE PENALIZACIONES:</b></color>\n");
+
+            // Imprimimos el array de 10 parámetros
+            for (int i = 0; i < puntosPerdidosTally.Length; i++)
+            {
+                if (puntosPerdidosTally[i] > 0)
+                {
+                    sb.AppendLine($"• {nombresParametros[i]}: <color=red>-{puntosPerdidosTally[i]:F1} pts</color>");
+                }
+            }
+
+            // Agregamos el texto extra si hubo penalización por inacción
+            if (poliposRestantes > 0 && ManejadorPartida.totalPolipos > 0)
+            {
+                float penalizacionPorInaccion = (100f / ManejadorPartida.totalPolipos) * poliposRestantes;
+                sb.AppendLine($"\n• <color=orange>Inacción Quirúrgica (Prot/Tec): -{penalizacionPorInaccion:F1} pts</color>");
+            }
+
+            if (profundidadMaximaAlcanzada < 80f && herramientas.ObtenerTotalEliminados() == 0)
+            {
+                sb.AppendLine($"• <color=red>Abandono Prematuro: Seguridad reducida a 0%</color>");
+            }
+
+            if (sb.Length < 60) sb.AppendLine("<color=green>Excelente: No se registraron penalizaciones.</color>");
+
+            txtDetallePenalizaciones.text = sb.ToString();
+        }
+    }
+
+    public void MostrarPopupConfirmacion(TipoConfirmacion tipo)
+    {
+        contextoConfirmacion = tipo;
+        if (panelConfirmarSalida != null) panelConfirmarSalida.SetActive(true);
+
+        // Cambiamos el texto para que el usuario entienda qué está aceptando
+        if (txtPreguntaConfirmacion != null)
+        {
+            if (tipo == TipoConfirmacion.FinalizarProcedimiento)
+                txtPreguntaConfirmacion.text = "¿Está seguro que desea finalizar la endoscopia y ver su calificación?";
+            else if (tipo == TipoConfirmacion.SalirAlMenu)
+                txtPreguntaConfirmacion.text = "¿Volver al menú principal? Se perderá el progreso de esta sesión.";
+        }
+    }
+
+    public void OcultarPopupConfirmacion()
+    {
+        contextoConfirmacion = TipoConfirmacion.Ninguno;
+        if (panelConfirmarSalida != null) panelConfirmarSalida.SetActive(false);
+    }
+    public void BotonConfirmarSi()
+    {
+        if (contextoConfirmacion == TipoConfirmacion.FinalizarProcedimiento)
+        {
+            FinalizarSimulacion(); // Calcula nota y muestra resultados
+        }
+        else if (contextoConfirmacion == TipoConfirmacion.SalirAlMenu)
+        {
+            Time.timeScale = 1f;
+            UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+        }
+
+        OcultarPopupConfirmacion();
+
+        // Le avisamos al hardware que ya se cerró el menú
+        if (herramientas != null) herramientas.ActivarModoSalida(false);
+    }
+
+    public void BotonConfirmarNo()
+    {
+        OcultarPopupConfirmacion();
+        if (herramientas != null) herramientas.ActivarModoSalida(false);
+    }
+    private System.Collections.IEnumerator ForzarScrollHaciaAbajo()
+    {
+        // Esperamos a que termine el frame actual para que el Canvas recalcule el tamaño del texto
+        yield return new WaitForEndOfFrame();
+
+        if (scrollRespuestas != null)
+        {
+            // 0f significa "hasta abajo", 1f significaría "hasta arriba"
+            scrollRespuestas.verticalNormalizedPosition = 0f;
         }
     }
 }
