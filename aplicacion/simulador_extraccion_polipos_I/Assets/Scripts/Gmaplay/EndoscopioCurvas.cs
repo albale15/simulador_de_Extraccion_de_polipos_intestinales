@@ -43,7 +43,7 @@ public class EndoscopioCurvas : MonoBehaviour
     // Estado del juego
     private bool juegoTerminado = false;
 
-    // --- NUEVO: SENSOR PARA SABER SI EL JUGADOR ESTÁ MOVIENDO ALGO ---
+    // SENSOR PARA SABER SI EL JUGADOR ESTÁ MOVIENDO ALGO
     private bool controlActivo = false;
 
     // Contadores internos
@@ -53,11 +53,15 @@ public class EndoscopioCurvas : MonoBehaviour
     private float tiempoForzandoBucle = 0f;
     private float tiempoExtraccionBrusca = 0f;
 
-    // Cinemática
+    // Cinemática y Odómetro
     private Quaternion[] rotacionesGlobalesIniciales;
     private Quaternion[] olaDeCurvas;
     private float longitudHueso;
     private float distanciaAcumulada = 0f;
+
+    [HideInInspector]
+    public float distanciaTotalInsertada = 0f; // El Odómetro real
+
     public float rotX = 0f, rotZ = 0f, torqueGiro = 0f;
     private List<Quaternion> historialCurvas = new List<Quaternion>();
 
@@ -166,7 +170,7 @@ public class EndoscopioCurvas : MonoBehaviour
             }
         }
 
-        // Detectamos si el jugador ordenó conscientemente algún movimiento
+        // Sensor Dinámico
         controlActivo = (Mathf.Abs(empujeFisico) > 0 || Mathf.Abs(inputTorqueActivo) > 0 || tocandoFlechas);
 
         if (empujeFisico > 0 && !tocandoFlechas)
@@ -195,11 +199,15 @@ public class EndoscopioCurvas : MonoBehaviour
                 {
                     contadorAvisoRoturaTorque++;
                     teclaPresionadaEnLimite = true;
-                    if (contadorAvisoRoturaTorque >= maxIntentosTorque) ProcesarGameOver("Rompiste la fibra óptica.");
-                    else Debug.LogWarning($"CUIDADO: Forzando Torque ({contadorAvisoRoturaTorque}/{maxIntentosTorque}).");
+                    if (contadorAvisoRoturaTorque >= maxIntentosTorque)
+                        ProcesarGameOver("Rompiste la fibra óptica por forzar el límite de torque.");
+                    else
+                        Debug.LogWarning($"<color=orange>CUIDADO: Forzando Torque. Toques: ({contadorAvisoRoturaTorque}/{maxIntentosTorque}). Suelta y gira al otro lado para relajar.</color>");
                 }
                 tiempoForzandoTorque += Time.deltaTime;
-                if (tiempoForzandoTorque >= tiempoMaximoTorque) ProcesarGameOver("Rompiste la fibra óptica por tensión extrema.");
+                if (tiempoForzandoTorque >= tiempoMaximoTorque)
+                    ProcesarGameOver("Rompiste la fibra óptica por mantener tensión extrema.");
+
                 torqueGiro = Mathf.Clamp(nuevoTorque, -maxTorquePermitido, maxTorquePermitido);
             }
             else
@@ -222,15 +230,13 @@ public class EndoscopioCurvas : MonoBehaviour
     {
         if (juegoTerminado || huesos.Length < 2) return;
 
-        // --- SISTEMA MAESTRO DE FRENADO ---
+        // Frenado Kinemático
         if (controlActivo)
         {
-            // El jugador está tocando los mandos. Permitimos físicas libres.
             rb.constraints = RigidbodyConstraints.FreezeRotation;
         }
         else
         {
-            // El jugador soltó los mandos. Estatua total.
             rb.constraints = RigidbodyConstraints.FreezeAll;
             rb.velocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
@@ -245,7 +251,13 @@ public class EndoscopioCurvas : MonoBehaviour
             if (multiplicadorAvance < 0.05f)
             {
                 tiempoForzandoBucle += Time.fixedDeltaTime;
-                if (tiempoForzandoBucle > tiempoMaximoForzandoBucle) ProcesarGameOver("PERFORACIÓN INTESTINAL");
+                if (tiempoForzandoBucle > tiempoMaximoForzandoBucle)
+                    ProcesarGameOver("PERFORACIÓN INTESTINAL: Forzaste el avance durante un bucle.");
+                else
+                {
+                    int porcentaje = (int)((tiempoForzandoBucle / tiempoMaximoForzandoBucle) * 100);
+                    Debug.LogWarning($"<color=orange>¡ATASCO! Ángulo ({anguloBucle}°). USA S + A/D PARA ARRECTAR. Daño: {porcentaje}%</color>");
+                }
             }
         }
         else
@@ -267,7 +279,13 @@ public class EndoscopioCurvas : MonoBehaviour
                 if (curvaturaCuerpo > 120f)
                 {
                     tiempoExtraccionBrusca += Time.fixedDeltaTime;
-                    if (tiempoExtraccionBrusca > tiempoMaximoTiron) ProcesarGameOver("LACERACIÓN DE MUCOSA");
+                    if (tiempoExtraccionBrusca > tiempoMaximoTiron)
+                        ProcesarGameOver("LACERACIÓN DE MUCOSA: Mantuviste un jalón prolongado sin pausas en una curva cerrada.");
+                    else
+                    {
+                        int dolor = (int)((tiempoExtraccionBrusca / tiempoMaximoTiron) * 100);
+                        Debug.LogWarning($"<color=orange>¡PACIENTE CON DOLOR! Fricción alta. Daño tisular: {dolor}% (Suelta S un momento para relajar)</color>");
+                    }
                 }
                 else tiempoExtraccionBrusca = Mathf.Max(0, tiempoExtraccionBrusca - (Time.fixedDeltaTime * 4f));
             }
@@ -277,7 +295,7 @@ public class EndoscopioCurvas : MonoBehaviour
 
         Vector3 direccionHaciaPunta = huesos[0].position - huesos[huesos.Length - 1].position;
         float productoPuntoPlano = Vector3.Dot(huesos[huesos.Length - 1].up, direccionHaciaPunta.normalized);
-        if (productoPuntoPlano < -0.1f && anguloBucle > 90f) ProcesarGameOver("AUTO-INTERSECCIÓN FATAL");
+        if (productoPuntoPlano < -0.1f && anguloBucle > 90f) ProcesarGameOver("AUTO-INTERSECCIÓN FATAL: El endoscopio cruzó su propio plano de entrada.");
 
         if (dibujarTuboExterior && rutaTubo.Count > 10 && !juegoTerminado)
         {
@@ -288,7 +306,7 @@ public class EndoscopioCurvas : MonoBehaviour
                 {
                     if (Vector3.Distance(huesos[0].position, rutaTubo[i]) < 0.04f && empujeFisico > 0)
                     {
-                        ProcesarGameOver("AUTO-INTERSECCIÓN: Chocó con su cable.");
+                        ProcesarGameOver("AUTO-INTERSECCIÓN: El endoscopio se anudó sobre sí mismo y chocó con su cable.");
                         break;
                     }
                 }
@@ -309,7 +327,11 @@ public class EndoscopioCurvas : MonoBehaviour
 
             Vector3 direccionFinal = huesos[1].up;
             float velActual = (empujeFisico > 0) ? velocidadInsercion : velocidadExtraccion;
+
+            // ODÓMETRO REAL
             float distanciaAvanzada = empujeFisico * (velActual * multiplicadorAvance) * Time.fixedDeltaTime;
+            distanciaTotalInsertada += distanciaAvanzada;
+            if (distanciaTotalInsertada < 0) distanciaTotalInsertada = 0f;
 
             rb.MovePosition(rb.position + (direccionFinal * distanciaAvanzada));
             distanciaAcumulada += distanciaAvanzada;
@@ -354,7 +376,13 @@ public class EndoscopioCurvas : MonoBehaviour
         }
     }
 
-    void ProcesarGameOver(string motivo) { if (juegoTerminado) return; juegoTerminado = true; Time.timeScale = 0f; Debug.LogError($"<b>GAME OVER:</b> {motivo}"); }
+    void ProcesarGameOver(string motivo)
+    {
+        if (juegoTerminado) return;
+        juegoTerminado = true;
+        Time.timeScale = 0f;
+        Debug.LogError($"<color=red><b>GAME OVER:</b> {motivo}</color>");
+    }
 
     void LateUpdate()
     {

@@ -74,22 +74,21 @@ public class MonitorEndoscopiaUI : MonoBehaviour
 
     private void ActualizarTelemetria()
     {
-        float distancia = Vector3.Distance(endoscopio.huesos[endoscopio.huesos.Length - 1].position, endoscopio.huesos[0].position);
-        int centimetros = Mathf.RoundToInt(distancia * 100f);
+        // 1. PROFUNDIDAD REAL DESDE EL ODÓMETRO
+        int centimetros = Mathf.RoundToInt(endoscopio.distanciaTotalInsertada * 10f);
         txtProfundidad.text = $"Cm: {centimetros}";
 
-        // --- CORRECCIÓN DEL TORQUE ---
-        // Leemos el torqueGiro directamente. Asegúrate de que EndoscopioCurvas no lo esté reiniciando a 0 constantemente.
-        float torqueActual = endoscopio.torqueGiro;
+        // 2. EL OCTÁGONO (SOLUCIÓN DE INGENIERÍA)
+        // En lugar de preguntarle a los huesos 3D que están doblados, usamos el valor matemático puro.
+        float giroPuro = endoscopio.torqueGiro;
 
-        // Formateamos para que muestre el signo y el grado sin decimales largos
-        txtTorque.text = $"Torque: {Mathf.RoundToInt(torqueActual)}°";
+        txtTorque.text = $"Torque: {Mathf.RoundToInt(endoscopio.torqueGiro)}°";
 
-        // Aplicamos la rotación. Usamos el valor negativo para que gire como un volante normal (derecha = horario)
-        // Dependiendo de cómo armaste tu Canvas, puede que necesites que sea positivo. 
+        // Giramos el gráfico UI en el eje Z (el eje de las pantallas 2D).
+        // NOTA: Si ves que gira al revés que tu mano, cámbialo a positivo (giroPuro) en vez de negativo (-giroPuro)
         if (indicadorOctagono != null)
         {
-            indicadorOctagono.localRotation = Quaternion.Euler(0f, 0f, -torqueActual);
+            indicadorOctagono.localRotation = Quaternion.Euler(0, 0, +giroPuro);
         }
 
         if (herramientas != null)
