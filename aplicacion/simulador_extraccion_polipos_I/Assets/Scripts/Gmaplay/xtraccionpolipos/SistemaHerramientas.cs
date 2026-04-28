@@ -30,6 +30,11 @@ public class SistemaHerramientas : MonoBehaviour
     public bool estaCortando = false;
     public bool llevandoPolipo = false;
     public bool estaCongelado = false;
+
+    // --- NUEVO: Sensor de zona de extracción ---
+    [HideInInspector]
+    public bool enZonaExtraccion = false;
+
     private bool estaEnZoom = false;
     private float fovOriginal;
 
@@ -45,6 +50,11 @@ public class SistemaHerramientas : MonoBehaviour
 
     // Memoria para Higiene
     private PolipoInteractuable ultimoPolipoCortado;
+
+    // --- NUEVO: Contadores de movimientos para higiene ---
+    private int movimientosSinSuccionar = 0;
+    private bool endoscopioEstabaMoviendo = false;
+    private int movimientosEnSeleccion = 0; // NUEVO: Para cancelar el menú si se mueve
 
     private DatosProcesados datosHardware;
     private bool ultimoF, ultimoC, ultimoZ, ultimoS, ultimoA;
@@ -79,6 +89,7 @@ public class SistemaHerramientas : MonoBehaviour
     void Update()
     {
         bool btnFreeze = false, btnCapture = false, btnZoom = false, btnSuccion = false, btnAccion = false;
+        bool moviendo = false; // Sensor local de movimiento
 
         bool modoPC = false;
         if (endoscopio != null)
@@ -93,6 +104,9 @@ public class SistemaHerramientas : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Alpha3)) { btnZoom = true; }
             if (Input.GetKeyDown(KeyCode.Alpha4)) { btnSuccion = true; }
             if (Input.GetKeyDown(KeyCode.Alpha5)) { btnAccion = true; }
+
+            // Verifica si está tocando teclas de movimiento
+            moviendo = Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D);
         }
         else
         {
@@ -103,6 +117,9 @@ public class SistemaHerramientas : MonoBehaviour
                 btnZoom = (datosHardware.botonZoom && !ultimoZ);
                 btnSuccion = (datosHardware.botonSuccion && !ultimoS);
                 btnAccion = (datosHardware.botonAccion && !ultimoA);
+
+                // Verifica si los valores analógicos del hardware superan el reposo
+                moviendo = Mathf.Abs(datosHardware.insercionFinal) > 0.05f || Mathf.Abs(datosHardware.torsionFinal) > 0.05f || Mathf.Abs(datosHardware.volanteXFinal) > 0.05f || Mathf.Abs(datosHardware.volanteYFinal) > 0.05f;
 
                 ultimoF = datosHardware.botonFreeze;
                 ultimoC = datosHardware.botonCapture;
@@ -115,31 +132,60 @@ public class SistemaHerramientas : MonoBehaviour
         Vector3 origenRayo = canalDeTrabajo.position;
         Vector3 direccionRayo = canalDeTrabajo.forward;
 
-        // --- PASO 1: RESTRICCIÓN DE FREEZE ---
+        // --- LÓGICA DE HIGIENE: 3 MOVIMIENTOS ---
+        if (ultimoPolipoCortado != null && ultimoPolipoCortado.estadoActual == PolipoInteractuable.EstadoPolipo.CortadoSuelto)
+        {
+            if (moviendo && !endoscopioEstabaMoviendo)
+            {
+                movimientosSinSuccionar++;
+            }
+
+            if (movimientosSinSuccionar >= 3)
+            {
+                float distanciaAlResto = Vector3.Distance(origenRayo, ultimoPolipoCortado.transform.position);
+                if (distanciaAlResto > 0.3f)
+                {
+                    EnviarErrorUI(MonitorEndoscopiaUI.CategoriaEvaluacion.Tecnica, 9, "Mala higiene visual: Abandonó el área dejando tejido suelto sin succionar.");
+                    ultimoPolipoCortado = null; // Detiene el castigo
+                    movimientosSinSuccionar = 0;
+                }
+            }
+        }
+
+        // --- NUEVA LÓGICA: CANCELAR SELECCIÓN SI SE MUEVE ---
+        if (enModoSeleccion)
+        {
+            if (moviendo && !endoscopioEstabaMoviendo)
+            {
+                movimientosEnSeleccion++;
+            }
+
+            if (movimientosEnSeleccion > 1) // Si hace más de 1 movimiento, se sale del menú
+            {
+                EnviarInfoUI("Selección de herramienta cancelada por movimiento del endoscopio.", "#FF8C00");
+                ActivarModoSeleccion(false);
+            }
+        }
+        else
+        {
+            movimientosEnSeleccion = 0; // Se resetea cuando no estamos en el menú
+        }
+
+        endoscopioEstabaMoviendo = moviendo;
+        // ----------------------------------------------------
+
+        // --- BLOQUEO DE FREEZE INTACTO QUE TÚ PROGRAMASTE ---
         if (estaCongelado)
         {
-            // Castigo si intenta usar botones que no sean los de documentación
             if (btnAccion || btnZoom || btnSuccion)
             {
                 EnviarErrorUI(MonitorEndoscopiaUI.CategoriaEvaluacion.Seguridad, 2, "Operación a ciegas: Intentó usar herramientas con la imagen congelada.");
             }
 
-            // SOLO dejamos que quite el Freeze o tome Foto
             if (btnCapture) EjecutarCapture();
             if (btnFreeze) EjecutarFreeze();
 
-            return; // Bloqueamos el Update entero para que no se procese nada más
-        }
-        // -------------------------------------
-
-        if (ultimoPolipoCortado != null && ultimoPolipoCortado.estadoActual == PolipoInteractuable.EstadoPolipo.CortadoSuelto)
-        {
-            float distanciaAlResto = Vector3.Distance(origenRayo, ultimoPolipoCortado.transform.position);
-            if (distanciaAlResto > 0.3f)
-            {
-                EnviarErrorUI(MonitorEndoscopiaUI.CategoriaEvaluacion.Tecnica, 9, "Mala higiene visual: Abandonó el área dejando tejido suelto sin succionar.");
-                ultimoPolipoCortado = null;
-            }
+            return;
         }
 
         if (!enModoSeleccion)
@@ -147,7 +193,31 @@ public class SistemaHerramientas : MonoBehaviour
             if (btnZoom && camaraPrincipal != null) EjecutarZoom();
             if (btnFreeze) EjecutarFreeze();
             if (btnCapture) EjecutarCapture();
-            if (btnSuccion) IntentarSuccion(origenRayo, direccionRayo);
+
+            // --- LÓGICA DE SUCCIÓN MANUAL Y CONTAMINACIÓN ---
+            if (btnSuccion)
+            {
+                if (llevandoPolipo)
+                {
+                    if (enZonaExtraccion)
+                    {
+                        SoltarPolipoEnLaboratorio();
+                    }
+                    else
+                    {
+                        EnviarErrorUI(MonitorEndoscopiaUI.CategoriaEvaluacion.Tecnica, 9, "Contaminación: Apagó la succión y soltó el pólipo dentro del tracto intestinal.");
+                        llevandoPolipo = false;
+                        foreach (Transform hijo in canalDeTrabajo)
+                        {
+                            Destroy(hijo.gameObject);
+                        }
+                    }
+                }
+                else
+                {
+                    IntentarSuccion(origenRayo, direccionRayo);
+                }
+            }
         }
 
         if (estaCortando) { VerificarMovimientoProhibido(); return; }
@@ -213,8 +283,8 @@ public class SistemaHerramientas : MonoBehaviour
         enModoSeleccion = activar;
         if (monitorUI != null) monitorUI.ActualizarTextosBotones(activar);
 
-        if (activar) EnviarInfoUI("Modo Herramientas: Seleccione Pinza (1) o Asa (2)", "#FFFFFF"); // Blanco
-        else EnviarInfoUI("Modo Herramientas Cancelado", "#888888"); // Gris
+        if (activar) EnviarInfoUI("Modo Herramientas: Seleccione Pinza (1) o Asa (2)", "#FFFFFF");
+        else EnviarInfoUI("Modo Herramientas Cancelado", "#888888");
     }
 
     private void ProcesarCorteManual(bool esPinza)
@@ -225,7 +295,7 @@ public class SistemaHerramientas : MonoBehaviour
 
         if (esPinza)
         {
-            EnviarInfoUI("Preparando Pinza de Biopsia...", "#FFFF00"); // amarillo 
+            EnviarInfoUI("Preparando Pinza de Biopsia...", "#FFFF00");
             if (polipoEnMira.tipo == PolipoInteractuable.TipoPolipo.Yamada1 || polipoEnMira.tipo == PolipoInteractuable.TipoPolipo.Yamada2)
             {
                 StartCoroutine(AnimacionPinzaFria());
@@ -253,7 +323,7 @@ public class SistemaHerramientas : MonoBehaviour
     {
         estaEnZoom = !estaEnZoom;
         camaraPrincipal.fieldOfView = estaEnZoom ? (fovOriginal / 1.6f) : fovOriginal;
-        EnviarInfoUI(estaEnZoom ? "Zoom Óptico Activado" : "Zoom Óptico Desactivado", "#FF8C00"); // Naranja
+        EnviarInfoUI(estaEnZoom ? "Zoom Óptico Activado" : "Zoom Óptico Desactivado", "#FF8C00");
     }
 
     private void EjecutarFreeze()
@@ -262,7 +332,7 @@ public class SistemaHerramientas : MonoBehaviour
         if (estaCongelado)
         {
             Time.timeScale = 0.0001f;
-            EnviarInfoUI("Imagen Congelada (Freeze)", "#00FFFF"); // Cian
+            EnviarInfoUI("Imagen Congelada (Freeze)", "#00FFFF");
         }
         else
         {
@@ -275,7 +345,7 @@ public class SistemaHerramientas : MonoBehaviour
     {
         if (estaCongelado)
         {
-            EnviarInfoUI("Fotografía guardada en expediente del paciente.", "#FFD700"); // Amarillo / Dorado
+            EnviarInfoUI("Fotografía guardada en expediente del paciente.", "#FFD700");
 
             if (polipoEnMira != null && polipoEnMira.estadoActual == PolipoInteractuable.EstadoPolipo.Intacto)
             {
@@ -288,7 +358,7 @@ public class SistemaHerramientas : MonoBehaviour
                 }
                 else
                 {
-                    EnviarInfoUI($"Calidad de Foto Óptima (Ángulo: {anguloCentrado:F1}°)", "#32CD32"); // Verde Lima
+                    EnviarInfoUI($"Calidad de Foto Óptima (Ángulo: {anguloCentrado:F1}°)", "#32CD32");
                 }
 
                 polipoEnMira.fueFotografiado = true;
@@ -302,8 +372,6 @@ public class SistemaHerramientas : MonoBehaviour
 
     private void IntentarSuccion(Vector3 origen, Vector3 direccion)
     {
-        if (llevandoPolipo || estaCongelado) return;
-
         if (Physics.Raycast(origen, direccion, out RaycastHit hit, distanciaAccion * 1.5f, capaPolipos))
         {
             PolipoInteractuable polipoTocado = hit.collider.GetComponent<PolipoInteractuable>();
@@ -311,7 +379,13 @@ public class SistemaHerramientas : MonoBehaviour
             if (polipoTocado != null && polipoTocado.estadoActual == PolipoInteractuable.EstadoPolipo.CortadoSuelto)
             {
                 StartCoroutine(RutinaSuccion(polipoTocado));
-                if (ultimoPolipoCortado == polipoTocado) ultimoPolipoCortado = null;
+
+                // Limpia la higiene al succionar
+                if (ultimoPolipoCortado == polipoTocado)
+                {
+                    ultimoPolipoCortado = null;
+                    movimientosSinSuccionar = 0;
+                }
             }
             else if (polipoTocado != null && polipoTocado.estadoActual == PolipoInteractuable.EstadoPolipo.Intacto)
             {
@@ -334,7 +408,25 @@ public class SistemaHerramientas : MonoBehaviour
 
         polipo.SerSuccionado(canalDeTrabajo);
         llevandoPolipo = true;
-        EnviarInfoUI("Pólipo succionado. Proceda a retirarlo del paciente.", "#1E90FF"); // Azul
+        EnviarInfoUI("Pólipo succionado. Proceda a retirarlo del paciente.", "#1E90FF");
+    }
+
+    private void SoltarPolipoEnLaboratorio()
+    {
+        llevandoPolipo = false;
+        int poliposBorrados = 0;
+
+        foreach (Transform hijo in canalDeTrabajo)
+        {
+            PolipoInteractuable polipo = hijo.GetComponent<PolipoInteractuable>();
+            if (polipo != null)
+            {
+                SumarPolipoEliminado(polipo.tipo);
+                Destroy(hijo.gameObject);
+                poliposBorrados++;
+            }
+        }
+        EnviarInfoUI($"Extracción Exitosa. {poliposBorrados} muestra(s) depositada(s) en laboratorio.", "#32CD32");
     }
 
     private IEnumerator AnimacionPinzaFria()
@@ -355,8 +447,12 @@ public class SistemaHerramientas : MonoBehaviour
         if (!estaCortando) yield break;
 
         polipoEnMira.ProcesarCorte();
+
+        ultimoPolipoCortado = polipoEnMira;
+        movimientosSinSuccionar = 0;
+
         SumarPolipoEliminado(polipoEnMira.tipo);
-        EnviarInfoUI($"Pólipo {polipoEnMira.tipo} extraído con éxito.", "#00FF00"); // Verde brillante
+        EnviarInfoUI($"Pólipo {polipoEnMira.tipo} extraído con éxito.", "#00FF00");
 
         yield return MoverHerramienta(pinzaDientes.transform, posExtendida, Vector3.zero, 0.5f);
 
@@ -382,7 +478,10 @@ public class SistemaHerramientas : MonoBehaviour
         if (!estaCortando) yield break;
 
         polipoEnMira.ProcesarCorte();
+
         ultimoPolipoCortado = polipoEnMira;
+        movimientosSinSuccionar = 0;
+
         EnviarInfoUI($"Pólipo {polipoEnMira.tipo} seccionado. Proceda con la succión.", "#00FF00");
 
         yield return MoverHerramienta(pinzaAsas.transform, posExtendida, Vector3.zero, 0.5f);

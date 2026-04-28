@@ -137,6 +137,7 @@ public class EndoscopioCurvas : MonoBehaviour
         inputTorqueActivo = 0f;
         bool tocandoFlechas = false;
 
+        // EL FIX: Obediencia Estricta. Si usarControlHardware es TRUE, modoPC es FALSE y punto.
         bool modoPC = !usarControlHardware;
 
         if (modoPC)
@@ -160,6 +161,7 @@ public class EndoscopioCurvas : MonoBehaviour
         }
         else
         {
+            // Solo procesamos hardware si nos aseguramos que hayan datos
             if (datosHardware != null)
             {
                 if (Time.time - tiempoUltimoDatoHardware > 0.15f)
@@ -275,6 +277,7 @@ public class EndoscopioCurvas : MonoBehaviour
     {
         if (juegoTerminado || huesos.Length < 2) return;
 
+        // Frenado Kinemático
         if (controlActivo)
         {
             rb.constraints = RigidbodyConstraints.FreezeRotation;
