@@ -329,6 +329,7 @@ public class EndoscopioCurvas : MonoBehaviour
                 atascadoPorBucle = false;
             }
         }
+        if (monitorUI != null) monitorUI.ActualizarEstadoBucle(atascadoPorBucle);
 
         // LÓGICA DE DAÑO POR BUCLE (ATASCO)
         if (anguloBucle > umbralBucleAtasco && empujeFisico > 0)

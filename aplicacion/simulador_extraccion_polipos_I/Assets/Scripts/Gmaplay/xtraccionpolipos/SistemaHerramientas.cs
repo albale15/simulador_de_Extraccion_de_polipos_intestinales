@@ -43,13 +43,13 @@ public class SistemaHerramientas : MonoBehaviour
     [HideInInspector]
     public int[] yamadasEliminados = new int[4] { 0, 0, 0, 0 };
 
-    private PolipoInteractuable polipoEnMira;
+    public PolipoInteractuable polipoEnMira;
     private Vector3 posInicialPunta;
     private Quaternion rotInicialPunta;
     private MonitorEndoscopiaUI monitorUI;
 
     // Memoria para Higiene
-    private PolipoInteractuable ultimoPolipoCortado;
+    public PolipoInteractuable ultimoPolipoCortado;
 
     // --- NUEVO: Contadores de movimientos para higiene ---
     private int movimientosSinSuccionar = 0;
@@ -60,7 +60,9 @@ public class SistemaHerramientas : MonoBehaviour
     private bool ultimoF, ultimoC, ultimoZ, ultimoS, ultimoA;
     [Header("Fin de Procedimiento")]
     public bool enModoConfirmarSalida = false;
-
+    public bool EstaEnModoSeleccion() { return enModoSeleccion; }
+    public PolipoInteractuable ObtenerPolipoEnMira() { return polipoEnMira; }
+    public PolipoInteractuable ObtenerUltimoPolipoCortado() { return ultimoPolipoCortado; }
     void Start()
     {
         pinzaDientes.SetActive(false);

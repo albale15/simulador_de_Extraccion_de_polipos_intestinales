@@ -36,12 +36,15 @@ public class MonitorEndoscopiaUI : MonoBehaviour
     public Toggle chkModoComputadora;
     public Button btnContinuar;
     public Button btnMenuPrincipal;
+    public Button btnReconectarHardware;
 
     [Header("Pantallas Extra")]
     public GameObject pantallaCargaNegra;
-
+    public GameObject alertaBucleUI;
     private bool estaPausado = false;
-
+    [Header("Guía Contextual")]
+    public GameObject panelGuiaContextual;
+    public TextMeshProUGUI txtGuiaContextual;
     public enum CategoriaEvaluacion { Seguridad, Protocolo, Tecnica }
 
     private float notaSeguridad = 100f;
@@ -90,7 +93,10 @@ public class MonitorEndoscopiaUI : MonoBehaviour
     void Start()
     {
         panelPausa.SetActive(false);
-        pantallaCargaNegra.SetActive(false);
+        if (pantallaCargaNegra != null) pantallaCargaNegra.SetActive(false);
+        // Apagamos la alerta al iniciar
+        if (alertaBucleUI != null) alertaBucleUI.SetActive(false);
+
         if (panelConfirmarSalida != null) panelConfirmarSalida.SetActive(false);
         if (panelResultadosFinales != null) panelResultadosFinales.SetActive(false);
         // Configuramos el nuevo panel
@@ -101,7 +107,15 @@ public class MonitorEndoscopiaUI : MonoBehaviour
             // Al presionar continuar, cierra el panel indicativo y lanza el reporte final
             btnContinuarIndicativo.onClick.AddListener(() => {
                 panelIndicativo.SetActive(false);
-                FinalizarSimulacion();
+                if (!string.IsNullOrEmpty(motivoGameOverCritico))
+                {
+                    FinalizarSimulacion();
+                }
+                else
+                {
+                    // Si el motivo estaba vacío, significa que estaba cerrando el mensaje de INICIO
+                    ReanudarJuego(); // Usamos tu método existente para devolver el timeScale a 1f
+                }
             });
         }
         Time.timeScale = 1f;
@@ -118,6 +132,12 @@ public class MonitorEndoscopiaUI : MonoBehaviour
         btnMenuPrincipal.onClick.RemoveAllListeners();
         btnMenuPrincipal.onClick.AddListener(() => MostrarPopupConfirmacion(TipoConfirmacion.SalirAlMenu));
 
+        if (btnReconectarHardware != null)
+        {
+            btnReconectarHardware.onClick.RemoveAllListeners();
+            btnReconectarHardware.onClick.AddListener(IntentarReconexionSTM32);
+        }
+
         chkModoComputadora.onValueChanged.RemoveAllListeners();
         chkModoComputadora.onValueChanged.AddListener(CambiarModoControl);
 
@@ -128,6 +148,8 @@ public class MonitorEndoscopiaUI : MonoBehaviour
         {
             btnFinalizarReporte.onClick.AddListener(IrAlMenuPrincipal);
         }
+
+        MostrarMensajeDeInicio();
     }
 
     void Update()
@@ -138,6 +160,16 @@ public class MonitorEndoscopiaUI : MonoBehaviour
         if (!estaPausado && endoscopio != null)
         {
             ActualizarTelemetria();
+            //Si estamos en Tutorial (0) o Fácil (1), actualizamos la guía
+            if (ManejadorPartida.dificultad == 0 || ManejadorPartida.dificultad == 1)
+            {
+                ActualizarGuiaContextual();
+            }
+            else if (panelGuiaContextual != null && panelGuiaContextual.activeSelf)
+            {
+                // En Normal o Realista, apagamos el panel
+                panelGuiaContextual.SetActive(false);
+            }
         }
 
         VigilarHardware();
@@ -238,22 +270,31 @@ public class MonitorEndoscopiaUI : MonoBehaviour
     {
         if (SerialManager.instancia != null)
         {
-            if (SerialManager.instancia.estadoActual == SerialManager.EstadoConexion.Error && !chkModoComputadora.isOn)
+            if (SerialManager.instancia != null)
             {
-                if (!estaPausado)
+                // Si está escaneando los puertos
+                if (SerialManager.instancia.estadoActual == SerialManager.EstadoConexion.Buscando)
                 {
-                    PausarJuego();
-                    txtAlertaConexion.text = "<color=red> ERROR: CONEXIÓN STM32 PERDIDA</color>\nPor favor, revise el cable USB.";
-                    chkModoComputadora.isOn = true;
-                    chkModoComputadora.interactable = false;
+                    if (txtAlertaConexion != null && estaPausado)
+                        txtAlertaConexion.text = $"<color=yellow>{SerialManager.instancia.mensajeInterfaz}</color>";
                 }
-            }
-            else if (SerialManager.instancia.estadoActual == SerialManager.EstadoConexion.Conectado)
-            {
-                if (estaPausado && !chkModoComputadora.isOn)
+                else if (SerialManager.instancia.estadoActual == SerialManager.EstadoConexion.Error && !chkModoComputadora.isOn)
                 {
-                    txtAlertaConexion.text = "<color=green>Conexión estable.</color>";
-                    chkModoComputadora.interactable = true;
+                    if (!estaPausado)
+                    {
+                        PausarJuego();
+                        txtAlertaConexion.text = "<color=red> ERROR: CONEXIÓN STM32 PERDIDA</color>\nPor favor, revise el cable USB.";
+                        chkModoComputadora.isOn = true;
+                        chkModoComputadora.interactable = false;
+                    }
+                }
+                else if (SerialManager.instancia.estadoActual == SerialManager.EstadoConexion.Conectado)
+                {
+                    if (estaPausado && !chkModoComputadora.isOn)
+                    {
+                        txtAlertaConexion.text = "<color=green>Conexión estable.</color>";
+                        chkModoComputadora.interactable = true;
+                    }
                 }
             }
         }
@@ -569,6 +610,168 @@ public class MonitorEndoscopiaUI : MonoBehaviour
         {
             // Si olvidaste asignar el panel, pasa directo a los resultados
             FinalizarSimulacion();
+        }
+    }
+    public void MostrarMensajeDeInicio()
+    {
+        if (panelIndicativo != null)
+        {
+            // Pausamos el tiempo para que no empiece a correr el reloj ni la física
+            Time.timeScale = 0f;
+            estaPausado = true; // Usamos tu variable existente para bloquear controles
+
+            string titulo = "";
+            string texto = "";
+
+            switch (ManejadorPartida.dificultad)
+            {
+                case 0: // Tutorial
+                    titulo = "DATOS: TUTORIAL";
+                    texto = "Práctica rápida guiada con 5 pólipos predefinidos para enseñar los controles y cómo resolver el procedimiento.\n\nSiga las instrucciones en pantalla.";
+                    break;
+                case 1: // Fácil
+                    titulo = "DATOS: FÁCIL";
+                    texto = "Sistema guiado que muestra el puntaje en tiempo real. Indica qué acciones tomar (ej. mantenerse quieto) y da feedback visual si se comete un error.";
+                    break;
+                case 2: // Normal
+                    titulo = "DATOS: NORMAL";
+                    texto = "Retira las guías paso a paso; el sistema solo indicará al usuario cuando pierda puntos. Evalúe con cuidado.";
+                    break;
+                case 3: // Realista
+                    titulo = "DATOS: REALISTA";
+                    texto = "<color=red>Emulación libre sin guías visuales ni elementos de apoyo.</color>\n\nSolo contará con respuestas hápticas de daño al paciente. Si retira el endoscopio sin efectuar acciones, finalizará con 0 puntos.";
+                    break;
+                default:
+                    titulo = "DATOS: DESCONOCIDO";
+                    texto = "Proceda con precaución.";
+                    break;
+            }
+            string recomendaciones = "\n\n<color=#B0B0B0><i><b>Recomendaciones Clínicas:</b>\n" +
+                                    "• Controle la fuerza de inserción; la pared intestinal es delicada.\n" +
+                                    "• Mantenga una distancia prudente para enfocar y operar los pólipos.\n" +
+                                    "• Si el endoscopio se atasca, no fuerce el avance. Jale lentamente mientras aplica torsión para arrectar el tubo.</i></color>";
+            txtTituloIndicativo.text = titulo;
+            txtTextoIndicativo.text = texto + recomendaciones;
+
+            panelIndicativo.SetActive(true);
+        }
+    }
+    private void ActualizarGuiaContextual()
+    {
+        if (panelGuiaContextual == null || txtGuiaContextual == null || herramientas == null) return;
+
+        panelGuiaContextual.SetActive(true);
+        string mensajeGuia = "";
+
+        int poliposRestantes = ManejadorPartida.totalPolipos - herramientas.ObtenerTotalEliminados();
+
+        // 1. CONDICIÓN DE VICTORIA (Ya no hay pólipos)
+        if (poliposRestantes <= 0)
+        {
+            if (herramientas.enZonaExtraccion)
+                mensajeGuia = "<color=#32CD32>¡Excelente! Has terminado. Presiona el Botón de Acción (5) para salir y ver tus resultados.</color>";
+            else
+                mensajeGuia = "¡Todos los pólipos extraídos! Vuelve a la zona de extracción al inicio del tracto y presiona salir.";
+        }
+        // 2. EXTRACCIÓN (Llevando pólipo en la punta)
+        else if (herramientas.llevandoPolipo)
+        {
+            if (herramientas.enZonaExtraccion)
+                mensajeGuia = "¡Llegaste a la salida! Apaga la succión (Botón 4) para depositar la muestra en el laboratorio.";
+            else
+                mensajeGuia = "Saca el pólipo extrayendo el tubo hacia la zona de inicio. Cuidado con los tirones bruscos.";
+        }
+        // 3. SUCCIÓN (Cortó un pólipo grande y está suelto)
+        else if (herramientas.ObtenerUltimoPolipoCortado() != null &&
+                 herramientas.ObtenerUltimoPolipoCortado().estadoActual == PolipoInteractuable.EstadoPolipo.CortadoSuelto)
+        {
+            mensajeGuia = "El pólipo está suelto. Enciende la succión (Botón 4) apuntando hacia él para capturarlo.";
+        }
+        // 4. MENÚ DE HERRAMIENTAS ABIERTO
+        else if (herramientas.EstaEnModoSeleccion())
+        {
+            PolipoInteractuable polipo = herramientas.ObtenerPolipoEnMira();
+            if (polipo != null)
+            {
+                if (polipo.tipo == PolipoInteractuable.TipoPolipo.Yamada1 || polipo.tipo == PolipoInteractuable.TipoPolipo.Yamada2)
+                    mensajeGuia = "Pólipo sésil/pequeño. Selecciona la <color=yellow>Pinza de Biopsia (Botón 1)</color> para extirparlo.";
+                else
+                    mensajeGuia = "Pólipo pediculado/grande. Selecciona el <color=#FF4500>Asa Diatérmica (Botón 2)</color> para seccionarlo.";
+            }
+        }
+        // 5. PÓLIPO EN LA MIRA (Protocolo Médico)
+        else if (herramientas.ObtenerPolipoEnMira() != null)
+        {
+            PolipoInteractuable polipo = herramientas.ObtenerPolipoEnMira();
+
+            if (!polipo.fueFotografiado)
+            {
+                if (!herramientas.estaCongelado)
+                    mensajeGuia = "¡Pólipo detectado! Sigue el protocolo:\n<color=#00FFFF>1. Congela la imagen (Freeze)</color>";
+                else
+                    mensajeGuia = "Imagen congelada.\n<color=#FFD700>2. Toma la fotografía (Capture)</color> para documentarlo.";
+            }
+            else
+            {
+                if (herramientas.estaCongelado)
+                    mensajeGuia = "Fotografía guardada.\n<color=#00FFFF>1. Descongela la imagen (Freeze)</color> para volver a moverte.";
+                else
+                    mensajeGuia = "Protocolo visual completo.\nPresiona el <color=white>Botón de Acción (5)</color> para elegir herramienta.";
+            }
+        }
+        // 6. CONGELADO POR ERROR
+        else if (herramientas.estaCongelado)
+        {
+            mensajeGuia = "La pantalla está congelada pero no hay ningún pólipo a la vista. Vuelve a presionar <color=#00FFFF>Freeze</color> para seguir moviéndote.";
+        }
+        // 7. ZONA DE EXTRACCIÓN (Buscando)
+        else if (herramientas.enZonaExtraccion)
+        {
+            mensajeGuia = "Aún no hemos acabado. Inserta el endoscopio y busca más pólipos.";
+        }
+        // 8. EXPLORACIÓN NORMAL
+        else
+        {
+            if (!endoscopio.MoviendoControles())
+                mensajeGuia = "Busca un pólipo. Muévete insertando el tubo en la ranura de inserción. Puedes usar los volantes para guiar tu camino.";
+            else
+                mensajeGuia = "Explorando... Revisa bien detrás de los pliegues intestinales usando el torque.";
+        }
+
+        txtGuiaContextual.text = mensajeGuia;
+    }
+    // Método para encender/apagar el letrero de atasco
+    public void ActualizarEstadoBucle(bool estaAtascado)
+    {
+        if (alertaBucleUI != null)
+        {
+            // Solo lo mostramos si está atascado y la dificultad NO es Realista (3)
+            if (estaAtascado && ManejadorPartida.dificultad != 3)
+            {
+                alertaBucleUI.SetActive(true);
+            }
+            else
+            {
+                alertaBucleUI.SetActive(false);
+            }
+        }
+    }
+    private void IntentarReconexionSTM32()
+    {
+        Debug.Log("Intentando reconexión con STM32...");
+        if (SerialManager.instancia != null)
+        {
+            // Cambiamos el texto para dar feedback inmediato
+            if (txtAlertaConexion != null)
+                txtAlertaConexion.text = "<color=yellow>Buscando hardware STM32...</color>\nPor favor espere.";
+
+            // Llamamos al hilo de búsqueda que ya tienes programado
+            SerialManager.instancia.IniciarBusqueda();
+        }
+        else
+        {
+            if (txtAlertaConexion != null)
+                txtAlertaConexion.text = "<color=red>Error Interno: SerialManager no encontrado.</color>";
         }
     }
 }

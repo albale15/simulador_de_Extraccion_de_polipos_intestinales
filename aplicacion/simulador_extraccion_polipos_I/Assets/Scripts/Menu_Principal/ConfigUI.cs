@@ -44,28 +44,54 @@ public class ConfigUI : MonoBehaviour
     private bool esperandoEje = false;
     private TextMeshProUGUI textoBotonActivo;
 
+    // Garantiza que encuentre los Singletons sin importar el orden en que Unity los despierte.
+    private void ConectarSistemas()
+    {
+        // 1. Forzamos a usar el Singleton Inmortal (ignorando cualquier clon muerto del inspector)
+        if (SerialManager.instancia != null)
+        {
+            serial = SerialManager.instancia;
+        }
+        else if (serial == null)
+        {
+            serial = FindObjectOfType<SerialManager>();
+        }
+
+        // 2. Lo mismo para el ConfigManager
+        if (ConfigManager.instancia != null)
+        {
+            config = ConfigManager.instancia;
+        }
+        else if (config == null)
+        {
+            config = FindObjectOfType<ConfigManager>();
+        }
+    }
+
     void Awake()
     {
-        serial = SerialManager.instancia;
-        config = ConfigManager.instancia;
+        ConectarSistemas();
     }
 
     void Start()
     {
-        if (serial == null) serial = SerialManager.instancia;
-        if (config == null) config = ConfigManager.instancia;
+        ConectarSistemas();
         ActualizarUI();
     }
 
     void OnEnable()
     {
-        if (serial == null) serial = SerialManager.instancia;
-        if (config == null) config = ConfigManager.instancia;
-
+        ConectarSistemas();
         ActualizarUI();
 
         if (serial != null)
+        {
+            // TRUCO DE SEGURIDAD PARA SINGLETONS:
+            // Desuscribimos antes de suscribir. Esto evita bugs de mapeo múltiple
+            // si la escena se recarga y el Singleton sobrevive.
+            serial.AlRecibirNuevosDatos -= EscucharParaMapear;
             serial.AlRecibirNuevosDatos += EscucharParaMapear;
+        }
     }
 
     void OnDisable()
@@ -97,7 +123,6 @@ public class ConfigUI : MonoBehaviour
         if (txtMapZoom) txtMapZoom.text = config.mapZoom;
         if (txtMapSuccion) txtMapSuccion.text = config.mapSuccion;
 
-        // NUEVO: Mostrar el mapeo guardado para Acción
         if (txtMapAccion) txtMapAccion.text = config.mapAccion;
 
         txtFeedback.text = "Modifica los valores y presiona 'Guardar' para aplicar.";
@@ -110,12 +135,14 @@ public class ConfigUI : MonoBehaviour
         config.sensInsercion = val;
         ActualizarTextosSensibilidad();
     }
+
     public void CambiarSensibilidadTorsion(float val)
     {
         if (config == null) return;
         config.sensTorsion = val;
         ActualizarTextosSensibilidad();
     }
+
     public void CambiarSensibilidadVolantes(float val)
     {
         if (config == null) return;
@@ -144,7 +171,6 @@ public class ConfigUI : MonoBehaviour
     public void MapearZoom() { PrepararMapeo("Zoom", false, txtMapZoom); }
     public void MapearSuccion() { PrepararMapeo("Succion", false, txtMapSuccion); }
 
-    // NUEVO: Botón en la UI para re-mapear la Acción
     public void MapearAccion() { PrepararMapeo("Accion", false, txtMapAccion); }
 
     private void PrepararMapeo(string accion, bool requiereEje, TextMeshProUGUI textoUI)
@@ -217,7 +243,7 @@ public class ConfigUI : MonoBehaviour
             case "Capture": config.mapCapture = inputDetectado; break;
             case "Zoom": config.mapZoom = inputDetectado; break;
             case "Succion": config.mapSuccion = inputDetectado; break;
-            case "Accion": config.mapAccion = inputDetectado; break; // NUEVO: Asignar en memoria
+            case "Accion": config.mapAccion = inputDetectado; break;
         }
     }
 

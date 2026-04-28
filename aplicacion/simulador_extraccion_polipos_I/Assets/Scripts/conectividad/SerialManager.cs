@@ -60,29 +60,43 @@ public class SerialManager : MonoBehaviour
 
     public void IniciarBusqueda()
     {
-        if (estadoActual == EstadoConexion.Buscando) return;
+        Debug.Log($"<color=yellow>[Serial] IniciarBusqueda invocado. Estado actual: {estadoActual}</color>");
+
+        if (estadoActual == EstadoConexion.Buscando)
+        {
+            Debug.LogWarning("<color=orange>[Serial] ABORTADO: El sistema cree que ya está buscando. El botón no hará nada.</color>");
+            return;
+        }
+
+        estadoActual = EstadoConexion.Buscando;
+        mensajeInterfaz = "Iniciando escaneo de puertos...";
+
+        Debug.Log("<color=yellow>[Serial] Estado cambiado a Buscando. Disparando el Hilo Secundario...</color>");
+
         _hiloBusqueda = new Thread(RutinaBusquedaEnFondo) { IsBackground = true };
         _hiloBusqueda.Start();
     }
 
     void RutinaBusquedaEnFondo()
     {
-        estadoActual = EstadoConexion.Buscando;
-        mensajeInterfaz = "Iniciando escaneo de puertos...";
+        Debug.Log("<color=magenta>[Hilo] --- HILO INICIADO --- Durmiendo 1.5s para no saturar USB...</color>");
         Thread.Sleep(1500);
 
         string[] puertos = SerialPort.GetPortNames();
+        Debug.Log($"<color=magenta>[Hilo] Escaneo completado. Se encontraron {puertos.Length} puertos conectados a la PC.</color>");
 
         if (puertos.Length == 0)
         {
             estadoActual = EstadoConexion.Error;
             mensajeInterfaz = "No se detectaron puertos USB.";
+            Debug.Log("<color=magenta>[Hilo] Fin de rutina: No hay puertos. Estado -> Error.</color>");
             return;
         }
 
         foreach (string nombrePuerto in puertos)
         {
             mensajeInterfaz = "Verificando " + nombrePuerto + "...";
+            Debug.Log($"<color=magenta>[Hilo] Intentando handshake con {nombrePuerto}...</color>");
 
             if (IntentarConexionFondo(nombrePuerto))
             {
@@ -93,13 +107,22 @@ public class SerialManager : MonoBehaviour
                 _ejecutando = true;
                 _hiloLectura = new Thread(LecturaDeFondo) { IsBackground = true };
                 _hiloLectura.Start();
+
+                Debug.Log($"<color=green><b>[Hilo] ¡ÉXITO! Endoscopio detectado en {nombrePuerto}. Hilo de búsqueda cerrado.</b></color>");
                 return;
+            }
+            else
+            {
+                Debug.Log($"<color=magenta>[Hilo] {nombrePuerto} rechazó la conexión o no es el endoscopio.</color>");
             }
         }
 
         estadoActual = EstadoConexion.Error;
         mensajeInterfaz = "Endoscopio no encontrado.";
+        Debug.Log("<color=magenta>[Hilo] Fin de rutina: Se revisaron todos los puertos pero no hubo firma válida. Estado -> Error.</color>");
     }
+
+    
 
     bool IntentarConexionFondo(string nombrePuerto)
     {

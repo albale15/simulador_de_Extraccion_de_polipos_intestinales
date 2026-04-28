@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class ConnectivityUI : MonoBehaviour
 {
@@ -15,21 +16,51 @@ public class ConnectivityUI : MonoBehaviour
     private float _tiempoConectado = 0f;
     private SerialManager.EstadoConexion _estadoAnterior = SerialManager.EstadoConexion.Iniciando;
 
+    // --- EL MÉTODO BLINDADO PARA ATRAPAR SINGLETONS ---
+    // --- MÉTODO BLINDADO DE CONEXIÓN ---
+    private void ConectarSistemas()
+    {
+        // 1. Forzamos a usar el Singleton Inmortal (ignorando cualquier clon muerto del inspector)
+        if (SerialManager.instancia != null)
+        {
+            serial = SerialManager.instancia;
+        }
+        else if (serial == null)
+        {
+            serial = FindObjectOfType<SerialManager>();
+        }
+
+        // 2. Lo mismo para el ConfigManager
+        if (ConfigManager.instancia != null)
+        {
+            config = ConfigManager.instancia;
+        }
+        else if (config == null)
+        {
+            config = FindObjectOfType<ConfigManager>();
+        }
+    }
+
     void Awake()
     {
-        // LA CURA AL "MISSING": Ignoramos al inspector y cazamos a los inmortales a la fuerza.
-        serial = SerialManager.instancia;
-        config = ConfigManager.instancia;
+        ConectarSistemas();
     }
 
     void Start()
     {
-        // Si el Awake falló porque se ejecutaron al revés, hacemos un re-intento seguro.
-        if (serial == null) serial = SerialManager.instancia;
-        if (config == null) config = ConfigManager.instancia;
-
+        ConectarSistemas();
+        if (botonReconectar != null)
+        {
+            Button btn = botonReconectar.GetComponent<Button>();
+            if (btn != null)
+            {
+                btn.onClick.RemoveAllListeners();
+                btn.onClick.AddListener(ClickReconectar);
+            }
+        }
         if (serial != null)
         {
+            // Forzamos la actualización visual la primera vez que se carga
             _estadoAnterior = SerialManager.EstadoConexion.Iniciando;
             ActualizarPanelVisual(serial.estadoActual);
         }
@@ -37,12 +68,20 @@ public class ConnectivityUI : MonoBehaviour
 
     void OnEnable()
     {
-        // Tercer blindaje por si la UI se enciende tarde
-        if (config == null) config = ConfigManager.instancia;
+        ConectarSistemas();
 
         if (config != null)
         {
+            // TRUCO DE SEGURIDAD PARA SINGLETONS:
+            // Desuscribimos antes de suscribir. Esto evita escuchar los datos dobles.
+            config.AlRecibirDatosProcesados -= EscucharDatosLimpios;
             config.AlRecibirDatosProcesados += EscucharDatosLimpios;
+        }
+
+        if (serial != null)
+        {
+            // Forzamos actualizar visualmente si hubo un cambio mientras el menú estaba cerrado
+            ActualizarPanelVisual(serial.estadoActual);
         }
     }
 
@@ -56,6 +95,8 @@ public class ConnectivityUI : MonoBehaviour
 
     private void EscucharDatosLimpios(DatosProcesados datos)
     {
+        if (txtFeedbackAcciones == null) return;
+
         string feedback = "<b>Monitor de Acciones Mapeadas:</b>\n";
 
         if (datos.volanteXFinal > 0) feedback += "Volante X: Girando Derecha \n";
@@ -82,6 +123,7 @@ public class ConnectivityUI : MonoBehaviour
     {
         if (serial == null) return;
 
+        // Si el estado cambió desde la última vez, actualizamos el panel
         if (serial.estadoActual != _estadoAnterior)
         {
             _estadoAnterior = serial.estadoActual;
@@ -89,10 +131,19 @@ public class ConnectivityUI : MonoBehaviour
             ActualizarPanelVisual(serial.estadoActual);
         }
 
+        // --- SOLUCIÓN AL FEEDBACK DE "BUSCANDO..." ---
+        // El SerialManager actualiza su variable "mensajeInterfaz" constantemente.
+        // Aquí le decimos a la UI que lea esa actualización frame a frame si está en modo "Buscando".
+        if (serial.estadoActual == SerialManager.EstadoConexion.Buscando && txtEstado != null)
+        {
+            txtEstado.text = "<color=yellow>Buscando control...</color>\n<size=20>" + serial.mensajeInterfaz + "</size>";
+        }
+
+        // Lógica para borrar el mensaje "Conectado" después de 5 segundos
         if (serial.estadoActual == SerialManager.EstadoConexion.Conectado)
         {
             _tiempoConectado += Time.deltaTime;
-            if (_tiempoConectado > 5f && txtEstado.text != "")
+            if (_tiempoConectado > 5f && txtEstado != null && txtEstado.text != "")
             {
                 txtEstado.text = "";
             }
@@ -101,12 +152,14 @@ public class ConnectivityUI : MonoBehaviour
 
     private void ActualizarPanelVisual(SerialManager.EstadoConexion estado)
     {
+        if (txtEstado == null || botonReconectar == null) return;
+
         switch (estado)
         {
             case SerialManager.EstadoConexion.Buscando:
                 txtEstado.text = "<color=yellow>Buscando control...</color>\n<size=20>" + serial.mensajeInterfaz + "</size>";
                 botonReconectar.SetActive(false);
-                if (txtFeedbackAcciones.text != "") txtFeedbackAcciones.text = "";
+                if (txtFeedbackAcciones != null && txtFeedbackAcciones.text != "") txtFeedbackAcciones.text = "";
                 break;
 
             case SerialManager.EstadoConexion.Conectado:
@@ -117,7 +170,7 @@ public class ConnectivityUI : MonoBehaviour
             case SerialManager.EstadoConexion.Error:
                 txtEstado.text = "Centro de mando: <color=red>DESCONECTADO</color>\n<size=20>Por favor, revisa el cable USB.</size>";
                 botonReconectar.SetActive(true);
-                if (txtFeedbackAcciones.text != "") txtFeedbackAcciones.text = "";
+                if (txtFeedbackAcciones != null && txtFeedbackAcciones.text != "") txtFeedbackAcciones.text = "";
                 break;
 
             case SerialManager.EstadoConexion.Iniciando:
@@ -129,6 +182,17 @@ public class ConnectivityUI : MonoBehaviour
 
     public void ClickReconectar()
     {
-        if (serial != null) serial.IniciarBusqueda();
+        Debug.Log("<color=cyan>[UI] Clic detectado en Botón Reconectar.</color>");
+
+        if (serial != null)
+        {
+            Debug.Log("<color=cyan>[UI] SerialManager encontrado. Enviando orden de búsqueda...</color>");
+            botonReconectar.SetActive(false);
+            serial.IniciarBusqueda();
+        }
+        else
+        {
+            Debug.LogError("<color=red>[UI] ERROR FATAL: 'serial' es NULO. La UI perdió la conexión con el mánager.</color>");
+        }
     }
 }
