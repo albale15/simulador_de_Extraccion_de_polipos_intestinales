@@ -45,33 +45,39 @@ public class ConfigUI : MonoBehaviour
 
     void Awake()
     {
-        if (serial == null) serial = FindObjectOfType<SerialManager>();
-        if (config == null) config = FindObjectOfType<ConfigManager>();
+        // Ignoramos los cadáveres del Inspector.
+        serial = SerialManager.instancia;
+        config = ConfigManager.instancia;
     }
-    // Doble seguridad para cargar la UI 
+
     void Start()
     {
-        // El Start se ejecuta al final de todo el proceso de encendido.
-        // Aquí estamos 100% seguros de que el ConfigManager ya leyó el disco duro.
+        if (serial == null) serial = SerialManager.instancia;
+        if (config == null) config = ConfigManager.instancia;
         ActualizarUI();
+
     }
+
     void OnEnable()
     {
-        // El OnEnable se ejecuta cada vez que entramos a esta pantalla. Por si el usuario hizo cambios en otra parte del juego, o simplemente para refrescar la UI.
+        // Doble validación al entrar a esta pestaña
+        if (serial == null) serial = SerialManager.instancia;
+        if (config == null) config = ConfigManager.instancia;
+
         ActualizarUI();
+
         if (serial != null)
             serial.AlRecibirNuevosDatos += EscucharParaMapear;
     }
 
     void OnDisable()
     {
-        // Al salir de esta pantalla, nos "desuscribimos" del evento para liberar RAM y evitar errores.
         if (serial != null)
             serial.AlRecibirNuevosDatos -= EscucharParaMapear;
 
         accionEsperando = "";
     }
-    // Esta función toma los valores actuales del ConfigManager y los muestra en la UI. Se llama al iniciar y cada vez que entramos a esta pantalla.
+
     private void ActualizarUI()
     {
         if (config == null) return;
@@ -97,13 +103,11 @@ public class ConfigUI : MonoBehaviour
         ActualizarTextosSensibilidad();
     }
 
-    // EVENTOS DE LOS SLIDERS DE SENSIBILIDAD
     public void CambiarSensibilidadInsercion(float val)
     {
         if (config == null) return;
         config.sensInsercion = val;
         ActualizarTextosSensibilidad();
-        // NOTA: Ya no guardamos aquí. Solo actualizamos la variable en memoria.
     }
     public void CambiarSensibilidadTorsion(float val)
     {
@@ -117,7 +121,7 @@ public class ConfigUI : MonoBehaviour
         config.sensVolantes = val;
         ActualizarTextosSensibilidad();
     }
-    // Esta función actualiza los textos que muestran el valor numérico de la sensibilidad, cada vez que se cambia un slider o se carga la pantalla.
+
     private void ActualizarTextosSensibilidad()
     {
         if (config == null) return;
@@ -126,7 +130,6 @@ public class ConfigUI : MonoBehaviour
         if (txtValVol) txtValVol.text = config.sensVolantes.ToString("F1") + "x";
     }
 
-    // EVENTOS DE LOS BOTONES DE MAPEO
     public void MapearVolXIzq() { PrepararMapeo("VolXIzq", true, txtMapVolXIzq); }
     public void MapearVolXDer() { PrepararMapeo("VolXDer", true, txtMapVolXDer); }
     public void MapearVolYArr() { PrepararMapeo("VolYArr", true, txtMapVolYArr); }
@@ -140,7 +143,6 @@ public class ConfigUI : MonoBehaviour
     public void MapearZoom() { PrepararMapeo("Zoom", false, txtMapZoom); }
     public void MapearSuccion() { PrepararMapeo("Succion", false, txtMapSuccion); }
 
-    // Cada vez que se presiona un botón de mapeo, esta función prepara el sistema para escuchar el siguiente input del hardware y asignarlo a la acción correspondiente.
     private void PrepararMapeo(string accion, bool requiereEje, TextMeshProUGUI textoUI)
     {
         accionEsperando = accion;
@@ -149,7 +151,7 @@ public class ConfigUI : MonoBehaviour
         textoBotonActivo.text = "<color=black>Moviendo...</color>";
         txtFeedback.text = requiereEje ? "Gira o empuja el control físico..." : "Presiona el botón físico...";
     }
-    // Esta función se ejecuta cada vez que el SerialManager recibe datos nuevos del hardware, pero SOLO asignará un nuevo mapeo si estamos en modo "esperando un input". De lo contrario, solo ignora los datos.
+
     private void EscucharParaMapear(DatosHardware d)
     {
         if (accionEsperando == "") return;
@@ -168,7 +170,7 @@ public class ConfigUI : MonoBehaviour
             txtFeedback.text = "<color=red>Movimiento Inválido. Usa el tipo de control correcto.</color>";
         }
     }
-    // Esta función analiza los datos del hardware para detectar cuál fue el último control que se movió o botón que se presionó, y devuelve un string con el formato adecuado para asignar al mapeo (por ejemplo, "INS_+" o "B1"). Si no se detecta ningún movimiento relevante, devuelve una cadena vacía.
+
     private string DetectarInput(DatosHardware d, bool buscarEje)
     {
         if (buscarEje)
@@ -192,7 +194,7 @@ public class ConfigUI : MonoBehaviour
         }
         return "";
     }
-    // Esta función asigna el nuevo mapeo detectado a la variable correspondiente del ConfigManager, pero SOLO en memoria. El cambio no se guarda en el disco duro hasta que el usuario presione el botón "Guardar".
+
     private void AsignarMapeoEnMemoria(string accion, string inputDetectado)
     {
         if (config == null) return;
@@ -214,7 +216,6 @@ public class ConfigUI : MonoBehaviour
         }
     }
 
-    // BOTÓN EXCLUSIVO DE GUARDADO
     public void BotonGuardarCambios()
     {
         if (config != null)
@@ -223,7 +224,7 @@ public class ConfigUI : MonoBehaviour
             txtFeedback.text = "<color=green><b>¡Configuración guardada exitosamente!</b></color>";
         }
     }
-    // BOTÓN EXCLUSIVO DE RESTABLECER
+
     public void BotonRestablecer()
     {
         if (config != null)
@@ -233,7 +234,7 @@ public class ConfigUI : MonoBehaviour
             txtFeedback.text = "<color=white>Valores restablecidos a fábrica.</color>";
         }
     }
-    // BOTÓN DE PRUEBA DE VIBRACIÓN (solo para el STM, que tiene un comando específico para eso)
+
     public void ProbarVibracionSTM()
     {
         if (serial != null && serial.estadoActual == SerialManager.EstadoConexion.Conectado)

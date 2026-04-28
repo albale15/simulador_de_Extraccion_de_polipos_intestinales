@@ -12,24 +12,36 @@ public class ConnectivityUI : MonoBehaviour
     public TextMeshProUGUI txtFeedbackAcciones;
     public GameObject botonReconectar;
 
-    // ELIMINAMOS public GameObject panelCargando; porque el ControladorMenuPrincipal ya se encarga de la carga.
-
     private float _tiempoConectado = 0f;
-    private SerialManager.EstadoConexion _estadoAnterior;
+    private SerialManager.EstadoConexion _estadoAnterior = SerialManager.EstadoConexion.Iniciando;
 
     void Awake()
     {
-        // contra Condición de Carrera
-        if (serial == null) serial = FindObjectOfType<SerialManager>();
-        if (config == null) config = FindObjectOfType<ConfigManager>();
+        // LA CURA AL "MISSING": Ignoramos al inspector y cazamos a los inmortales a la fuerza.
+        serial = SerialManager.instancia;
+        config = ConfigManager.instancia;
     }
 
-    // ESCUCHAMOS CONFIG MANAGER 
+    void Start()
+    {
+        // Si el Awake falló porque se ejecutaron al revés, hacemos un re-intento seguro.
+        if (serial == null) serial = SerialManager.instancia;
+        if (config == null) config = ConfigManager.instancia;
+
+        if (serial != null)
+        {
+            _estadoAnterior = SerialManager.EstadoConexion.Iniciando;
+            ActualizarPanelVisual(serial.estadoActual);
+        }
+    }
+
     void OnEnable()
     {
+        // Tercer blindaje por si la UI se enciende tarde
+        if (config == null) config = ConfigManager.instancia;
+
         if (config != null)
         {
-            // Nos suscribimos a los datos ya limpios, mapeados y multiplicados
             config.AlRecibirDatosProcesados += EscucharDatosLimpios;
         }
     }
@@ -42,12 +54,10 @@ public class ConnectivityUI : MonoBehaviour
         }
     }
 
-    // Usamos DatosProcesados en lugar de DatosHardware
     private void EscucharDatosLimpios(DatosProcesados datos)
     {
         string feedback = "<b>Monitor de Acciones Mapeadas:</b>\n";
 
-        // solo preguntamos si el valor es mayor o menor a cero
         if (datos.volanteXFinal > 0) feedback += "Volante X: Girando Derecha \n";
         else if (datos.volanteXFinal < 0) feedback += "Volante X: Girando Izquierda \n";
 
@@ -60,7 +70,6 @@ public class ConnectivityUI : MonoBehaviour
         if (datos.torsionFinal > 0) feedback += "Torque: Girando Derecha \n";
         else if (datos.torsionFinal < 0) feedback += "Torque: Girando Izquierda \n";
 
-        // Los botones ahora son las ACCIONES, no el hardware físico
         if (datos.botonFreeze) feedback += "<color=#00FFFF>Acción: Freeze activada</color>\n";
         if (datos.botonCapture) feedback += "<color=#FFD700>Acción: Capture activada</color>\n";
         if (datos.botonZoom) feedback += "<color=#FF8C00>Acción: Zoom activado</color>\n";
@@ -69,7 +78,6 @@ public class ConnectivityUI : MonoBehaviour
         txtFeedbackAcciones.text = feedback;
     }
 
-    // GESTIÓN DE LA UI VISUAL 
     void Update()
     {
         if (serial == null) return;
@@ -78,11 +86,22 @@ public class ConnectivityUI : MonoBehaviour
         {
             _estadoAnterior = serial.estadoActual;
             _tiempoConectado = 0f;
+            ActualizarPanelVisual(serial.estadoActual);
         }
 
-        // ELIMINAMOS la línea que activaba el panelCargando aquí.
+        if (serial.estadoActual == SerialManager.EstadoConexion.Conectado)
+        {
+            _tiempoConectado += Time.deltaTime;
+            if (_tiempoConectado > 5f && txtEstado.text != "")
+            {
+                txtEstado.text = "";
+            }
+        }
+    }
 
-        switch (serial.estadoActual)
+    private void ActualizarPanelVisual(SerialManager.EstadoConexion estado)
+    {
+        switch (estado)
         {
             case SerialManager.EstadoConexion.Buscando:
                 txtEstado.text = "<color=yellow>Buscando control...</color>\n<size=20>" + serial.mensajeInterfaz + "</size>";
@@ -91,9 +110,7 @@ public class ConnectivityUI : MonoBehaviour
                 break;
 
             case SerialManager.EstadoConexion.Conectado:
-                _tiempoConectado += Time.deltaTime;
-                if (_tiempoConectado <= 5f) txtEstado.text = "Centro de mando: <color=green>CONECTADO</color> (" + serial.puertoActivo + ")";
-                else txtEstado.text = "";
+                txtEstado.text = "Centro de mando: <color=green>CONECTADO</color> (" + serial.puertoActivo + ")";
                 botonReconectar.SetActive(false);
                 break;
 
@@ -104,7 +121,6 @@ public class ConnectivityUI : MonoBehaviour
                 break;
 
             case SerialManager.EstadoConexion.Iniciando:
-                // Ahora, mientras inicia, simplemente no muestra nada (porque la pantalla Splash lo está tapando)
                 txtEstado.text = "";
                 botonReconectar.SetActive(false);
                 break;
@@ -113,6 +129,6 @@ public class ConnectivityUI : MonoBehaviour
 
     public void ClickReconectar()
     {
-        serial.IniciarBusqueda();
+        if (serial != null) serial.IniciarBusqueda();
     }
 }

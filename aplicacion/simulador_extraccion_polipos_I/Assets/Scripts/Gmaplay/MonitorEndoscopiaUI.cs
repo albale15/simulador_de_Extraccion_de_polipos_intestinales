@@ -49,8 +49,14 @@ public class MonitorEndoscopiaUI : MonoBehaviour
 
         ActualizarTextosBotones();
 
+        // Limpiamos listeners viejos por si recarga la escena y evitamos bugs de doble click
+        btnContinuar.onClick.RemoveAllListeners();
         btnContinuar.onClick.AddListener(ReanudarJuego);
+
+        btnMenuPrincipal.onClick.RemoveAllListeners();
         btnMenuPrincipal.onClick.AddListener(IrAlMenuPrincipal);
+
+        chkModoComputadora.onValueChanged.RemoveAllListeners();
         chkModoComputadora.onValueChanged.AddListener(CambiarModoControl);
     }
 
@@ -74,18 +80,13 @@ public class MonitorEndoscopiaUI : MonoBehaviour
 
     private void ActualizarTelemetria()
     {
-        // 1. PROFUNDIDAD REAL DESDE EL ODÓMETRO
         int centimetros = Mathf.RoundToInt(endoscopio.distanciaTotalInsertada * 10f);
         txtProfundidad.text = $"Cm: {centimetros}";
 
-        // 2. EL OCTÁGONO (SOLUCIÓN DE INGENIERÍA)
-        // En lugar de preguntarle a los huesos 3D que están doblados, usamos el valor matemático puro.
         float giroPuro = endoscopio.torqueGiro;
 
         txtTorque.text = $"Torque: {Mathf.RoundToInt(endoscopio.torqueGiro)}°";
 
-        // Giramos el gráfico UI en el eje Z (el eje de las pantallas 2D).
-        // NOTA: Si ves que gira al revés que tu mano, cámbialo a positivo (giroPuro) en vez de negativo (-giroPuro)
         if (indicadorOctagono != null)
         {
             indicadorOctagono.localRotation = Quaternion.Euler(0, 0, +giroPuro);
@@ -145,15 +146,16 @@ public class MonitorEndoscopiaUI : MonoBehaviour
     {
         if (SerialManager.instancia != null)
         {
-            if (SerialManager.instancia.estadoActual == SerialManager.EstadoConexion.Error)
+            // EL FIX: Solo forzamos la pausa por error SI NO están usando la PC.
+            if (SerialManager.instancia.estadoActual == SerialManager.EstadoConexion.Error && !chkModoComputadora.isOn)
             {
                 if (!estaPausado)
                 {
                     PausarJuego();
                     txtAlertaConexion.text = "<color=red> ERROR: CONEXIÓN STM32 PERDIDA</color>\nPor favor, revise el cable USB.";
 
-                    chkModoComputadora.isOn = true;
-                    chkModoComputadora.interactable = false;
+                    chkModoComputadora.isOn = true; // Auto-activamos PC para que puedan continuar
+                    chkModoComputadora.interactable = false; // Castigamos bloqueando el checkbox
                 }
             }
             else if (SerialManager.instancia.estadoActual == SerialManager.EstadoConexion.Conectado)
@@ -161,7 +163,7 @@ public class MonitorEndoscopiaUI : MonoBehaviour
                 if (estaPausado)
                 {
                     txtAlertaConexion.text = "<color=green>Conexión estable.</color>";
-                    chkModoComputadora.interactable = true;
+                    chkModoComputadora.interactable = true; // Liberamos el castigo
                 }
             }
         }
@@ -194,6 +196,13 @@ public class MonitorEndoscopiaUI : MonoBehaviour
 
     public void ReanudarJuego()
     {
+        // EL FIX DE SEGURIDAD: Evitamos que quiten la pausa si el cable sigue roto y no quieren usar PC
+        if (!chkModoComputadora.isOn && SerialManager.instancia != null && SerialManager.instancia.estadoActual == SerialManager.EstadoConexion.Error)
+        {
+            txtAlertaConexion.text = "<color=red>NO SE PUEDE CONTINUAR</color>\nConecte el hardware o active el Modo Computadora.";
+            return;
+        }
+
         estaPausado = false;
         Time.timeScale = 1f;
         panelPausa.SetActive(false);
