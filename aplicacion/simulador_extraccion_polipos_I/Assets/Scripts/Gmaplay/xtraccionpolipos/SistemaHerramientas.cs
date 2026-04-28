@@ -115,6 +115,23 @@ public class SistemaHerramientas : MonoBehaviour
         Vector3 origenRayo = canalDeTrabajo.position;
         Vector3 direccionRayo = canalDeTrabajo.forward;
 
+        // --- PASO 1: RESTRICCIÓN DE FREEZE ---
+        if (estaCongelado)
+        {
+            // Castigo si intenta usar botones que no sean los de documentación
+            if (btnAccion || btnZoom || btnSuccion)
+            {
+                EnviarErrorUI(MonitorEndoscopiaUI.CategoriaEvaluacion.Seguridad, 2, "Operación a ciegas: Intentó usar herramientas con la imagen congelada.");
+            }
+
+            // SOLO dejamos que quite el Freeze o tome Foto
+            if (btnCapture) EjecutarCapture();
+            if (btnFreeze) EjecutarFreeze();
+
+            return; // Bloqueamos el Update entero para que no se procese nada más
+        }
+        // -------------------------------------
+
         if (ultimoPolipoCortado != null && ultimoPolipoCortado.estadoActual == PolipoInteractuable.EstadoPolipo.CortadoSuelto)
         {
             float distanciaAlResto = Vector3.Distance(origenRayo, ultimoPolipoCortado.transform.position);
@@ -457,7 +474,6 @@ public class SistemaHerramientas : MonoBehaviour
         if (monitorUI != null) monitorUI.RegistrarErrorEstandarizado(cat, index, mensaje);
     }
 
-    // --- NUEVA FUNCIÓN PARA ENVIAR TEXTOS AL MONITOR ---
     private void EnviarInfoUI(string mensaje, string colorHex)
     {
         Debug.Log($"<color={colorHex}>{mensaje}</color>");

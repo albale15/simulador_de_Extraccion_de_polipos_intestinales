@@ -72,6 +72,11 @@ public class EndoscopioCurvas : MonoBehaviour
     private LineRenderer lr;
     private List<Vector3> rutaTubo = new List<Vector3>();
 
+    // --- NUEVO: REFERENCIAS PARA RESTRICCIÓN DE FREEZE ---
+    private SistemaHerramientas herramientas;
+    private MonitorEndoscopiaUI monitorUI;
+    private bool alertaFreezeDada = false;
+
     void OnEnable()
     {
         if (ConfigManager.instancia != null) ConfigManager.instancia.AlRecibirDatosProcesados += ActualizarDatosHardware;
@@ -94,6 +99,10 @@ public class EndoscopioCurvas : MonoBehaviour
         rb.interpolation = RigidbodyInterpolation.Interpolate;
         rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         rb.constraints = RigidbodyConstraints.FreezeRotation;
+
+        // Buscamos los cerebros
+        herramientas = FindObjectOfType<SistemaHerramientas>();
+        monitorUI = FindObjectOfType<MonitorEndoscopiaUI>();
 
         rotacionesGlobalesIniciales = new Quaternion[huesos.Length];
         olaDeCurvas = new Quaternion[huesos.Length];
@@ -128,7 +137,6 @@ public class EndoscopioCurvas : MonoBehaviour
         inputTorqueActivo = 0f;
         bool tocandoFlechas = false;
 
-        // EL FIX: Obediencia Estricta. Si usarControlHardware es TRUE, modoPC es FALSE y punto.
         bool modoPC = !usarControlHardware;
 
         if (modoPC)
@@ -144,7 +152,6 @@ public class EndoscopioCurvas : MonoBehaviour
             if (Input.GetKey(KeyCode.A)) inputTorqueActivo = -1f;
             if (Input.GetKey(KeyCode.D)) inputTorqueActivo = 1f;
 
-            // LOGS DE DIAGNÓSTICO
             if (Input.GetKeyDown(KeyCode.W)) Debug.Log("[PC] Avanzando tubo (W)");
             if (Input.GetKeyDown(KeyCode.S)) Debug.Log("[PC] Retrayendo tubo (S)");
             if (Input.GetKeyDown(KeyCode.A)) Debug.Log("[PC] Torque Izquierda (A)");
@@ -153,7 +160,6 @@ public class EndoscopioCurvas : MonoBehaviour
         }
         else
         {
-            // Solo procesamos hardware si nos aseguramos que hayan datos
             if (datosHardware != null)
             {
                 if (Time.time - tiempoUltimoDatoHardware > 0.15f)
@@ -184,8 +190,33 @@ public class EndoscopioCurvas : MonoBehaviour
             }
         }
 
-        // Sensor Dinámico
         controlActivo = (Mathf.Abs(empujeFisico) > 0 || Mathf.Abs(inputTorqueActivo) > 0 || tocandoFlechas);
+
+        // --- PASO 1: BLOQUEO POR FREEZE Y CASTIGO ---
+        if (herramientas != null && herramientas.estaCongelado)
+        {
+            if (controlActivo) // Si intenta moverse estando ciego
+            {
+                if (!alertaFreezeDada && monitorUI != null)
+                {
+                    // Castigamos en Seguridad (Índice 2 = Puntos Ciegos / Exploración)
+                    monitorUI.RegistrarErrorEstandarizado(MonitorEndoscopiaUI.CategoriaEvaluacion.Seguridad, 2, "Operación a ciegas: Movió el endoscopio mientras la pantalla estaba congelada.");
+                    alertaFreezeDada = true;
+                }
+
+                // Anulamos su intento de movimiento
+                empujeFisico = 0f;
+                inputTorqueActivo = 0f;
+                tocandoFlechas = false;
+                controlActivo = false;
+                return; // Cortamos el Update para que no aplique fuerzas
+            }
+        }
+        else
+        {
+            alertaFreezeDada = false; // Se resetea cuando descongelan
+        }
+        // ---------------------------------------------
 
         if (empujeFisico > 0 && !tocandoFlechas)
         {
@@ -244,7 +275,6 @@ public class EndoscopioCurvas : MonoBehaviour
     {
         if (juegoTerminado || huesos.Length < 2) return;
 
-        // Frenado Kinemático
         if (controlActivo)
         {
             rb.constraints = RigidbodyConstraints.FreezeRotation;
@@ -342,7 +372,6 @@ public class EndoscopioCurvas : MonoBehaviour
             Vector3 direccionFinal = huesos[1].up;
             float velActual = (empujeFisico > 0) ? velocidadInsercion : velocidadExtraccion;
 
-            // ODÓMETRO REAL
             float distanciaAvanzada = empujeFisico * (velActual * multiplicadorAvance) * Time.fixedDeltaTime;
             distanciaTotalInsertada += distanciaAvanzada;
             if (distanciaTotalInsertada < 0) distanciaTotalInsertada = 0f;
