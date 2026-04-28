@@ -80,8 +80,9 @@ public class EndoscopioCurvas : MonoBehaviour
     // --- Banderas para no repetir la misma penalización infinitamente ---
     private bool penalizadoBucle = false;
     private bool penalizadoTiron = false;
-    private bool penalizadoSuavidad = false;
+    private int siguienteUmbralSuavidad = 5;
 
+    private bool atascadoPorBucle = false;
     void OnEnable()
     {
         if (ConfigManager.instancia != null) ConfigManager.instancia.AlRecibirDatosProcesados += ActualizarDatosHardware;
@@ -139,6 +140,10 @@ public class EndoscopioCurvas : MonoBehaviour
     {
         if (juegoTerminado || huesos.Length == 0) return;
 
+        // GUARDAMOS EL ESTADO ANTERIOR DE LA PUNTA
+        float rotXAnterior = rotX;
+        float rotZAnterior = rotZ;
+
         empujeFisico = 0f;
         inputTorqueActivo = 0f;
         bool tocandoFlechas = false;
@@ -195,9 +200,24 @@ public class EndoscopioCurvas : MonoBehaviour
                 }
             }
         }
+        if (atascadoPorBucle)
+        {
+            // 1. Si intenta empujar hacia adelante, anulamos la fuerza
+            //if (empujeFisico > 0)
+            //{
+            //    empujeFisico = 0f;
+            //}
 
+            // 2. Si intenta doblar la punta, revertimos la rotación a como estaba en el frame anterior
+            if (tocandoFlechas)
+            {
+                rotX = rotXAnterior;
+                rotZ = rotZAnterior;
+                tocandoFlechas = false; // Esto apaga el sensor de movimiento de la punta
+            }
+            controlActivo = (Mathf.Abs(empujeFisico) > 0 || Mathf.Abs(inputTorqueActivo) > 0 || tocandoFlechas);
+        }
         controlActivo = (Mathf.Abs(empujeFisico) > 0 || Mathf.Abs(inputTorqueActivo) > 0 || tocandoFlechas);
-
         if (herramientas != null && herramientas.estaCongelado)
         {
             if (controlActivo)
@@ -297,15 +317,17 @@ public class EndoscopioCurvas : MonoBehaviour
         // Penalización por Suavidad si entra en bucle peligroso
         if (anguloBucle > umbralBucleAtasco)
         {
-            if (!penalizadoSuavidad && monitorUI != null)
-            {
-                monitorUI.RegistrarErrorEstandarizado(MonitorEndoscopiaUI.CategoriaEvaluacion.Seguridad, 1, "Suavidad de Desplazamiento: Generó un bucle/atasco peligroso.");
-                penalizadoSuavidad = true;
-            }
+            atascadoPorBucle = true;
+            
         }
         else
         {
-            penalizadoSuavidad = false;
+            
+            // ABRIMOS EL CANDADO SOLO SI EL ÁNGULO YA ES SEGURO Y EL JUGADOR ESTÁ JALANDO
+            if (empujeFisico < 0)
+            {
+                atascadoPorBucle = false;
+            }
         }
 
         // LÓGICA DE DAÑO POR BUCLE (ATASCO)
@@ -323,7 +345,13 @@ public class EndoscopioCurvas : MonoBehaviour
                 {
                     int porcentaje = (int)((tiempoForzandoBucle / tiempoMaximoForzandoBucle) * 100);
                     Debug.LogWarning($"<color=orange>¡ATASCO! Ángulo ({anguloBucle}°). USA S + A/D PARA ARRECTAR. Daño: {porcentaje}%</color>");
+                    if (porcentaje >= siguienteUmbralSuavidad)
+                    {
+                        if (monitorUI != null)
+                            monitorUI.RegistrarErrorEstandarizado(MonitorEndoscopiaUI.CategoriaEvaluacion.Seguridad, 1, $"Suavidad de Desplazamiento: Forzó el endoscopio atascado ({porcentaje}% tensión).");
 
+                        siguienteUmbralSuavidad += 5; // Subimos la vara para el próximo castigo (10%, 15%, 20%...)
+                    }
                     if (porcentaje >= 25 && !penalizadoBucle)
                     {
                         if (monitorUI != null) monitorUI.RegistrarErrorEstandarizado(MonitorEndoscopiaUI.CategoriaEvaluacion.Seguridad, 0, "Trauma Tisular: Fuerza excesiva contra la pared intestinal.");
@@ -343,7 +371,11 @@ public class EndoscopioCurvas : MonoBehaviour
             tiempoForzandoBucle = Mathf.Max(0, tiempoForzandoBucle - (Time.fixedDeltaTime * 2f));
         }
 
-        if (tiempoForzandoBucle == 0) penalizadoBucle = false;
+        if (tiempoForzandoBucle == 0)
+        {
+            penalizadoBucle = false;
+            siguienteUmbralSuavidad = 5; 
+        }
 
         // LÓGICA DE DAÑO POR EXTRACCIÓN BRUSCA (TIRÓN)
         if (empujeFisico < 0)
@@ -495,7 +527,14 @@ public class EndoscopioCurvas : MonoBehaviour
         if (juegoTerminado) return;
         juegoTerminado = true;
         Time.timeScale = 0f;
+
         Debug.LogError($"<color=red><b>GAME OVER:</b> {motivo}</color>");
+
+        //le mandamos el motivo a la interfaz para que muestre el PopUp
+        if (monitorUI != null)
+        {
+            monitorUI.MostrarGameOver(motivo);
+        }
     }
 
     void LateUpdate()

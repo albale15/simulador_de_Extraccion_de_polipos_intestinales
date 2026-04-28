@@ -51,7 +51,14 @@ public class MonitorEndoscopiaUI : MonoBehaviour
 
     public GameObject panelConfirmarSalida; // Arrastra aquí un Panel oscuro con el texto "¿Desea finalizar la endoscopia?"
     public TextMeshProUGUI txtPreguntaConfirmacion;// Un texto dentro del panel para cambiar la pregunta según el caso
+    // PANEL INDICATIVO (GAME OVER / AVISOS) ---
+    public GameObject panelIndicativo;
+    public TextMeshProUGUI txtTituloIndicativo;
+    public TextMeshProUGUI txtTextoIndicativo;
+    public Button btnContinuarIndicativo;
 
+    // Variable para recordar si la partida terminó por un error crítico
+    private string motivoGameOverCritico = "";
     public enum TipoConfirmacion { Ninguno, FinalizarProcedimiento, SalirAlMenu }
     private TipoConfirmacion contextoConfirmacion = TipoConfirmacion.Ninguno;
 
@@ -86,7 +93,17 @@ public class MonitorEndoscopiaUI : MonoBehaviour
         pantallaCargaNegra.SetActive(false);
         if (panelConfirmarSalida != null) panelConfirmarSalida.SetActive(false);
         if (panelResultadosFinales != null) panelResultadosFinales.SetActive(false);
-
+        // Configuramos el nuevo panel
+        if (panelIndicativo != null) panelIndicativo.SetActive(false);
+        if (btnContinuarIndicativo != null)
+        {
+            btnContinuarIndicativo.onClick.RemoveAllListeners();
+            // Al presionar continuar, cierra el panel indicativo y lanza el reporte final
+            btnContinuarIndicativo.onClick.AddListener(() => {
+                panelIndicativo.SetActive(false);
+                FinalizarSimulacion();
+            });
+        }
         Time.timeScale = 1f;
 
         string nombreDoc = ManejadorPartida.nombreEstudiante != "" ? ManejadorPartida.nombreEstudiante : "NaN";
@@ -321,7 +338,10 @@ public class MonitorEndoscopiaUI : MonoBehaviour
                 notaTecnica = Mathf.Max(0, notaTecnica - puntosAQuitar);
                 break;
         }
-        ImprimirMensajeConsola($"[-] {mensajeFallo} (-{puntosAQuitar} pts)", "red");
+        if (ManejadorPartida.dificultad != 3)
+        {
+            ImprimirMensajeConsola($"[-] {mensajeFallo} (-{puntosAQuitar} pts)", "red");
+        }
     }
 
     private void ImprimirMensajeConsola(string lineaCompleta, string color)
@@ -403,7 +423,7 @@ public class MonitorEndoscopiaUI : MonoBehaviour
             ImprimirMensajeConsola($"[-] Ausencia de Procedimiento: -{penalizacionPorInaccion:F1} pts en Protocolo y Técnica por pólipos ignorados.", "orange");
         }
 
-        // --- NUEVO: ABANDONO PREMATURO (Seguridad a 0) ---
+        // ABANDONO PREMATURO (Seguridad a 0)
         // Si no avanzó ni el 20% (80cm) y no sacó nada, reprueba Seguridad automáticamente
         if (profundidadMaximaAlcanzada < 80f && herramientas.ObtenerTotalEliminados() == 0)
         {
@@ -411,7 +431,15 @@ public class MonitorEndoscopiaUI : MonoBehaviour
             ImprimirMensajeConsola("[-] ABANDONO CRÍTICO: Procedimiento abortado sin exploración inicial. Seguridad anulada.", "red");
         }
         // ====================================================================
-
+        //Logica Game Over por negligencia médica grave (si Seguridad cae por debajo de 40)
+        bool esGameOver = !string.IsNullOrEmpty(motivoGameOverCritico);
+        if (esGameOver)
+        {
+            // Restamos 50 puntos fijos a cada categoría principal
+            notaSeguridad -= 50f;
+            notaProtocolo -= 50f;
+            notaTecnica -= 50f;
+        }
         // --- CIERRE DE NOTAS ---
         notaSeguridad = Mathf.Max(0, notaSeguridad);
         notaProtocolo = Mathf.Max(0, notaProtocolo);
@@ -438,6 +466,12 @@ public class MonitorEndoscopiaUI : MonoBehaviour
         if (txtDetallePenalizaciones != null)
         {
             StringBuilder sb = new StringBuilder();
+            if (esGameOver)
+            {
+                sb.AppendLine($"<color=red><b>¡NEGLIGENCIA MÉDICA GRAVE!</b></color>");
+                sb.AppendLine($"<color=orange>{motivoGameOverCritico}</color>");
+                sb.AppendLine($"<color=red><b>CASTIGO: -50% EN TODAS LAS CATEGORÍAS</b></color>\n");
+            }
             sb.AppendLine("<color=#DEFF9A><b>DESGLOSE DE PENALIZACIONES:</b></color>\n");
 
             // Imprimimos el array de 10 parámetros
@@ -519,6 +553,22 @@ public class MonitorEndoscopiaUI : MonoBehaviour
         {
             // 0f significa "hasta abajo", 1f significaría "hasta arriba"
             scrollRespuestas.verticalNormalizedPosition = 0f;
+        }
+    }
+    public void MostrarGameOver(string motivo)
+    {
+        motivoGameOverCritico = motivo; // Guardamos el motivo para el reporte
+
+        if (panelIndicativo != null)
+        {
+            txtTituloIndicativo.text = "Simulación Finalizada";
+            txtTextoIndicativo.text = $"<color=red><b>EVENTO CRÍTICO:</b></color>\n{motivo}";
+            panelIndicativo.SetActive(true);
+        }
+        else
+        {
+            // Si olvidaste asignar el panel, pasa directo a los resultados
+            FinalizarSimulacion();
         }
     }
 }
