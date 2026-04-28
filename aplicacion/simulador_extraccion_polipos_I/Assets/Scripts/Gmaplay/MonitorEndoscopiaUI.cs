@@ -19,6 +19,9 @@ public class MonitorEndoscopiaUI : MonoBehaviour
     public TextMeshProUGUI txtRespuestas;
     public RectTransform indicadorOctagono;
 
+    // --- NUEVO: TEXTO DE DAÑO ---
+    public TextMeshProUGUI txtDanioPaciente;
+
     [Header("Panel Azul (Configuración Botones)")]
     public TextMeshProUGUI txtListaBotones;
 
@@ -48,7 +51,6 @@ public class MonitorEndoscopiaUI : MonoBehaviour
     {
         panelPausa.SetActive(false);
         pantallaCargaNegra.SetActive(false);
-
         Time.timeScale = 1f;
 
         string nombreDoc = ManejadorPartida.nombreEstudiante != "" ? ManejadorPartida.nombreEstudiante : "NaN";
@@ -66,6 +68,9 @@ public class MonitorEndoscopiaUI : MonoBehaviour
         chkModoComputadora.onValueChanged.AddListener(CambiarModoControl);
 
         CambiarModoControl(chkModoComputadora.isOn);
+
+        // Inicializar texto de daño
+        if (txtDanioPaciente != null) txtDanioPaciente.text = "Daño: 0%";
     }
 
     void Update()
@@ -114,6 +119,18 @@ public class MonitorEndoscopiaUI : MonoBehaviour
             {
                 txtNotaEstudiante.text = "Evaluación en curso...";
             }
+        }
+    }
+
+    // --- NUEVA FUNCIÓN PARA ACTUALIZAR DAÑO ---
+    public void MostrarDanio(int porcentaje, string mensaje)
+    {
+        if (txtDanioPaciente != null)
+        {
+            if (porcentaje > 0)
+                txtDanioPaciente.text = $"<color=white> {porcentaje}%</color>";
+            else
+                txtDanioPaciente.text = "Daño: 0%";
         }
     }
 
@@ -185,7 +202,6 @@ public class MonitorEndoscopiaUI : MonoBehaviour
         if (ConfigManager.instancia != null)
         {
             ConfigManager cfg = ConfigManager.instancia;
-
             if (enModoSeleccion)
             {
                 txtListaBotones.text =
@@ -207,10 +223,6 @@ public class MonitorEndoscopiaUI : MonoBehaviour
                     $"5: Herramientas [{cfg.mapAccion}]";
             }
         }
-        else
-        {
-            txtListaBotones.text = "Error: ConfigManager no encontrado.";
-        }
     }
 
     public void PausarJuego()
@@ -218,42 +230,19 @@ public class MonitorEndoscopiaUI : MonoBehaviour
         estaPausado = true;
         Time.timeScale = 0f;
         panelPausa.SetActive(true);
-
-        if (SerialManager.instancia != null)
-        {
-            if (SerialManager.instancia.estadoActual == SerialManager.EstadoConexion.Conectado)
-                txtAlertaConexion.text = "<color=white>JUEGO PAUSADO</color>\n<color=green>Hardware Conectado y Listo.</color>";
-            else
-                txtAlertaConexion.text = "<color=white>JUEGO PAUSADO</color>\n<color=red>Advertencia: Hardware Desconectado.</color>";
-        }
-        else
-        {
-            txtAlertaConexion.text = "<color=white>JUEGO PAUSADO</color>";
-        }
     }
 
     public void ReanudarJuego()
     {
-        if (!chkModoComputadora.isOn && SerialManager.instancia != null && SerialManager.instancia.estadoActual == SerialManager.EstadoConexion.Error)
-        {
-            txtAlertaConexion.text = "<color=red>NO SE PUEDE CONTINUAR</color>\nConecte el hardware o active el Modo Computadora.";
-            return;
-        }
-
         estaPausado = false;
         if (herramientas != null && herramientas.estaCongelado) Time.timeScale = 0.0001f;
         else Time.timeScale = 1f;
-
         panelPausa.SetActive(false);
     }
 
     private void CambiarModoControl(bool usarPc)
     {
-        if (endoscopio != null)
-        {
-            endoscopio.usarControlHardware = !usarPc;
-            if (usarPc && estaPausado) txtAlertaConexion.text = "<color=yellow>Modo Teclado/PC Activado.</color>";
-        }
+        if (endoscopio != null) endoscopio.usarControlHardware = !usarPc;
     }
 
     private void IrAlMenuPrincipal()
@@ -262,25 +251,11 @@ public class MonitorEndoscopiaUI : MonoBehaviour
         UnityEngine.SceneManagement.SceneManager.LoadScene(0);
     }
 
-    void OnDestroy()
-    {
-        Time.timeScale = 1f;
-    }
-
-    // --- FUNCIONES DE EVALUACIÓN (Errores) ---
-    public void RegistrarError(string mensajeFallo, float puntosAQuitar)
-    {
-        notaTecnica -= puntosAQuitar;
-        ImprimirMensajeConsola($"[-] {mensajeFallo} (-{puntosAQuitar} pts)", "red");
-    }
-
     public void RegistrarErrorEstandarizado(CategoriaEvaluacion categoria, int indiceParametro, string mensajeFallo)
     {
         float puntosAQuitar = 1f;
         if (ManejadorPartida.penalizaciones != null && indiceParametro >= 0 && indiceParametro < ManejadorPartida.penalizaciones.Length)
-        {
             puntosAQuitar = ManejadorPartida.penalizaciones[indiceParametro];
-        }
 
         switch (categoria)
         {
@@ -288,26 +263,20 @@ public class MonitorEndoscopiaUI : MonoBehaviour
             case CategoriaEvaluacion.Protocolo: notaProtocolo -= puntosAQuitar; break;
             case CategoriaEvaluacion.Tecnica: notaTecnica -= puntosAQuitar; break;
         }
-
         ImprimirMensajeConsola($"[-] {mensajeFallo} (-{puntosAQuitar} pts)", "red");
     }
 
-    // --- NUEVO: FUNCIÓN DE FEEDBACK POSITIVO/ACCIÓN ---
-    public void RegistrarAccionInfo(string mensajeInfo, string colorHex = "#00FFFF")
-    {
-        ImprimirMensajeConsola($"[+] {mensajeInfo}", colorHex);
-    }
-
-    // --- MOTOR DE IMPRESIÓN UNIFICADO ---
     private void ImprimirMensajeConsola(string lineaCompleta, string color)
     {
         txtRespuestas.text += $"\n<color={color}>{lineaCompleta}</color>";
-
         string[] lineas = txtRespuestas.text.Split('\n');
         if (lineas.Length > 5)
-        {
             txtRespuestas.text = "Respuestas:" + string.Join("\n", lineas, lineas.Length - 4, 4);
-        }
+    }
+
+    public void RegistrarAccionInfo(string mensajeInfo, string colorHex = "#00FFFF")
+    {
+        ImprimirMensajeConsola($"[+] {mensajeInfo}", colorHex);
     }
 
     private string ObtenerNombreDificultad()

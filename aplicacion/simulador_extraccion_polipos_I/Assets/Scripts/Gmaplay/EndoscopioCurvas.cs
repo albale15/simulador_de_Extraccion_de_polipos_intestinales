@@ -72,10 +72,15 @@ public class EndoscopioCurvas : MonoBehaviour
     private LineRenderer lr;
     private List<Vector3> rutaTubo = new List<Vector3>();
 
-    // --- NUEVO: REFERENCIAS PARA RESTRICCIÓN DE FREEZE ---
+    // --- REFERENCIAS PARA RESTRICCIÓN DE FREEZE ---
     private SistemaHerramientas herramientas;
     private MonitorEndoscopiaUI monitorUI;
     private bool alertaFreezeDada = false;
+
+    // --- Banderas para no repetir la misma penalización infinitamente ---
+    private bool penalizadoBucle = false;
+    private bool penalizadoTiron = false;
+    private bool penalizadoSuavidad = false;
 
     void OnEnable()
     {
@@ -100,7 +105,6 @@ public class EndoscopioCurvas : MonoBehaviour
         rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         rb.constraints = RigidbodyConstraints.FreezeRotation;
 
-        // Buscamos los cerebros
         herramientas = FindObjectOfType<SistemaHerramientas>();
         monitorUI = FindObjectOfType<MonitorEndoscopiaUI>();
 
@@ -129,6 +133,8 @@ public class EndoscopioCurvas : MonoBehaviour
         }
     }
 
+    public bool MoviendoControles() { return controlActivo; }
+
     void Update()
     {
         if (juegoTerminado || huesos.Length == 0) return;
@@ -137,7 +143,6 @@ public class EndoscopioCurvas : MonoBehaviour
         inputTorqueActivo = 0f;
         bool tocandoFlechas = false;
 
-        // EL FIX: Obediencia Estricta. Si usarControlHardware es TRUE, modoPC es FALSE y punto.
         bool modoPC = !usarControlHardware;
 
         if (modoPC)
@@ -161,7 +166,6 @@ public class EndoscopioCurvas : MonoBehaviour
         }
         else
         {
-            // Solo procesamos hardware si nos aseguramos que hayan datos
             if (datosHardware != null)
             {
                 if (Time.time - tiempoUltimoDatoHardware > 0.15f)
@@ -194,31 +198,27 @@ public class EndoscopioCurvas : MonoBehaviour
 
         controlActivo = (Mathf.Abs(empujeFisico) > 0 || Mathf.Abs(inputTorqueActivo) > 0 || tocandoFlechas);
 
-        // --- PASO 1: BLOQUEO POR FREEZE Y CASTIGO ---
         if (herramientas != null && herramientas.estaCongelado)
         {
-            if (controlActivo) // Si intenta moverse estando ciego
+            if (controlActivo)
             {
                 if (!alertaFreezeDada && monitorUI != null)
                 {
-                    // Castigamos en Seguridad (Índice 2 = Puntos Ciegos / Exploración)
                     monitorUI.RegistrarErrorEstandarizado(MonitorEndoscopiaUI.CategoriaEvaluacion.Seguridad, 2, "Operación a ciegas: Movió el endoscopio mientras la pantalla estaba congelada.");
                     alertaFreezeDada = true;
                 }
 
-                // Anulamos su intento de movimiento
                 empujeFisico = 0f;
                 inputTorqueActivo = 0f;
                 tocandoFlechas = false;
                 controlActivo = false;
-                return; // Cortamos el Update para que no aplique fuerzas
+                return;
             }
         }
         else
         {
-            alertaFreezeDada = false; // Se resetea cuando descongelan
+            alertaFreezeDada = false;
         }
-        // ---------------------------------------------
 
         if (empujeFisico > 0 && !tocandoFlechas)
         {
@@ -246,6 +246,9 @@ public class EndoscopioCurvas : MonoBehaviour
                 {
                     contadorAvisoRoturaTorque++;
                     teclaPresionadaEnLimite = true;
+
+                    if (monitorUI != null) monitorUI.RegistrarErrorEstandarizado(MonitorEndoscopiaUI.CategoriaEvaluacion.Seguridad, 1, "Suavidad de Desplazamiento: Forzó bruscamente los límites de torque.");
+
                     if (contadorAvisoRoturaTorque >= maxIntentosTorque)
                         ProcesarGameOver("Rompiste la fibra óptica por forzar el límite de torque.");
                     else
@@ -277,7 +280,6 @@ public class EndoscopioCurvas : MonoBehaviour
     {
         if (juegoTerminado || huesos.Length < 2) return;
 
-        // Frenado Kinemático
         if (controlActivo)
         {
             rb.constraints = RigidbodyConstraints.FreezeRotation;
@@ -292,6 +294,21 @@ public class EndoscopioCurvas : MonoBehaviour
         float anguloBucle = Vector3.Angle(huesos[huesos.Length - 1].up, huesos[0].up);
         float multiplicadorAvance = 1f;
 
+        // Penalización por Suavidad si entra en bucle peligroso
+        if (anguloBucle > umbralBucleAtasco)
+        {
+            if (!penalizadoSuavidad && monitorUI != null)
+            {
+                monitorUI.RegistrarErrorEstandarizado(MonitorEndoscopiaUI.CategoriaEvaluacion.Seguridad, 1, "Suavidad de Desplazamiento: Generó un bucle/atasco peligroso.");
+                penalizadoSuavidad = true;
+            }
+        }
+        else
+        {
+            penalizadoSuavidad = false;
+        }
+
+        // LÓGICA DE DAÑO POR BUCLE (ATASCO)
         if (anguloBucle > umbralBucleAtasco && empujeFisico > 0)
         {
             multiplicadorAvance = Mathf.Clamp01(1f - ((anguloBucle - umbralBucleAtasco) / 40f));
@@ -299,20 +316,36 @@ public class EndoscopioCurvas : MonoBehaviour
             {
                 tiempoForzandoBucle += Time.fixedDeltaTime;
                 if (tiempoForzandoBucle > tiempoMaximoForzandoBucle)
+                {
                     ProcesarGameOver("PERFORACIÓN INTESTINAL: Forzaste el avance durante un bucle.");
+                }
                 else
                 {
                     int porcentaje = (int)((tiempoForzandoBucle / tiempoMaximoForzandoBucle) * 100);
                     Debug.LogWarning($"<color=orange>¡ATASCO! Ángulo ({anguloBucle}°). USA S + A/D PARA ARRECTAR. Daño: {porcentaje}%</color>");
+
+                    if (porcentaje >= 25 && !penalizadoBucle)
+                    {
+                        if (monitorUI != null) monitorUI.RegistrarErrorEstandarizado(MonitorEndoscopiaUI.CategoriaEvaluacion.Seguridad, 0, "Trauma Tisular: Fuerza excesiva contra la pared intestinal.");
+                        penalizadoBucle = true;
+                    }
                 }
+            }
+            else
+            {
+                // FIX: Baja suavemente en vez de caer a cero instantáneo
+                tiempoForzandoBucle = Mathf.Max(0, tiempoForzandoBucle - (Time.fixedDeltaTime * 2f));
             }
         }
         else
         {
-            if (empujeFisico < 0) tiempoForzandoBucle = 0f;
-            else tiempoForzandoBucle = Mathf.Max(0, tiempoForzandoBucle - (Time.fixedDeltaTime * 2f));
+            // FIX: Baja suavemente en vez de caer a cero
+            tiempoForzandoBucle = Mathf.Max(0, tiempoForzandoBucle - (Time.fixedDeltaTime * 2f));
         }
 
+        if (tiempoForzandoBucle == 0) penalizadoBucle = false;
+
+        // LÓGICA DE DAÑO POR EXTRACCIÓN BRUSCA (TIRÓN)
         if (empujeFisico < 0)
         {
             float curvaturaCuerpo = 0f;
@@ -332,13 +365,48 @@ public class EndoscopioCurvas : MonoBehaviour
                     {
                         int dolor = (int)((tiempoExtraccionBrusca / tiempoMaximoTiron) * 100);
                         Debug.LogWarning($"<color=orange>¡PACIENTE CON DOLOR! Fricción alta. Daño tisular: {dolor}% (Suelta S un momento para relajar)</color>");
+
+                        if (dolor >= 25 && !penalizadoTiron)
+                        {
+                            if (monitorUI != null) monitorUI.RegistrarErrorEstandarizado(MonitorEndoscopiaUI.CategoriaEvaluacion.Seguridad, 3, "Seguridad en la Retirada: Tirones bruscos causando laceración.");
+                            penalizadoTiron = true;
+                        }
                     }
                 }
                 else tiempoExtraccionBrusca = Mathf.Max(0, tiempoExtraccionBrusca - (Time.fixedDeltaTime * 4f));
             }
             else tiempoExtraccionBrusca = Mathf.Max(0, tiempoExtraccionBrusca - (Time.fixedDeltaTime * 4f));
         }
-        else tiempoExtraccionBrusca = Mathf.Max(0, tiempoExtraccionBrusca - (Time.fixedDeltaTime * 4f));
+        else
+        {
+            tiempoExtraccionBrusca = Mathf.Max(0, tiempoExtraccionBrusca - (Time.fixedDeltaTime * 4f));
+        }
+
+        if (tiempoExtraccionBrusca == 0) penalizadoTiron = false;
+
+
+        // --- UNIFICACIÓN DE UI DE DAÑO ---
+        // Calcula el daño mayor actual y se lo envía a MonitorEndoscopiaUI para que lo dibuje.
+        // Como las variables 'tiempoForzandoBucle' y 'tiempoExtraccionBrusca' ahora bajan poco a poco, 
+        // el texto de la UI también bajará su porcentaje suavemente.
+        if (monitorUI != null)
+        {
+            int porcentajeBucle = (int)((tiempoForzandoBucle / tiempoMaximoForzandoBucle) * 100);
+            int porcentajeTiron = (int)((tiempoExtraccionBrusca / tiempoMaximoTiron) * 100);
+
+            if (porcentajeBucle > 0 || porcentajeTiron > 0)
+            {
+                if (porcentajeBucle >= porcentajeTiron)
+                    monitorUI.MostrarDanio(porcentajeBucle, "¡Atasco! Perforación inminente");
+                else
+                    monitorUI.MostrarDanio(porcentajeTiron, "¡Fricción alta en retirada!");
+            }
+            else
+            {
+                monitorUI.MostrarDanio(0, ""); // Si ambos son cero, limpia la pantalla
+            }
+        }
+
 
         Vector3 direccionHaciaPunta = huesos[0].position - huesos[huesos.Length - 1].position;
         float productoPuntoPlano = Vector3.Dot(huesos[huesos.Length - 1].up, direccionHaciaPunta.normalized);
