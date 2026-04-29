@@ -46,6 +46,8 @@ public class ConfigManager : MonoBehaviour
     public string mapAccion = "B4";
     public string mapSuccion = "Su";
 
+    public DatosProcesados datosActuales = new DatosProcesados();
+
     void Awake()
     {
         //cargamos los ajustes guardados, o dejamos los valores por defecto si no hay nada guardado
@@ -90,6 +92,7 @@ public class ConfigManager : MonoBehaviour
         limpios.botonAccion = ObtenerBoton(mapAccion, d);
         limpios.botonSuccion = ObtenerBoton(mapSuccion, d);
         // Una vez que tenemos los datos limpios y listos, los enviamos a través de nuestro propio evento para que cualquier otro script pueda usarlos sin preocuparse por el hardware
+        datosActuales = limpios;
         AlRecibirDatosProcesados?.Invoke(limpios);
     }
     // Esta función toma el nombre del bind (por ejemplo, "INS_+") y devuelve el valor correspondiente del hardware, aplicando las condiciones de dirección (positivo/negativo) según el caso.

@@ -135,7 +135,16 @@ public class SistemaHerramientas : MonoBehaviour
 
         Vector3 origenRayo = canalDeTrabajo.position;
         Vector3 direccionRayo = canalDeTrabajo.forward;
-
+        bool bloqueadoPorTutorial = (TutorialManager.instancia != null && TutorialManager.instancia.controlesBloqueados);
+        if (bloqueadoPorTutorial)
+        {
+            btnFreeze = false;
+            btnCapture = false;
+            btnZoom = false;
+            btnSuccion = false;
+            btnAccion = false;
+            moviendo = false;
+        }
         // --- LÓGICA DE HIGIENE: 3 MOVIMIENTOS ---
         if (ultimoPolipoCortado != null && ultimoPolipoCortado.estadoActual == PolipoInteractuable.EstadoPolipo.CortadoSuelto)
         {

@@ -243,7 +243,7 @@ public class MonitorEndoscopiaUI : MonoBehaviour
         if (ManejadorPartida.dificultad == 0 || ManejadorPartida.dificultad == 1)
         {
             txtEstadisticasPolipos.text =
-                $"Pólipos Totales: {totalExtraidos} / {tTotal}\n\n" +
+                $"Pólipos Totales:\n {totalExtraidos} / {tTotal}\n\n" +
                 $"Y1: {herramientas.yamadasEliminados[0]} / {y1Req}\n" +
                 $"Y2: {herramientas.yamadasEliminados[1]} / {y2Req}\n" +
                 $"Y3: {herramientas.yamadasEliminados[2]} / {y3Req}\n" +
@@ -414,6 +414,11 @@ public class MonitorEndoscopiaUI : MonoBehaviour
         if (ManejadorPartida.dificultad != 3)
         {
             ImprimirMensajeConsola($"[-] {mensajeFallo} (-{puntosAQuitar} pts)", "red");
+        }
+        if (SerialManager.instancia != null && SerialManager.instancia.estadoActual == SerialManager.EstadoConexion.Conectado)
+        {
+            // Mandamos el comando de vibración por 1 segundo (1000 ms)
+            SerialManager.instancia.EnviarDato("V1:1000\n");
         }
     }
 
