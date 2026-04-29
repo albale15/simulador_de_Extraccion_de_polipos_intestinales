@@ -65,6 +65,12 @@ public class SistemaHerramientas : MonoBehaviour
     public PolipoInteractuable ObtenerUltimoPolipoCortado() { return ultimoPolipoCortado; }
     void Start()
     {
+        if (ManejadorPartida.dificultad == 0)
+        {
+            anguloTolerancia = 180f;
+            anguloToleranciaFoto = 180f;
+            // Detiene la ejecución del script aquí
+        }
         pinzaDientes.SetActive(false);
         pinzaAsas.SetActive(false);
         monitorUI = FindObjectOfType<MonitorEndoscopiaUI>();

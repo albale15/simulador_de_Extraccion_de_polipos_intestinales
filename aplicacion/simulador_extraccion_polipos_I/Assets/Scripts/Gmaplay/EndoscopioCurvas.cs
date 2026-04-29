@@ -248,10 +248,21 @@ public class EndoscopioCurvas : MonoBehaviour
             rotX += caidaGravedad * factorFlexibilidad * Time.deltaTime;
         }
 
-        if (empujeFisico < 0 && !tocandoFlechas)
+        if (empujeFisico < 0)
         {
-            rotX = Mathf.Lerp(rotX, 0f, Time.deltaTime * 2f);
-            rotZ = Mathf.Lerp(rotZ, 0f, Time.deltaTime * 2f);
+            // Enderezamos la punta MUCHO más rápido al jalar (12f en vez de 2f)
+            // Si el jugador está intentando doblar la punta mientras jala, lo dejamos doblar, pero con resistencia.
+            float velocidadRelajacion = tocandoFlechas ? 4f : 12f;
+
+            rotX = Mathf.Lerp(rotX, 0f, Time.deltaTime * velocidadRelajacion);
+            rotZ = Mathf.Lerp(rotZ, 0f, Time.deltaTime * velocidadRelajacion);
+
+            // Reducir la rotación lateral (torque) lentamente al extraer 
+            // para que el tubo no ruede sobre sí mismo y se "desenrede" naturalmente.
+            if (inputTorqueActivo == 0)
+            {
+                torqueGiro = Mathf.Lerp(torqueGiro, 0f, Time.deltaTime * 3f);
+            }
         }
 
         float limiteActual = (empujeFisico > 0) ? limiteFlexionNormal : limiteFlexionRelajada;
