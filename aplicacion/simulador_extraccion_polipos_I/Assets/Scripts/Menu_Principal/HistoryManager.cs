@@ -45,6 +45,10 @@ public class HistoryManager : MonoBehaviour
     {
         string json = JsonUtility.ToJson(sesion, true);
         string nombreArchivo = $"{sesion.nombreEstudiante}_{DateTime.Now:yyyyMMdd_HHmm}.json";
+        if (!string.IsNullOrEmpty(ManejadorPartida.rutaGuardado))
+        {
+            rutaCursoActual = ManejadorPartida.rutaGuardado;
+        }
         File.WriteAllText(Path.Combine(rutaCursoActual, nombreArchivo), json);
     }
 

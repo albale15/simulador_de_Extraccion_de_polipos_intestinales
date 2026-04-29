@@ -42,6 +42,7 @@ public class MonitorEndoscopiaUI : MonoBehaviour
     public GameObject pantallaCargaNegra;
     public GameObject alertaBucleUI;
     private bool estaPausado = false;
+    private SerialManager.EstadoConexion estadoHardwareAnterior = SerialManager.EstadoConexion.Iniciando;
     [Header("Guía Contextual")]
     public GameObject panelGuiaContextual;
     public TextMeshProUGUI txtGuiaContextual;
@@ -268,37 +269,67 @@ public class MonitorEndoscopiaUI : MonoBehaviour
 
     private void VigilarHardware()
     {
-        if (SerialManager.instancia != null)
+        if (SerialManager.instancia == null) return;
+
+        SerialManager.EstadoConexion estadoActual = SerialManager.instancia.estadoActual;
+
+        // Salto automático al menú de pausa
+
+        if (estadoActual != estadoHardwareAnterior)
         {
-            if (SerialManager.instancia != null)
+            // Guardamos la memoria ANTES de accionar la pausa para evitar bucles de código
+            SerialManager.EstadoConexion estadoViejo = estadoHardwareAnterior;
+            estadoHardwareAnterior = estadoActual;
+
+            if (estadoActual == SerialManager.EstadoConexion.Error && estadoViejo == SerialManager.EstadoConexion.Conectado)
             {
-                // Si está escaneando los puertos
-                if (SerialManager.instancia.estadoActual == SerialManager.EstadoConexion.Buscando)
+                if (!estaPausado)
                 {
-                    if (txtAlertaConexion != null && estaPausado)
-                        txtAlertaConexion.text = $"<color=yellow>{SerialManager.instancia.mensajeInterfaz}</color>";
-                }
-                else if (SerialManager.instancia.estadoActual == SerialManager.EstadoConexion.Error && !chkModoComputadora.isOn)
-                {
-                    if (!estaPausado)
-                    {
-                        PausarJuego();
-                        txtAlertaConexion.text = "<color=red> ERROR: CONEXIÓN STM32 PERDIDA</color>\nPor favor, revise el cable USB.";
-                        chkModoComputadora.isOn = true;
-                        chkModoComputadora.interactable = false;
-                    }
-                }
-                else if (SerialManager.instancia.estadoActual == SerialManager.EstadoConexion.Conectado)
-                {
-                    if (estaPausado && !chkModoComputadora.isOn)
-                    {
-                        txtAlertaConexion.text = "<color=green>Conexión estable.</color>";
-                        chkModoComputadora.interactable = true;
-                    }
+                    PausarJuego();
                 }
             }
         }
+
+
+        //ACTUALIZACION VISUAL Y BLOQUEOS (Se ejecuta siempre)
+
+        switch (estadoActual)
+        {
+            case SerialManager.EstadoConexion.Buscando:
+                if (txtAlertaConexion != null)
+                    txtAlertaConexion.text = $"<color=yellow>Buscando Hardware: {SerialManager.instancia.mensajeInterfaz}</color>";
+
+                // Forzamos modo PC y lo bloqueamos
+                if (!chkModoComputadora.isOn) chkModoComputadora.isOn = true;
+                chkModoComputadora.interactable = false;
+                break;
+
+            case SerialManager.EstadoConexion.Error:
+                if (txtAlertaConexion != null)
+                    txtAlertaConexion.text = "<color=red>¡ERROR DE CONEXIÓN!</color>\nEl cable USB se ha desconectado.";
+
+                if (!chkModoComputadora.isOn) chkModoComputadora.isOn = true;
+                chkModoComputadora.interactable = false;
+                break;
+
+            case SerialManager.EstadoConexion.Conectado:
+                if (txtAlertaConexion != null)
+                    txtAlertaConexion.text = $"<color=green>Hardware STM32 Conectado ({SerialManager.instancia.puertoActivo})</color>\nPuede desmarcar 'Modo PC' para usarlo.";
+
+                chkModoComputadora.interactable = true;
+                break;
+
+            case SerialManager.EstadoConexion.Iniciando:
+            default:
+                if (txtAlertaConexion != null)
+                    txtAlertaConexion.text = "<color=white>Esperando conexión de dispositivo...</color>";
+
+                if (!chkModoComputadora.isOn) chkModoComputadora.isOn = true;
+                chkModoComputadora.interactable = false;
+                break;
+        }
     }
+
 
     public void ActualizarTextosBotones(bool enModoSeleccion, bool habilitarSalida = false)
     {
@@ -336,6 +367,7 @@ public class MonitorEndoscopiaUI : MonoBehaviour
         estaPausado = true;
         Time.timeScale = 0f;
         panelPausa.SetActive(true);
+        VigilarHardware();
     }
 
     public void ReanudarJuego()
@@ -450,9 +482,8 @@ public class MonitorEndoscopiaUI : MonoBehaviour
         puntosPerdidosTally[2] += puntosPerdidosExploracion;
         notaSeguridad -= puntosPerdidosExploracion;
 
-        // ====================================================================
-        // --- NUEVO: PENALIZACIÓN POR INACCIÓN (Protocolo y Técnica) ---
-        // ====================================================================
+        // PENALIZACIÓN POR INACCIÓN (Protocolo y Técnica) ---
+
         if (poliposRestantes > 0 && ManejadorPartida.totalPolipos > 0)
         {
             // Calculamos el valor de cada pólipo (Ej: 100 / 5 = 20 puntos por pólipo)
@@ -507,11 +538,13 @@ public class MonitorEndoscopiaUI : MonoBehaviour
         if (txtDetallePenalizaciones != null)
         {
             StringBuilder sb = new StringBuilder();
+            System.Collections.Generic.List<string> listaPenalizacionesJson = new System.Collections.Generic.List<string>();
             if (esGameOver)
             {
                 sb.AppendLine($"<color=red><b>¡NEGLIGENCIA MÉDICA GRAVE!</b></color>");
                 sb.AppendLine($"<color=orange>{motivoGameOverCritico}</color>");
                 sb.AppendLine($"<color=red><b>CASTIGO: -50% EN TODAS LAS CATEGORÍAS</b></color>\n");
+                listaPenalizacionesJson.Add($"EVENTO CRÍTICO: {motivoGameOverCritico} (-50% general)");
             }
             sb.AppendLine("<color=#DEFF9A><b>DESGLOSE DE PENALIZACIONES:</b></color>\n");
 
@@ -521,6 +554,7 @@ public class MonitorEndoscopiaUI : MonoBehaviour
                 if (puntosPerdidosTally[i] > 0)
                 {
                     sb.AppendLine($"• {nombresParametros[i]}: <color=red>-{puntosPerdidosTally[i]:F1} pts</color>");
+                    listaPenalizacionesJson.Add($"-{puntosPerdidosTally[i]:F1} pts: Falla en {nombresParametros[i]}.");
                 }
             }
 
@@ -529,16 +563,61 @@ public class MonitorEndoscopiaUI : MonoBehaviour
             {
                 float penalizacionPorInaccion = (100f / ManejadorPartida.totalPolipos) * poliposRestantes;
                 sb.AppendLine($"\n• <color=orange>Inacción Quirúrgica (Prot/Tec): -{penalizacionPorInaccion:F1} pts</color>");
+                listaPenalizacionesJson.Add($"-{penalizacionPorInaccion:F1} pts: Inacción Quirúrgica ({poliposRestantes} pólipos ignorados).");
             }
 
             if (profundidadMaximaAlcanzada < 80f && herramientas.ObtenerTotalEliminados() == 0)
             {
                 sb.AppendLine($"• <color=red>Abandono Prematuro: Seguridad reducida a 0%</color>");
+                listaPenalizacionesJson.Add("-100 pts: Abandono Prematuro de la intervención.");
             }
 
             if (sb.Length < 60) sb.AppendLine("<color=green>Excelente: No se registraron penalizaciones.</color>");
 
             txtDetallePenalizaciones.text = sb.ToString();
+
+            Debug.Log($"<color=cyan>[Sistema] Reporte de penalizaciones generado con éxito.</color>");
+            // GUARDADO DE ARCHIVO JSON 
+            if (ManejadorPartida.guardarHistorial && HistoryManager.instancia != null)
+            {
+                Debug.Log($"<color=cyan>[Sistema] Iniciando proceso de guardado de sesión...</color>");
+                SesionPractica sesionGuardado = new SesionPractica();
+
+                // Datos de Identificación
+                sesionGuardado.nombreEstudiante = ManejadorPartida.nombreEstudiante;
+                sesionGuardado.fecha = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+
+                // Creamos un ID tipo "JP_20260422_1430"
+                string iniciales = ManejadorPartida.nombreEstudiante.Length > 2 ? ManejadorPartida.nombreEstudiante.Substring(0, 2).ToUpper() : "XX";
+                sesionGuardado.idSesion = $"{iniciales}_{DateTime.Now:yyyyMMdd_HHmm}";
+
+                // Notas por Categoría
+                sesionGuardado.puntajeSeguridad = notaSeguridad;
+                sesionGuardado.puntajeProtocolo = notaProtocolo;
+                sesionGuardado.puntajeTecnica = notaTecnica;
+                sesionGuardado.puntajeTotal = notaFinal;
+
+                // Desglose Específico (Casteando y adaptando a tus variables)
+                sesionGuardado.indiceTrauma = (int)puntosPerdidosTally[0]; // Casteo explícito a int para Trauma Tisular
+                sesionGuardado.suavidadDesplazamiento = 100f - puntosPerdidosTally[1];
+                sesionGuardado.porcentajeExploracion = Mathf.Clamp((profundidadMaximaAlcanzada / META_PROFUNDIDAD) * 100f, 0, 100f);
+                sesionGuardado.retiradaSegura = (puntosPerdidosTally[3] == 0);
+
+                sesionGuardado.hallazgosDocumentados = herramientas.ObtenerTotalEliminados();
+                sesionGuardado.calidadCapturaPromedio = 100f - puntosPerdidosTally[5];
+                sesionGuardado.aciertosYamada = (puntosPerdidosTally[6] == 0) ? 1 : 0;
+
+                sesionGuardado.estabilidadAbordaje = 100f - puntosPerdidosTally[7];
+                sesionGuardado.tasaExtraccion = ManejadorPartida.totalPolipos > 0 ? ((float)herramientas.ObtenerTotalEliminados() / ManejadorPartida.totalPolipos) * 100f : 100f;
+                sesionGuardado.higieneCampo = (puntosPerdidosTally[9] == 0);
+
+                // Insertamos la lista de textos rojos que fuimos armando arriba
+                sesionGuardado.penalizaciones = listaPenalizacionesJson;
+
+                // ¡A GUARDAR SE HA DICHO!
+                HistoryManager.instancia.GuardarSesion(sesionGuardado);
+                Debug.Log($"<color=cyan>[Sistema] Archivo guardado correctamente para la sesión: {sesionGuardado.idSesion}</color>");
+            }
         }
     }
 
