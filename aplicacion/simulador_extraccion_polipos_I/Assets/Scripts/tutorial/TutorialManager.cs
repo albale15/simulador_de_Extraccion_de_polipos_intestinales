@@ -27,6 +27,9 @@ public class TutorialManager : MonoBehaviour
     private bool esperandoCondicion = false;
     public GameObject objTextoPresionar;
 
+    [Header("Objetos a Desactivar si NO es Tutorial")]
+    [Tooltip("Pon aquí los Muros de Tutorial y los Pólipos pre-definidos de la escena.")]
+    public List<GameObject> elementosSoloTutorial;
     void Start()
     {
         if (ManejadorPartida.dificultad != 0)
@@ -34,7 +37,16 @@ public class TutorialManager : MonoBehaviour
             gameObject.SetActive(false);
             return;
         }
+        if (elementosSoloTutorial != null)
+        {
+            foreach (GameObject obj in elementosSoloTutorial)
+            {
+                if (obj != null) obj.SetActive(true);
+            }
+        }
 
+        // Desactivamos el panel de instrucciones por si acaso
+        if (panelInstrucciones != null) panelInstrucciones.SetActive(true);
         // El panel indicativo inicial de MonitorEndoscopiaUI se cierra y empezamos
         StartCoroutine(CicloTutorial());
     }
@@ -72,6 +84,7 @@ public class TutorialManager : MonoBehaviour
 
             // 2. Esperar condición
             esperandoCondicion = true;
+            Debug.Log("Esperando condición para paso: " + p.nombrePaso);
             yield return EvaluarCondicion(p);
             esperandoCondicion = false;
 
@@ -152,6 +165,11 @@ public class TutorialManager : MonoBehaviour
             case PasoTutorial.TipoEspera.LlegarAZona:
                 // Espera a que el endoscopio esté en la zona de extracción (la variable que ya creaste)
                 yield return new WaitUntil(() => herramientas.enZonaExtraccion);
+                break;
+            case PasoTutorial.TipoEspera.PolipoEnMira:
+                // Usa estrictamente el trigger de tus pólipos. 
+                // Espera hasta que el colisionador de la cámara detecte uno.
+                yield return new WaitUntil(() => herramientas.ObtenerPolipoEnMira() != null);
                 break;
         }
     }

@@ -8,7 +8,7 @@ public class PasoTutorial
     [TextArea] public string instruccion;
     public RectTransform uiAResaltar; // Si es null, no resalta nada
 
-    public enum TipoEspera { Tiempo, AccionInput, LlegarAZona, PolipoEliminado }
+    public enum TipoEspera { Tiempo, AccionInput, LlegarAZona, PolipoEliminado, PolipoEnMira }
     public TipoEspera espera;
 
     public float tiempoSegundos; // Para TipoEspera.Tiempo

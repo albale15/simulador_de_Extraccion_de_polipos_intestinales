@@ -3602,8 +3602,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 411, y: -56.54599}
-  m_SizeDelta: {x: -879.654, y: -206.917}
+  m_AnchoredPosition: {x: 388.20398, y: -65.634}
+  m_SizeDelta: {x: -776.399, y: -206.917}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &147819183
 MonoBehaviour:
@@ -20726,8 +20726,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -272.89, y: -65.634}
-  m_SizeDelta: {x: 784.99, y: 554.907}
+  m_AnchoredPosition: {x: -256.34, y: -76.09}
+  m_SizeDelta: {x: 751.89, y: 533.99}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1063212143
 MonoBehaviour:
@@ -22953,8 +22953,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 1.2089844, y: 0}
-  m_SizeDelta: {x: 112.177, y: 0}
+  m_AnchoredPosition: {x: 0.00024414062, y: 0}
+  m_SizeDelta: {x: -0.00048828, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1186379301
 GameObject:
@@ -32277,7 +32277,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.00073242, y: -0.00080872}
+  m_AnchoredPosition: {x: 3.4797, y: -0.0014926}
   m_SizeDelta: {x: 495.16, y: 513.08}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1744914436
@@ -32433,10 +32433,10 @@ RectTransform:
   - {fileID: 1183224687}
   m_Father: {fileID: 801131423}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.0012817, y: 0}
-  m_SizeDelta: {x: 1264.6, y: 720}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0.0012817383, y: 0}
+  m_SizeDelta: {x: -15.400024, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1757794785
 GameObject:
@@ -34021,7 +34021,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2028666084}
   m_HandleRect: {fileID: 2028666083}
   m_Direction: 0
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:

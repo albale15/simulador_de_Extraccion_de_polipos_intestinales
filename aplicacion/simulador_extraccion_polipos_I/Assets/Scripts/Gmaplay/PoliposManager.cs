@@ -25,7 +25,11 @@ public class PoliposManager : MonoBehaviour
 
     void Start()
     {
-
+        if (ManejadorPartida.dificultad == 0)
+        {
+            Debug.Log("Dificultad Tutorial: Spawning aleatorio desactivado.");
+            return; // Detiene la ejecución del script aquí
+        }
         prefabDiccionario = new GameObject[] { prefabYamada1, prefabYamada2, prefabYamada3, prefabYamada4 };
 
         foreach (Transform punto in contenedorPuntosSpawn)

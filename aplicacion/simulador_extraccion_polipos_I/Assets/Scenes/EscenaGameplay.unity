@@ -3564,16 +3564,16 @@ RectTransform:
   m_Children:
   - {fileID: 689849874}
   - {fileID: 1948923969}
-  - {fileID: 1766167896}
   - {fileID: 1934338134}
   - {fileID: 113892073}
-  - {fileID: 829215623}
   - {fileID: 455842472}
   - {fileID: 970984854}
   - {fileID: 1504859466}
   - {fileID: 1942030677}
   - {fileID: 732441917}
   - {fileID: 162133098}
+  - {fileID: 1766167896}
+  - {fileID: 829215623}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -8910,8 +8910,8 @@ MonoBehaviour:
   controlesBloqueados: 0
   pasos:
   - nombrePaso: paso 0
-    instruccion: "Bienvenido al simulador de extraccion de polipos intestinals. Te
-      guiar\xE9 por los elementos para que comprendas que hacen."
+    instruccion: "Bienvenido al simulador de extraccion de polipos intestinales.
+      Te guiar\xE9 por los elementos para que comprendas que hacen."
     uiAResaltar: {fileID: 0}
     espera: 1
     tiempoSegundos: 0
@@ -9009,8 +9009,8 @@ MonoBehaviour:
     mostrarTextoPresionar: 1
     mostrarTemporalmente: 0
   - nombrePaso: paso 9
-    instruccion: "Con Eso concluimos con la interfaz.Empecemos empuja el tubo para
-      realizar la Inserci\xF3n o presiona w si estas en modo por computadora"
+    instruccion: "Con eso concluimos con la interfaz. Empecemos empuja el tubo para
+      realizar la Inserci\xF3n o  w si estas en modo por computadora."
     uiAResaltar: {fileID: 0}
     espera: 1
     tiempoSegundos: 0
@@ -9020,8 +9020,8 @@ MonoBehaviour:
     mostrarTextoPresionar: 0
     mostrarTemporalmente: 0
   - nombrePaso: paso 10
-    instruccion: "Bien. Ahora jala el tubo para practicar la Extracci\xF3n o presiona
-      \"s\" si estas en modo por computadora"
+    instruccion: "Ahora jala el tubo para practicar la Extracci\xF3n o s si estas
+      en modo por computadora"
     uiAResaltar: {fileID: 0}
     espera: 0
     tiempoSegundos: 5
@@ -9031,7 +9031,7 @@ MonoBehaviour:
     mostrarTextoPresionar: 0
     mostrarTemporalmente: 0
   - nombrePaso: paso 10.1
-    instruccion: "Debes tener cuidado con la extracion del tubo,ya que generas friccion
+    instruccion: "Debes tener cuidado con la extracion del tubo, ya que generas friccion
       en el paciente, ten cuidado con el da\xF1o que le haces"
     uiAResaltar: {fileID: 113892073}
     espera: 1
@@ -9042,8 +9042,9 @@ MonoBehaviour:
     mostrarTextoPresionar: 1
     mostrarTemporalmente: 0
   - nombrePaso: paso 10.2
-    instruccion: Se en la insersion o extraccion generas un BUCLE se te indicara
-      en las dificultades mas bajas, para salir de un BUCLE has la extraccion.
+    instruccion: Si en la insersion o extraccion generas un BUCLE se te indicara
+      en las dificultades mas bajas. Para salir de un BUCLE has la extraccion o presiona
+      s si estas en modo computadora.
     uiAResaltar: {fileID: 1504859466}
     espera: 1
     tiempoSegundos: 0
@@ -9052,15 +9053,403 @@ MonoBehaviour:
     bloquearControles: 1
     mostrarTextoPresionar: 1
     mostrarTemporalmente: 1
-  - nombrePaso: paso 10.2
+  - nombrePaso: paso 10.3
     instruccion: Ahora que conoces la insercion y extraccion vamos a empezar con
-      la busqueda de un polipo.
-    uiAResaltar: {fileID: 1504859466}
+      la busqueda de un polipo. Avanza hasta el polipo
+    uiAResaltar: {fileID: 732441917}
     espera: 1
     tiempoSegundos: 0
     accionRequerida: Freeze
     colliderABloquear: {fileID: 1822834537}
     bloquearControles: 1
+    mostrarTextoPresionar: 1
+    mostrarTemporalmente: 1
+  - nombrePaso: 11
+    instruccion: 
+    uiAResaltar: {fileID: 0}
+    espera: 4
+    tiempoSegundos: 0
+    accionRequerida: 
+    colliderABloquear: {fileID: 0}
+    bloquearControles: 0
+    mostrarTextoPresionar: 0
+    mostrarTemporalmente: 0
+  - nombrePaso: 12
+    instruccion: Encontraste un polipo Yamada 1 por protocolo debemos tomarle una
+      foto asi que presiona Freeze o 1 si estas en modo computadora para congelar
+      la imagen.
+    uiAResaltar: {fileID: 732441917}
+    espera: 1
+    tiempoSegundos: 0
+    accionRequerida: Freeze
+    colliderABloquear: {fileID: 0}
+    bloquearControles: 0
+    mostrarTextoPresionar: 0
+    mostrarTemporalmente: 1
+  - nombrePaso: 13
+    instruccion: Freeze congelara la pantalla procura no moverte o hacer otra accion
+      para no recibir penalizaciones en tu calificacion.
+    uiAResaltar: {fileID: 732441917}
+    espera: 1
+    tiempoSegundos: 0
+    accionRequerida: Freeze
+    colliderABloquear: {fileID: 0}
+    bloquearControles: 1
+    mostrarTextoPresionar: 1
+    mostrarTemporalmente: 1
+  - nombrePaso: 14
+    instruccion: 'Una vez congelada la Imagen le tomaremos la foto con el boton Capture
+      o 2 si estas en modo computadora '
+    uiAResaltar: {fileID: 732441917}
+    espera: 1
+    tiempoSegundos: 0
+    accionRequerida: Capture
+    colliderABloquear: {fileID: 0}
+    bloquearControles: 0
+    mostrarTextoPresionar: 0
+    mostrarTemporalmente: 1
+  - nombrePaso: 15
+    instruccion: Despues de tomar la foto saldremos del modo Freeze debes volver
+      presionar el boton Freeze o 1 si estas en modo computadora para salir del modo
+      Freeze
+    uiAResaltar: {fileID: 732441917}
+    espera: 1
+    tiempoSegundos: 0
+    accionRequerida: Freeze
+    colliderABloquear: {fileID: 0}
+    bloquearControles: 0
+    mostrarTextoPresionar: 0
+    mostrarTemporalmente: 1
+  - nombrePaso: 16
+    instruccion: Como puedes notar el panel de acciones se va llenando siempre que
+      cumplas una accion
+    uiAResaltar: {fileID: 732441917}
+    espera: 1
+    tiempoSegundos: 0
+    accionRequerida: Freeze
+    colliderABloquear: {fileID: 0}
+    bloquearControles: 1
+    mostrarTextoPresionar: 1
+    mostrarTemporalmente: 1
+  - nombrePaso: 16
+    instruccion: Una vez salgas del modo Freeze procederemos al corte del polipo
+      para eso el simulador te obligara a estar en una buena posicion para las pinzas
+      de insercion
+    uiAResaltar: {fileID: 732441917}
+    espera: 1
+    tiempoSegundos: 0
+    accionRequerida: Freeze
+    colliderABloquear: {fileID: 0}
+    bloquearControles: 1
+    mostrarTextoPresionar: 1
+    mostrarTemporalmente: 1
+  - nombrePaso: 16.1
+    instruccion: Las pinzas se encuentran en la parte baja del endoscopio prueba
+      elebando la cabeza del endoscopio un poco y presiona el boton de accion o 5
+      si estas en modo computadora para entrar en las opciones de corte
+    uiAResaltar: {fileID: 732441917}
+    espera: 1
+    tiempoSegundos: 0
+    accionRequerida: Freeze
+    colliderABloquear: {fileID: 0}
+    bloquearControles: 1
+    mostrarTextoPresionar: 1
+    mostrarTemporalmente: 1
+  - nombrePaso: 16.2
+    instruccion: 
+    uiAResaltar: {fileID: 0}
+    espera: 1
+    tiempoSegundos: 0
+    accionRequerida: Accion
+    colliderABloquear: {fileID: 0}
+    bloquearControles: 0
+    mostrarTextoPresionar: 0
+    mostrarTemporalmente: 0
+  - nombrePaso: 16.3
+    instruccion: Una vez entres en las opciones de corte notaras en el recuadro azul
+      las opciones de botones han cambiado.
+    uiAResaltar: {fileID: 732441917}
+    espera: 1
+    tiempoSegundos: 0
+    accionRequerida: Freeze
+    colliderABloquear: {fileID: 0}
+    bloquearControles: 1
+    mostrarTextoPresionar: 1
+    mostrarTemporalmente: 1
+  - nombrePaso: 16.4
+    instruccion: Deberas escoger la pinza correcta para la accion con los polipos,
+      en las dificultades bajas se te dara indicaciones por el panel de intrucciones.
+    uiAResaltar: {fileID: 732441917}
+    espera: 1
+    tiempoSegundos: 0
+    accionRequerida: Freeze
+    colliderABloquear: {fileID: 0}
+    bloquearControles: 1
+    mostrarTextoPresionar: 1
+    mostrarTemporalmente: 1
+  - nombrePaso: 16.5
+    instruccion: Selecciona la pinza con el boton de freeze o 1 si estas en modo
+      computadora
+    uiAResaltar: {fileID: 732441917}
+    espera: 1
+    tiempoSegundos: 0
+    accionRequerida: Freeze
+    colliderABloquear: {fileID: 0}
+    bloquearControles: 0
+    mostrarTextoPresionar: 0
+    mostrarTemporalmente: 1
+  - nombrePaso: 16.6
+    instruccion: 
+    uiAResaltar: {fileID: 0}
+    espera: 0
+    tiempoSegundos: 5
+    accionRequerida: 
+    colliderABloquear: {fileID: 0}
+    bloquearControles: 1
+    mostrarTextoPresionar: 0
+    mostrarTemporalmente: 0
+  - nombrePaso: 16.7
+    instruccion: Este tipo de polipos salen facilmente por el endoscopio, dirigete
+      al siguiente polipo
+    uiAResaltar: {fileID: 732441917}
+    espera: 1
+    tiempoSegundos: 0
+    accionRequerida: Freeze
+    colliderABloquear: {fileID: 298192898}
+    bloquearControles: 1
+    mostrarTextoPresionar: 1
+    mostrarTemporalmente: 1
+  - nombrePaso: 17
+    instruccion: 
+    uiAResaltar: {fileID: 0}
+    espera: 4
+    tiempoSegundos: 0
+    accionRequerida: 
+    colliderABloquear: {fileID: 0}
+    bloquearControles: 0
+    mostrarTextoPresionar: 0
+    mostrarTemporalmente: 0
+  - nombrePaso: 18
+    instruccion: Encontraste un polipo Yamada 3  tomale una foto, presiona Freeze
+      o 1 si estas en modo computadora para congelar la imagen.
+    uiAResaltar: {fileID: 732441917}
+    espera: 1
+    tiempoSegundos: 0
+    accionRequerida: Freeze
+    colliderABloquear: {fileID: 0}
+    bloquearControles: 0
+    mostrarTextoPresionar: 0
+    mostrarTemporalmente: 1
+  - nombrePaso: 18.1
+    instruccion: 'Una vez congelada la Imagen le tomaremos la foto con el boton Capture
+      o 2 si estas en modo computadora '
+    uiAResaltar: {fileID: 732441917}
+    espera: 1
+    tiempoSegundos: 0
+    accionRequerida: Capture
+    colliderABloquear: {fileID: 0}
+    bloquearControles: 0
+    mostrarTextoPresionar: 0
+    mostrarTemporalmente: 1
+  - nombrePaso: 18.2
+    instruccion: Despues de tomar la foto saldremos del modo Freeze debes volver
+      presionar el boton Freeze o 1 si estas en modo computadora para salir del modo
+      Freeze
+    uiAResaltar: {fileID: 732441917}
+    espera: 1
+    tiempoSegundos: 0
+    accionRequerida: Freeze
+    colliderABloquear: {fileID: 0}
+    bloquearControles: 0
+    mostrarTextoPresionar: 0
+    mostrarTemporalmente: 1
+  - nombrePaso: 19
+    instruccion: Presiona accion o 5 si estas en modo computadora para ir a seleccion
+      de pinzas
+    uiAResaltar: {fileID: 732441917}
+    espera: 1
+    tiempoSegundos: 0
+    accionRequerida: Accion
+    colliderABloquear: {fileID: 0}
+    bloquearControles: 0
+    mostrarTextoPresionar: 0
+    mostrarTemporalmente: 1
+  - nombrePaso: 19.1
+    instruccion: Cortalo con el asa usando el boton capture o 2 si estas en modo
+      computadora
+    uiAResaltar: {fileID: 732441917}
+    espera: 1
+    tiempoSegundos: 0
+    accionRequerida: Capture
+    colliderABloquear: {fileID: 0}
+    bloquearControles: 0
+    mostrarTextoPresionar: 0
+    mostrarTemporalmente: 1
+  - nombrePaso: 20
+    instruccion: 
+    uiAResaltar: {fileID: 0}
+    espera: 0
+    tiempoSegundos: 5
+    accionRequerida: 
+    colliderABloquear: {fileID: 0}
+    bloquearControles: 1
+    mostrarTextoPresionar: 0
+    mostrarTemporalmente: 0
+  - nombrePaso: 20.1
+    instruccion: como puedes notar los polipo yamada 3 y 4 son muy grandes para que
+      salgan por el orificio de las pinzas por lo que deberas succionarlos
+    uiAResaltar: {fileID: 732441917}
+    espera: 1
+    tiempoSegundos: 0
+    accionRequerida: Freeze
+    colliderABloquear: {fileID: 0}
+    bloquearControles: 1
+    mostrarTextoPresionar: 1
+    mostrarTemporalmente: 1
+  - nombrePaso: 20.2
+    instruccion: Presiona el Boton de succion o 4 si estas en modo computadora para
+      succionarlo
+    uiAResaltar: {fileID: 732441917}
+    espera: 1
+    tiempoSegundos: 0
+    accionRequerida: Succion
+    colliderABloquear: {fileID: 0}
+    bloquearControles: 0
+    mostrarTextoPresionar: 0
+    mostrarTemporalmente: 1
+  - nombrePaso: 20.2
+    instruccion: 
+    uiAResaltar: {fileID: 0}
+    espera: 0
+    tiempoSegundos: 2
+    accionRequerida: Succion
+    colliderABloquear: {fileID: 0}
+    bloquearControles: 1
+    mostrarTextoPresionar: 0
+    mostrarTemporalmente: 0
+  - nombrePaso: 20.3
+    instruccion: El polipo succionado debe ser sacado del instestino deberas ir sacando
+      el tubo sin hacer tirones para no lastimar al paciente  o S si estas en modo
+      computadora,  para sacar el endoscopio
+    uiAResaltar: {fileID: 732441917}
+    espera: 1
+    tiempoSegundos: 0
+    accionRequerida: S
+    colliderABloquear: {fileID: 0}
+    bloquearControles: 0
+    mostrarTextoPresionar: 0
+    mostrarTemporalmente: 1
+  - nombrePaso: 20.4
+    instruccion: 
+    uiAResaltar: {fileID: 0}
+    espera: 2
+    tiempoSegundos: 0
+    accionRequerida: 
+    colliderABloquear: {fileID: 0}
+    bloquearControles: 0
+    mostrarTextoPresionar: 0
+    mostrarTemporalmente: 0
+  - nombrePaso: 21
+    instruccion: llegaste a la zona de extraccion (salida del endoscopio) presiona
+      denuevo succionar para soltar el polipo o 4 si estas en modo computadora
+    uiAResaltar: {fileID: 732441917}
+    espera: 1
+    tiempoSegundos: 0
+    accionRequerida: Succion
+    colliderABloquear: {fileID: 0}
+    bloquearControles: 0
+    mostrarTextoPresionar: 0
+    mostrarTemporalmente: 1
+  - nombrePaso: 22
+    instruccion: como notaras en el panel morado se ira aumentando los polipos que
+      hayas sacado todavia faltan polipos ve a buscar los que faltan.
+    uiAResaltar: {fileID: 732441917}
+    espera: 1
+    tiempoSegundos: 0
+    accionRequerida: Freeze
+    colliderABloquear: {fileID: 2004581900}
+    bloquearControles: 1
+    mostrarTextoPresionar: 1
+    mostrarTemporalmente: 1
+  - nombrePaso: 22.1
+    instruccion: 
+    uiAResaltar: {fileID: 0}
+    espera: 3
+    tiempoSegundos: 0
+    accionRequerida: 
+    colliderABloquear: {fileID: 0}
+    bloquearControles: 0
+    mostrarTextoPresionar: 0
+    mostrarTemporalmente: 0
+  - nombrePaso: 22.2
+    instruccion: 
+    uiAResaltar: {fileID: 0}
+    espera: 3
+    tiempoSegundos: 0
+    accionRequerida: 
+    colliderABloquear: {fileID: 0}
+    bloquearControles: 0
+    mostrarTextoPresionar: 0
+    mostrarTemporalmente: 0
+  - nombrePaso: 22.3
+    instruccion: 
+    uiAResaltar: {fileID: 0}
+    espera: 3
+    tiempoSegundos: 0
+    accionRequerida: 
+    colliderABloquear: {fileID: 0}
+    bloquearControles: 0
+    mostrarTextoPresionar: 0
+    mostrarTemporalmente: 0
+  - nombrePaso: 23
+    instruccion: Haz encontrado varios polipo se recomienda revisar el intestino
+      completo
+    uiAResaltar: {fileID: 732441917}
+    espera: 1
+    tiempoSegundos: 0
+    accionRequerida: freeze
+    colliderABloquear: {fileID: 0}
+    bloquearControles: 1
+    mostrarTextoPresionar: 1
+    mostrarTemporalmente: 1
+  - nombrePaso: 24
+    instruccion: "Cuando est\xE9s listo, regresa a la salida/zona de extraccion"
+    uiAResaltar: {fileID: 732441917}
+    espera: 1
+    tiempoSegundos: 0
+    accionRequerida: freeze
+    colliderABloquear: {fileID: 0}
+    bloquearControles: 1
+    mostrarTextoPresionar: 1
+    mostrarTemporalmente: 1
+  - nombrePaso: 25
+    instruccion: 
+    uiAResaltar: {fileID: 0}
+    espera: 2
+    tiempoSegundos: 0
+    accionRequerida: 
+    colliderABloquear: {fileID: 0}
+    bloquearControles: 0
+    mostrarTextoPresionar: 0
+    mostrarTemporalmente: 0
+  - nombrePaso: 25
+    instruccion: "presiona Acci\xF3n o 5 si estas en modo computadora, para terminar."
+    uiAResaltar: {fileID: 732441917}
+    espera: 1
+    tiempoSegundos: 0
+    accionRequerida: 
+    colliderABloquear: {fileID: 0}
+    bloquearControles: 0
+    mostrarTextoPresionar: 0
+    mostrarTemporalmente: 1
+  - nombrePaso: 25
+    instruccion: 
+    uiAResaltar: {fileID: 0}
+    espera: 1
+    tiempoSegundos: 0
+    accionRequerida: freeze
+    colliderABloquear: {fileID: 0}
+    bloquearControles: 0
     mostrarTextoPresionar: 0
     mostrarTemporalmente: 1
   panelInstrucciones: {fileID: 732441914}
@@ -9070,6 +9459,9 @@ MonoBehaviour:
   herramientas: {fileID: 808759708}
   monitorUI: {fileID: 154574840}
   objTextoPresionar: {fileID: 1184416986}
+  elementosSoloTutorial:
+  - {fileID: 1296131327}
+  - {fileID: 1771341918}
 --- !u!1 &1184416986
 GameObject:
   m_ObjectHideFlags: 0

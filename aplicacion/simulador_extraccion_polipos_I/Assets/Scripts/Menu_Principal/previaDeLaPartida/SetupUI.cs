@@ -159,7 +159,7 @@ public class SetupUI : MonoBehaviour
             inputTotalPolipos.interactable = false;
             togglePersonalizar.isOn = false;
             togglePersonalizar.interactable = false;
-            AsignarYamadas(1, 1, 2, 1);
+            AsignarYamadas(2, 1, 1, 1);
             return;
         }
 
@@ -172,16 +172,16 @@ public class SetupUI : MonoBehaviour
             switch (dif)
             {
                 case 1:
-                    y1 = Mathf.RoundToInt(total * 0.50f); y2 = Mathf.RoundToInt(total * 0.30f);
-                    y3 = Mathf.RoundToInt(total * 0.20f); y4 = total - (y1 + y2 + y3);
+                    y1 = Mathf.RoundToInt(total * 0.80f); y2 = Mathf.RoundToInt(total * 0.10f);
+                    y3 = Mathf.RoundToInt(total * 0.05f); y4 = Mathf.Max(0, total - (y1 + y2 + y3));
                     break;
                 case 2:
-                    y1 = Mathf.RoundToInt(total * 0.40f); y2 = Mathf.RoundToInt(total * 0.30f);
-                    y3 = Mathf.RoundToInt(total * 0.20f); y4 = total - (y1 + y2 + y3);
+                    y1 = Mathf.RoundToInt(total * 0.50f); y2 = Mathf.RoundToInt(total * 0.30f);
+                    y3 = Mathf.RoundToInt(total * 0.15f); y4 = Mathf.Max(0, total - (y1 + y2 + y3));
                     break;
                 case 3:
-                    y1 = Mathf.RoundToInt(total * 0.30f); y2 = Mathf.RoundToInt(total * 0.40f);
-                    y3 = Mathf.RoundToInt(total * 0.15f); y4 = total - (y1 + y2 + y3);
+                    y1 = Mathf.RoundToInt(total * 0.40f); y2 = Mathf.RoundToInt(total * 0.40f);
+                    y3 = Mathf.RoundToInt(total * 0.10f); y4 = Mathf.Max(0, total - (y1 + y2 + y3));
                     break;
             }
             AsignarYamadas(y1, y2, y3, y4);
