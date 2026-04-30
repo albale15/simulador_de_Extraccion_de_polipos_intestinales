@@ -106,7 +106,7 @@ public class SistemaHerramientas : MonoBehaviour
             modoPC = !endoscopio.usarControlHardware;
         else
             modoPC = true;
-
+        
         if (modoPC)
         {
             if (Input.GetKeyDown(KeyCode.Alpha1)) { btnFreeze = true; }
@@ -150,6 +150,19 @@ public class SistemaHerramientas : MonoBehaviour
             btnSuccion = false;
             btnAccion = false;
             moviendo = false;
+        }
+        if (TutorialManager.instancia != null && ManejadorPartida.dificultad == 0)
+        {
+            string filtro = TutorialManager.instancia.accionEsperadaActiva;
+            if (!string.IsNullOrEmpty(filtro))
+            {
+                // Apagamos implacablemente cualquier botón que no sea el que el tutorial pidió
+                if (filtro != "Freeze") btnFreeze = false;
+                if (filtro != "Capture") btnCapture = false;
+                if (filtro != "Accion") btnAccion = false;
+                if (filtro != "Succion") btnSuccion = false;
+                if (filtro != "Zoom") btnZoom = false;
+            }
         }
         // --- LÓGICA DE HIGIENE: 3 MOVIMIENTOS ---
         if (ultimoPolipoCortado != null && ultimoPolipoCortado.estadoActual == PolipoInteractuable.EstadoPolipo.CortadoSuelto)

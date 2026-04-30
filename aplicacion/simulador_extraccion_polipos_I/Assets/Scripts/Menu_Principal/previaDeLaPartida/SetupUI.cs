@@ -37,9 +37,14 @@ public class SetupUI : MonoBehaviour
     public TMP_InputField[] inputsPenalizaciones = new TMP_InputField[10];
     private bool configAvanzadaModificada = false;
 
+    [Header("Feedback de Errores")]
+    public TextMeshProUGUI txtFeedbackError;
+
     [Header("Popups")]
     public GameObject popupAvisoNoGuardado;
 
+    [Header("configurables")]
+    public int limitepolipos;
     void Start()
     {
         CargarConfiguracionAvanzada();
@@ -151,7 +156,31 @@ public class SetupUI : MonoBehaviour
         int dif = dropDificultad.value;
         int total;
         int.TryParse(inputTotalPolipos.text, out total);
-        if (total < 1) total = 1;
+        if (total < 1)
+        {
+            total = 1;
+        }
+        else if (total > limitepolipos)
+        {
+            total = limitepolipos;
+            // Al cambiar el texto aquí, la UI se actualiza instantáneamente
+            inputTotalPolipos.text = "10";
+        }
+        if (dif == 0) // Si es Tutorial
+        {
+            if (toggleGuardar != null)
+            {
+                toggleGuardar.isOn = false;
+                toggleGuardar.interactable = false;
+            }
+        }
+        else // Si es cualquier otra dificultad
+        {
+            if (toggleGuardar != null)
+            {
+                toggleGuardar.interactable = true;
+            }
+        }
 
         if (dif == 0)
         {
@@ -267,8 +296,44 @@ public class SetupUI : MonoBehaviour
 
     public void BotonEmpezar()
     {
-        if (configAvanzadaModificada) popupAvisoNoGuardado.SetActive(true);
-        else EjecutarInicio();
+        // 1. Limpiamos cualquier error previo
+        if (txtFeedbackError != null) txtFeedbackError.text = "";
+
+        // 2. VALIDACIÓN: Nombre vacío
+        if (string.IsNullOrWhiteSpace(inputNombre.text))
+        {
+            if (txtFeedbackError != null) txtFeedbackError.text = "<color=red>Error: Ingrese el nombre del estudiante para poder iniciar.</color>";
+            return; // Detiene el código, no inicia la partida
+        }
+
+        // 3. VALIDACIÓN: Suma exacta de pólipos
+        int total, y1, y2, y3, y4;
+        int.TryParse(inputTotalPolipos.text, out total);
+        int.TryParse(inputY1.text, out y1);
+        int.TryParse(inputY2.text, out y2);
+        int.TryParse(inputY3.text, out y3);
+        int.TryParse(inputY4.text, out y4);
+
+        int sumaYamadas = y1 + y2 + y3 + y4;
+
+        if (sumaYamadas != total)
+        {
+            if (txtFeedbackError != null)
+            {
+                txtFeedbackError.text = $"<color=red>Error: La suma de los Yamada ({sumaYamadas}) debe coincidir exactamente con el Total ({total}).</color>";
+            }
+            return; // Detiene el código, no inicia la partida
+        }
+
+        // 4. Si todo es correcto, permitimos el inicio
+        if (configAvanzadaModificada)
+        {
+            popupAvisoNoGuardado.SetActive(true);
+        }
+        else
+        {
+            EjecutarInicio();
+        }
     }
 
     public void ConfirmarInicioConCambiosTemporales()

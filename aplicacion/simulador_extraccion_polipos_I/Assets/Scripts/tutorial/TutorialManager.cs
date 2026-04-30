@@ -30,6 +30,8 @@ public class TutorialManager : MonoBehaviour
     [Header("Objetos a Desactivar si NO es Tutorial")]
     [Tooltip("Pon aquí los Muros de Tutorial y los Pólipos pre-definidos de la escena.")]
     public List<GameObject> elementosSoloTutorial;
+
+    [HideInInspector] public string accionEsperadaActiva = "";
     void Start()
     {
         if (ManejadorPartida.dificultad != 0)
@@ -67,7 +69,14 @@ public class TutorialManager : MonoBehaviour
 
             // 1. Mostrar UI
             controlesBloqueados = p.bloquearControles;
-
+            if (p.espera == PasoTutorial.TipoEspera.AccionInput)
+            {
+                accionEsperadaActiva = p.accionRequerida;
+            }
+            else
+            {
+                accionEsperadaActiva = "";
+            }
             if (p.uiAResaltar != null && p.mostrarTemporalmente)
             {
                 p.uiAResaltar.gameObject.SetActive(true);
@@ -98,6 +107,7 @@ public class TutorialManager : MonoBehaviour
             if (p.colliderABloquear != null) p.colliderABloquear.SetActive(false);
         }
         controlesBloqueados = false;
+        accionEsperadaActiva = "";
         // Fin del Tutorial
         txtInstrucciones.text = "Tutorial Completado. Regrese a la zona de extracción para finalizar.";
         mascara.Desactivar();

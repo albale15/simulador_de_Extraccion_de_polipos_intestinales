@@ -149,6 +149,7 @@ public class EndoscopioCurvas : MonoBehaviour
         bool tocandoFlechas = false;
         bool bloqueadoPorTutorial = (TutorialManager.instancia != null && TutorialManager.instancia.controlesBloqueados);
         bool modoPC = !usarControlHardware;
+        
         if (!bloqueadoPorTutorial)
         {
             if (modoPC)
@@ -199,6 +200,29 @@ public class EndoscopioCurvas : MonoBehaviour
                         rotZ += datosHardware.volanteXFinal * velocidadGiroPunta * Time.deltaTime;
                         tocandoFlechas = true;
                     }
+                }
+            }
+        }
+        if (TutorialManager.instancia != null && ManejadorPartida.dificultad == 0)
+        {
+            string filtro = TutorialManager.instancia.accionEsperadaActiva;
+            // Si el filtro NO está vacío, significa que el tutorial exige una acción específica
+            if (!string.IsNullOrEmpty(filtro))
+            {
+                // Si exigen empujar ("W"), anulamos el jalón hacia atrás ("S")
+                if (filtro != "W" && empujeFisico > 0) empujeFisico = 0f;
+                // Si exigen jalar ("S"), anulamos el empuje hacia adelante ("W")
+                if (filtro != "S" && empujeFisico < 0) empujeFisico = 0f;
+
+                // Si la acción no es "Torque", anulamos cualquier rotación del cable
+                if (filtro != "Torque") inputTorqueActivo = 0f;
+
+                // Si la acción no es "Flechas", revertimos si intentan mover la punta con los volantes
+                if (filtro != "Flechas" && tocandoFlechas)
+                {
+                    rotX = rotXAnterior;
+                    rotZ = rotZAnterior;
+                    tocandoFlechas = false;
                 }
             }
         }
@@ -488,6 +512,17 @@ public class EndoscopioCurvas : MonoBehaviour
             }
 
             Vector3 direccionFinal = huesos[1].up;
+            if (empujeFisico < 0 && huesos.Length >= 4)
+            {
+                // Al extraer, ignoramos hacia dónde mira la punta.
+                // Usamos el hueso 3 o 4 (que ya está seguro atrás en el centro del tubo) como un ancla.
+                int huesoGuia = Mathf.Min(4, huesos.Length - 1);
+
+                // Calculamos el vector desde el cuerpo hacia la punta.
+                // Como 'empujeFisico' es negativo al jalar, esto invertirá el vector 
+                // y jalará la punta SUAVEMENTE por el mismo camino por el que entró.
+                direccionFinal = (huesos[0].position - huesos[huesoGuia].position).normalized;
+            }
             float velActual = (empujeFisico > 0) ? velocidadInsercion : velocidadExtraccion;
 
             float distanciaAvanzada = empujeFisico * (velActual * multiplicadorAvance) * Time.fixedDeltaTime;
