@@ -35,6 +35,7 @@ public class EndoscopioCurvas : MonoBehaviour
     public float tiempoMaximoTorque = 2f;
     public float tiempoMaximoForzandoBucle = 3f;
     public float tiempoMaximoTiron = 4f;
+    public float valorDañoExtraccion = 5f;
 
     [Header("Visualización del Tubo")]
     public bool dibujarTuboExterior = true;
@@ -260,6 +261,13 @@ public class EndoscopioCurvas : MonoBehaviour
                 controlActivo = false;
                 return;
             }
+            else
+            {
+                // --- EL FIX ESTÁ AQUÍ ---
+                // Si el jugador suelta los controles (deja de moverse), "recargamos" la penalización 
+                // para que le vuelva a quitar puntos si vuelve a tocar algo por error.
+                alertaFreezeDada = false;
+            }
         }
         else
         {
@@ -429,7 +437,7 @@ public class EndoscopioCurvas : MonoBehaviour
 
                 if (curvaturaCuerpo > 120f)
                 {
-                    tiempoExtraccionBrusca += Time.fixedDeltaTime;
+                    tiempoExtraccionBrusca += Time.fixedDeltaTime * valorDañoExtraccion;
                     if (tiempoExtraccionBrusca > tiempoMaximoTiron)
                         ProcesarGameOver("LACERACIÓN DE MUCOSA: Mantuviste un jalón prolongado sin pausas en una curva cerrada.");
                     else

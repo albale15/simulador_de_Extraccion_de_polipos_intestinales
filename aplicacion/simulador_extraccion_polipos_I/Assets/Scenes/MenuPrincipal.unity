@@ -12841,7 +12841,7 @@ MonoBehaviour:
   - {fileID: 1375402954}
   - {fileID: 1183187932}
   - {fileID: 805721548}
-  txtFeedbackError: {fileID: 0}
+  txtFeedbackError: {fileID: 1384748113}
   popupAvisoNoGuardado: {fileID: 1998786560}
   limitepolipos: 10
 --- !u!4 &604372613
