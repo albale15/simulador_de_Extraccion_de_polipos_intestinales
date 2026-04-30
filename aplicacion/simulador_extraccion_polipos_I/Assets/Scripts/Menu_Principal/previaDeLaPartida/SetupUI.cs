@@ -31,6 +31,7 @@ public class SetupUI : MonoBehaviour
     public Slider sliderProtocolo;
     public Slider sliderTecnica;
     public TextMeshProUGUI txtSeg, txtProt, txtTec;
+    public TMP_InputField inputSeg, inputProt, inputTec;
     private bool ajustandoSliders = false;
 
     [Header("Avanzado - Penalizaciones")]
@@ -44,7 +45,8 @@ public class SetupUI : MonoBehaviour
     public GameObject popupAvisoNoGuardado;
 
     [Header("configurables")]
-    public int limitepolipos;
+    public int limitepolipos=10;
+
     void Start()
     {
         CargarConfiguracionAvanzada();
@@ -60,6 +62,9 @@ public class SetupUI : MonoBehaviour
         sliderProtocolo.onValueChanged.AddListener((v) => AutoBalancearPesos(1, v));
         sliderTecnica.onValueChanged.AddListener((v) => AutoBalancearPesos(2, v));
 
+        inputSeg.onEndEdit.AddListener((val) => AlCambiarInputPeso(0, val));
+        inputProt.onEndEdit.AddListener((val) => AlCambiarInputPeso(1, val));
+        inputTec.onEndEdit.AddListener((val) => AlCambiarInputPeso(2, val));
         foreach (var input in inputsPenalizaciones)
             input.onValueChanged.AddListener((v) => configAvanzadaModificada = true);
 
@@ -229,7 +234,7 @@ public class SetupUI : MonoBehaviour
         ajustandoSliders = true;
 
         Slider[] sliders = { sliderSeguridad, sliderProtocolo, sliderTecnica };
-        TextMeshProUGUI[] textos = { txtSeg, txtProt, txtTec };
+        TMP_InputField[] inputs = { inputSeg, inputProt, inputTec };
 
         float restante = 100f - nuevoValor;
         int idA = (indiceCambiado + 1) % 3;
@@ -248,16 +253,50 @@ public class SetupUI : MonoBehaviour
             sliders[idB].value = restante - sliders[idA].value;
         }
 
-        for (int i = 0; i < 3; i++) textos[i].text = sliders[i].value + "%";
+        // --- CAMBIO: ESCRIBIMOS EN LOS INPUTS EN VEZ DE LOS TXT ---
+        for (int i = 0; i < 3; i++)
+        {
+            if (inputs[i] != null) inputs[i].text = sliders[i].value.ToString("0");
+        }
 
         ajustandoSliders = false;
     }
+    // --- NUEVA FUNCIÓN: DEL INPUT AL SLIDER ---
+    private void AlCambiarInputPeso(int indice, string valorTxt)
+    {
+        if (ajustandoSliders) return;
 
+        float nuevoValor;
+        // Intentamos convertir lo que escribió a un número real
+        if (float.TryParse(valorTxt, out nuevoValor))
+        {
+            // Limitamos que no escriban números negativos o mayores a 100
+            nuevoValor = Mathf.Clamp(nuevoValor, 0f, 100f);
+
+            // Movemos el slider correspondiente. 
+            // ¡La magia es que esto disparará automáticamente la función AutoBalancearPesos!
+            if (indice == 0) sliderSeguridad.value = nuevoValor;
+            else if (indice == 1) sliderProtocolo.value = nuevoValor;
+            else if (indice == 2) sliderTecnica.value = nuevoValor;
+        }
+        else
+        {
+            // Si el profesor borró todo o escribió letras por accidente, restauramos los textos
+            TMP_InputField[] inputs = { inputSeg, inputProt, inputTec };
+            Slider[] sliders = { sliderSeguridad, sliderProtocolo, sliderTecnica };
+            if (inputs[indice] != null) inputs[indice].text = sliders[indice].value.ToString("0");
+        }
+    }
     public void RestablecerPesos()
     {
         ajustandoSliders = true;
         sliderSeguridad.value = 30f; sliderProtocolo.value = 30f; sliderTecnica.value = 40f;
-        txtSeg.text = "30%"; txtProt.text = "30%"; txtTec.text = "40%";
+
+        // --- CAMBIO: ESCRIBIMOS EN LOS INPUTS ---
+        if (inputSeg != null) inputSeg.text = "30";
+        if (inputProt != null) inputProt.text = "30";
+        if (inputTec != null) inputTec.text = "40";
+
         ajustandoSliders = false;
     }
 
