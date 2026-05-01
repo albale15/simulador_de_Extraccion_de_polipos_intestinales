@@ -288,6 +288,12 @@ public class MonitorEndoscopiaUI : MonoBehaviour
                     PausarJuego();
                 }
             }
+            // EL HARDWARE SE ACABA DE CONECTAR
+            else if (estadoActual == SerialManager.EstadoConexion.Conectado)
+            {
+                // Apagamos el modo PC automáticamente para darle prioridad al hardware
+                chkModoComputadora.isOn = false;
+            }
         }
 
 
@@ -314,7 +320,7 @@ public class MonitorEndoscopiaUI : MonoBehaviour
 
             case SerialManager.EstadoConexion.Conectado:
                 if (txtAlertaConexion != null)
-                    txtAlertaConexion.text = $"<color=green>Hardware STM32 Conectado ({SerialManager.instancia.puertoActivo})</color>\nPuede desmarcar 'Modo PC' para usarlo.";
+                    txtAlertaConexion.text = $"<color=green>Hardware STM32 Conectado ({SerialManager.instancia.puertoActivo})</color>\nModo PC desactivado automáticamente.";
 
                 chkModoComputadora.interactable = true;
                 break;

@@ -68,6 +68,11 @@ uint8_t mensaje_completo = 0;
 // VARIABLES PARA EL VIBRADOR
 uint32_t tiempo_inicio_vibracion = 0;
 uint8_t vibrando = 0;
+
+// VARIABLES PARA FILTRO DE ENCODERS MECÁNICOS ---
+int8_t acum_mecanico_insercion = 0;
+int8_t acum_mecanico_torsion = 0;
+#define SENSITIVITY_THRESHOLD_MEC 1.5
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -84,6 +89,22 @@ void SystemClock_Config(void);
 // Llamamos a los puertos I2C que configurarás en el CubeIDE
 extern I2C_HandleTypeDef hi2c1;
 extern I2C_HandleTypeDef hi2c3;
+
+
+int8_t processEncoderDelta(int8_t delta, int8_t *accumulator) {
+    int8_t output = 0;
+    *accumulator += delta;
+
+    while (*accumulator >= SENSITIVITY_THRESHOLD_MEC) {
+        output += 1;
+        *accumulator -= SENSITIVITY_THRESHOLD_MEC;
+    }
+    while (*accumulator <= -SENSITIVITY_THRESHOLD_MEC) {
+        output -= 1;
+        *accumulator += SENSITIVITY_THRESHOLD_MEC;
+    }
+    return output;
+}
 
 uint8_t readButton(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, uint8_t *lastState) {
     uint8_t current = HAL_GPIO_ReadPin(GPIOx, GPIO_Pin);
@@ -123,34 +144,40 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
     // Encoder 1: Inserción (PB5 = CLK, PA12 = DT)
     if(GPIO_Pin == GPIO_PIN_5) {
         // FILTRO RC DE SOFTWARE: Subimos a 10ms para matar el ruido mecánico
-        if(current_time - last_irq_ins > 10) {
+        if(current_time - last_irq_ins > 1) {
             // VALIDACIÓN: Leemos el estado de AMBOS pines para saber la dirección
             GPIO_PinState dt_state = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_12);
             GPIO_PinState clk_state = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5);
 
-            if(dt_state != clk_state) {
-                encoder_insercion++; // Entrando
-            } else {
-                encoder_insercion--; // Saliendo
-            }
-            last_irq_ins = current_time;
-            activate = 1;
+            int8_t delta = (dt_state != clk_state) ? 1 : -1;
+
+			// Pasamos por el filtro de sensibilidad
+			int8_t movimiento_real = processEncoderDelta(delta, &acum_mecanico_insercion);
+
+			if (movimiento_real != 0) {
+				encoder_insercion += movimiento_real;
+				activate = 1;
+			}
+			last_irq_ins = current_time;
         }
     }
 
     // Encoder 2: Torsión (PB1 = CLK, PB3 = DT)
     if(GPIO_Pin == GPIO_PIN_1) {
-        if(current_time - last_irq_tor > 10) { // FILTRO DE 10ms
+        if(current_time - last_irq_tor > 1) { // FILTRO DE 10ms
             GPIO_PinState dt_state = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_3);
             GPIO_PinState clk_state = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_1);
 
-            if(dt_state != clk_state) {
-                encoder_torsion++; // Giro Derecha
-            } else {
-                encoder_torsion--; // Giro Izquierda
-            }
-            last_irq_tor = current_time;
-            activate = 1;
+            int8_t delta = (dt_state != clk_state) ? 1 : -1;
+
+			// Pasamos por el filtro de sensibilidad
+			int8_t movimiento_real = processEncoderDelta(delta, &acum_mecanico_torsion);
+
+			if (movimiento_real != 0) {
+				encoder_torsion += movimiento_real;
+				activate = 1;
+			}
+			last_irq_tor = current_time;
         }
     }
 }

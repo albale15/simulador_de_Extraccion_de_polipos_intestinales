@@ -10335,7 +10335,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1296131328
 Transform:
   m_ObjectHideFlags: 0
@@ -10426,6 +10426,7 @@ MonoBehaviour:
   tiempoMaximoTorque: 2
   tiempoMaximoForzandoBucle: 3
   tiempoMaximoTiron: 30
+  "valorDa\xF1oExtraccion": 5
   dibujarTuboExterior: 1
   grosorTubo: 0.5
   distanciaTotalInsertada: 0
