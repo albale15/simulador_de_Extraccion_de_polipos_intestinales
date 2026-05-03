@@ -72,7 +72,7 @@ uint8_t vibrando = 0;
 // VARIABLES PARA FILTRO DE ENCODERS MECÁNICOS ---
 int8_t acum_mecanico_insercion = 0;
 int8_t acum_mecanico_torsion = 0;
-#define SENSITIVITY_THRESHOLD_MEC 1.5
+#define SENSITIVITY_THRESHOLD_MEC 2
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -141,47 +141,46 @@ int _write(int file, char *ptr, int len) {
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
     uint32_t current_time = HAL_GetTick();
 
+    // ---------------------------------------------------------
     // Encoder 1: Inserción (PB5 = CLK, PA12 = DT)
+    // ---------------------------------------------------------
     if(GPIO_Pin == GPIO_PIN_5) {
-        // FILTRO RC DE SOFTWARE: Subimos a 10ms para matar el ruido mecánico
-        if(current_time - last_irq_ins > 1) {
-            // VALIDACIÓN: Leemos el estado de AMBOS pines para saber la dirección
-            GPIO_PinState dt_state = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_12);
+
+
+        if(current_time - last_irq_ins > 3) {
+
             GPIO_PinState clk_state = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5);
+            GPIO_PinState dt_state = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_12);
 
-            int8_t delta = (dt_state != clk_state) ? 1 : -1;
+            int8_t delta = (clk_state != dt_state) ? 1 : -1;
 
-			// Pasamos por el filtro de sensibilidad
-			int8_t movimiento_real = processEncoderDelta(delta, &acum_mecanico_insercion);
 
-			if (movimiento_real != 0) {
-				encoder_insercion += movimiento_real;
-				activate = 1;
-			}
-			last_irq_ins = current_time;
+            encoder_insercion += delta;
+            activate = 1;
+
+            last_irq_ins = current_time;
         }
     }
 
+    // ---------------------------------------------------------
     // Encoder 2: Torsión (PB1 = CLK, PB3 = DT)
+    // ---------------------------------------------------------
     if(GPIO_Pin == GPIO_PIN_1) {
-        if(current_time - last_irq_tor > 1) { // FILTRO DE 10ms
-            GPIO_PinState dt_state = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_3);
+
+        if(current_time - last_irq_tor > 3) {
+
             GPIO_PinState clk_state = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_1);
+            GPIO_PinState dt_state = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_3);
 
-            int8_t delta = (dt_state != clk_state) ? 1 : -1;
+            int8_t delta = (clk_state != dt_state) ? 1 : -1;
 
-			// Pasamos por el filtro de sensibilidad
-			int8_t movimiento_real = processEncoderDelta(delta, &acum_mecanico_torsion);
+            encoder_torsion += delta;
+            activate = 1;
 
-			if (movimiento_real != 0) {
-				encoder_torsion += movimiento_real;
-				activate = 1;
-			}
-			last_irq_tor = current_time;
+            last_irq_tor = current_time;
         }
     }
 }
-
 // INTERRUPCIÓN DE RECEPCIÓN UART (Mensajes de Unity)
 // Unity debe enviar mensajes terminados en '\n', ej: "V1:100\n"
 

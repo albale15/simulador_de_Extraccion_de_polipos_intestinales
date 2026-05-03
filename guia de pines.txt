@@ -20,7 +20,7 @@ sda	PB4
 
 *****Encoder Rotativo:
 
-primero---(cable naranja y verde)
+primero---(cable naranja y verde) incersion
 
 
 clk	PB5 (blanco-verde)
@@ -29,7 +29,7 @@ DT	PA12  (naranja)
 vcc	(verde)
 gnd	(blanco-naranja)
 
-segundo (cable cafe y azul)
+segundo (cable cafe y azul) torcion
 
 
 

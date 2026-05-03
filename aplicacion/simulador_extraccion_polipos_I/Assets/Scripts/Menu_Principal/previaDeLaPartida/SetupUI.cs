@@ -328,7 +328,7 @@ public class SetupUI : MonoBehaviour
     {
         for (int i = 0; i < 10; i++)
             if (inputsPenalizaciones.Length > i && inputsPenalizaciones[i] != null)
-                inputsPenalizaciones[i].text = "1";
+                inputsPenalizaciones[i].text = "5";
 
         GuardarConfiguracionAvanzada();
     }
