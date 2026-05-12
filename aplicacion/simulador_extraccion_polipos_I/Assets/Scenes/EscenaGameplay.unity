@@ -9407,7 +9407,7 @@ MonoBehaviour:
     uiAResaltar: {fileID: 732441917}
     espera: 1
     tiempoSegundos: 0
-    accionRequerida: freeze
+    accionRequerida: Freeze
     colliderABloquear: {fileID: 0}
     bloquearControles: 1
     mostrarTextoPresionar: 1
@@ -9417,7 +9417,7 @@ MonoBehaviour:
     uiAResaltar: {fileID: 732441917}
     espera: 1
     tiempoSegundos: 0
-    accionRequerida: freeze
+    accionRequerida: Freeze
     colliderABloquear: {fileID: 0}
     bloquearControles: 1
     mostrarTextoPresionar: 1
@@ -9437,7 +9437,7 @@ MonoBehaviour:
     uiAResaltar: {fileID: 732441917}
     espera: 1
     tiempoSegundos: 0
-    accionRequerida: 
+    accionRequerida: Accion
     colliderABloquear: {fileID: 0}
     bloquearControles: 0
     mostrarTextoPresionar: 0
@@ -9447,7 +9447,7 @@ MonoBehaviour:
     uiAResaltar: {fileID: 0}
     espera: 1
     tiempoSegundos: 0
-    accionRequerida: freeze
+    accionRequerida: Freeze
     colliderABloquear: {fileID: 0}
     bloquearControles: 0
     mostrarTextoPresionar: 0

@@ -46,17 +46,15 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-uint8_t btn1, btn2, btn3, btn4, btn_suction;
-uint8_t b1_last=0, b2_last=0, b3_last=0, b4_last=0, bs_last=0;
+uint8_t btn_lim, btn_su, btn1, btn2, btn3, btn4;
+uint8_t bl_last=0, bs_last=0, b1_last=0, b2_last=0, b3_last=0, b4_last=0;
 uint16_t angulo_anterior_1 = 0, angulo_anterior_2 = 0;
 int32_t enc1_accumulator = 0, enc2_accumulator = 0;
 const int32_t MAGNETIC_THRESHOLD = 200;
 int8_t enc1_send = 0, enc2_send = 0, activate = 0;
 
 volatile int32_t encoder_insercion = 0;
-volatile int32_t encoder_torsion = 0;
 uint32_t last_irq_ins = 0;
-uint32_t last_irq_tor = 0;
 
 uint8_t err_encoder = 0;
 
@@ -65,14 +63,20 @@ uint8_t rx_byte;
 char rx_buffer[20];
 uint8_t rx_index = 0;
 uint8_t mensaje_completo = 0;
+
 // VARIABLES PARA EL VIBRADOR
 uint32_t tiempo_inicio_vibracion = 0;
 uint8_t vibrando = 0;
 
-// VARIABLES PARA FILTRO DE ENCODERS MECÁNICOS ---
-int8_t acum_mecanico_insercion = 0;
-int8_t acum_mecanico_torsion = 0;
-#define SENSITIVITY_THRESHOLD_MEC 2
+
+// Tabla de estados válidos del encoder
+// Solo suma 1 o resta -1 si la secuencia física es matemáticamente correcta.
+const int8_t tabla_encoder[16] = {0, 1, -1, 0, -1, 0, 0, 1, 1, 0, 0, -1, 0, -1, 1, 0};
+
+// Memoria para guardar el estado del milisegundo anterior
+uint8_t estado_ant_1 = 0;
+uint8_t estado_ant_2 = 0;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -90,21 +94,6 @@ void SystemClock_Config(void);
 extern I2C_HandleTypeDef hi2c1;
 extern I2C_HandleTypeDef hi2c3;
 
-
-int8_t processEncoderDelta(int8_t delta, int8_t *accumulator) {
-    int8_t output = 0;
-    *accumulator += delta;
-
-    while (*accumulator >= SENSITIVITY_THRESHOLD_MEC) {
-        output += 1;
-        *accumulator -= SENSITIVITY_THRESHOLD_MEC;
-    }
-    while (*accumulator <= -SENSITIVITY_THRESHOLD_MEC) {
-        output -= 1;
-        *accumulator += SENSITIVITY_THRESHOLD_MEC;
-    }
-    return output;
-}
 
 uint8_t readButton(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, uint8_t *lastState) {
     uint8_t current = HAL_GPIO_ReadPin(GPIOx, GPIO_Pin);
@@ -137,49 +126,35 @@ int _write(int file, char *ptr, int len) {
     HAL_UART_Transmit(&huart2, (uint8_t*)ptr, len, HAL_MAX_DELAY);
     return len;
 }
-// INTERRUPCIONES DE LOS ENCODERS (KY-040) Y UNITY
+// INTERRUPCIONES DE LOS ENCODERS (Máquina de Estados)
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
-    uint32_t current_time = HAL_GetTick();
 
-    // ---------------------------------------------------------
-    // Encoder 1: Inserción (PB5 = CLK, PA12 = DT)
-    // ---------------------------------------------------------
-    if(GPIO_Pin == GPIO_PIN_5) {
+    // ENCODER 1: Inserción (PB5 = CLK, PA12 = DT)
+    // Si la interrupción viene de CLK o de DT del Encoder 1...
+    if(GPIO_Pin == GPIO_PIN_5 || GPIO_Pin == GPIO_PIN_12) {
 
+        // Leemos el estado físico de ambos pines al mismo tiempo
+        uint8_t clk = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5);
+        uint8_t dt = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_12);
 
-        if(current_time - last_irq_ins > 3) {
+        // Unimos los bits para formar el estado actual (0, 1, 2 o 3)
+        uint8_t estado_actual = (clk << 1) | dt;
 
-            GPIO_PinState clk_state = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5);
-            GPIO_PinState dt_state = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_12);
+        // Creamos un índice combinando el estado anterior con el actual
+        uint8_t indice = (estado_ant_1 << 2) | estado_actual;
 
-            int8_t delta = (clk_state != dt_state) ? 1 : -1;
+        // Consultamos la tabla maestra
+        int8_t movimiento = tabla_encoder[indice];
 
-
-            encoder_insercion += delta;
+        if(movimiento != 0) {
+            encoder_insercion += movimiento;
             activate = 1;
-
-            last_irq_ins = current_time;
         }
+
+        // Guardamos el estado para la próxima vez
+        estado_ant_1 = estado_actual;
     }
 
-    // ---------------------------------------------------------
-    // Encoder 2: Torsión (PB1 = CLK, PB3 = DT)
-    // ---------------------------------------------------------
-    if(GPIO_Pin == GPIO_PIN_1) {
-
-        if(current_time - last_irq_tor > 3) {
-
-            GPIO_PinState clk_state = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_1);
-            GPIO_PinState dt_state = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_3);
-
-            int8_t delta = (clk_state != dt_state) ? 1 : -1;
-
-            encoder_torsion += delta;
-            activate = 1;
-
-            last_irq_tor = current_time;
-        }
-    }
 }
 // INTERRUPCIÓN DE RECEPCIÓN UART (Mensajes de Unity)
 // Unity debe enviar mensajes terminados en '\n', ej: "V1:100\n"
@@ -285,84 +260,93 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
     {
-	  // 1. BOTONES
-	  	        btn1 = readButton(GPIOA, GPIO_PIN_3, &b1_last);
-	  	        btn2 = readButton(GPIOA, GPIO_PIN_4, &b2_last);
-	  	        btn3 = readButton(GPIOA, GPIO_PIN_6, &b3_last);
-	  	        btn4 = readButton(GPIOA, GPIO_PIN_8, &b4_last);
-	  	        btn_suction = readButton(GPIOB, GPIO_PIN_0, &bs_last); // Botón succión en PB0
 
-	  	        // 2. VOLANTES (AS5600)
-	  	        uint16_t angulo_actual_1 = Leer_Angulo_AS5600(&hi2c1);
-	  	        uint16_t angulo_actual_2 = Leer_Angulo_AS5600(&hi2c3);
 
-	  	        if(angulo_actual_1 == 1512 && angulo_actual_2 == 1512) err_encoder = 1;
-	  	        else err_encoder = 0;
+	    // 1. BOTONES
+	    btn_lim = readButton(GPIOB, GPIO_PIN_1, &bl_last);
+	    btn_su  = readButton(GPIOA, GPIO_PIN_3, &bs_last);
+	    btn1    = readButton(GPIOA, GPIO_PIN_4, &b1_last);
+	    btn2    = readButton(GPIOA, GPIO_PIN_6, &b2_last);
+	    btn3    = readButton(GPIOA, GPIO_PIN_8, &b3_last);
+	    btn4    = readButton(GPIOB, GPIO_PIN_0, &b4_last);
 
-	  	        int16_t diff_1 = angulo_actual_1 - angulo_anterior_1;
-	  	        int16_t diff_2 = angulo_actual_2 - angulo_anterior_2;
+		// 2. VOLANTES (AS5600)
+		uint16_t angulo_actual_1 = Leer_Angulo_AS5600(&hi2c1);
+		uint16_t angulo_actual_2 = Leer_Angulo_AS5600(&hi2c3);
 
-	  	        if (diff_1 > 2048) diff_1 -= 4096;
-	  	        if (diff_1 < -2048) diff_1 += 4096;
-	  	        if (diff_2 > 2048) diff_2 -= 4096;
-	  	        if (diff_2 < -2048) diff_2 += 4096;
+		if(angulo_actual_1 == 1512 && angulo_actual_2 == 1512) err_encoder = 1;
+		else err_encoder = 0;
 
-	  	        angulo_anterior_1 = angulo_actual_1;
-	  	        angulo_anterior_2 = angulo_actual_2;
+		int16_t diff_1 = angulo_actual_1 - angulo_anterior_1;
+		int16_t diff_2 = angulo_actual_2 - angulo_anterior_2;
 
-	  	        enc1_accumulator += diff_1;
-	  	        enc2_accumulator += diff_2;
+		if (diff_1 > 2048) diff_1 -= 4096;
+		if (diff_1 < -2048) diff_1 += 4096;
+		if (diff_2 > 2048) diff_2 -= 4096;
+		if (diff_2 < -2048) diff_2 += 4096;
 
-	  	        if (enc1_accumulator >= MAGNETIC_THRESHOLD) {
-	  	            enc1_send = 1; enc1_accumulator -= MAGNETIC_THRESHOLD; activate = 1;
-	  	        } else if (enc1_accumulator <= -MAGNETIC_THRESHOLD) {
-	  	            enc1_send = -1; enc1_accumulator += MAGNETIC_THRESHOLD; activate = 1;
-	  	        }
+		angulo_anterior_1 = angulo_actual_1;
+		angulo_anterior_2 = angulo_actual_2;
 
-	  	        if (enc2_accumulator >= MAGNETIC_THRESHOLD) {
-	  	            enc2_send = 1; enc2_accumulator -= MAGNETIC_THRESHOLD; activate = 1;
-	  	        } else if (enc2_accumulator <= -MAGNETIC_THRESHOLD) {
-	  	            enc2_send = -1; enc2_accumulator += MAGNETIC_THRESHOLD; activate = 1;
-	  	        }
+		enc1_accumulator += diff_1;
+		enc2_accumulator += diff_2;
 
-	  	      // 3. RECEPCIÓN UNITY -> VIBRACIÓN
-				if(mensaje_completo == 1) {
-					int fuerza_motor = 0;
-					if(sscanf((char*)rx_buffer, "V1:%d", &fuerza_motor) == 1) {
-						TIM2->CCR1 = fuerza_motor; // Enciende el motor
-						  tiempo_inicio_vibracion = HAL_GetTick(); // Guarda la hora actual
-						  vibrando = 1; // Avisa que está vibrando
-					}
-					else if(sscanf((char*)rx_buffer, "V2:%d", &fuerza_motor) == 1) {
-						TIM2->CCR2 = fuerza_motor;
-						  tiempo_inicio_vibracion = HAL_GetTick();
-						  vibrando = 1;
-					}
-					mensaje_completo = 0;
-				}
+		if (enc1_accumulator >= MAGNETIC_THRESHOLD) {
+			enc1_send = 1; enc1_accumulator -= MAGNETIC_THRESHOLD; activate = 1;
+		} else if (enc1_accumulator <= -MAGNETIC_THRESHOLD) {
+			enc1_send = -1; enc1_accumulator += MAGNETIC_THRESHOLD; activate = 1;
+		}
 
-				  // 4. EL AUTO-APAGADO DEL VIBRADOR (Cooldown de 1 segundo)
-				  if(vibrando == 1 && (HAL_GetTick() - tiempo_inicio_vibracion >= 1000)) {
-					  TIM2->CCR1 = 0; // Apaga Motor 1
-					  TIM2->CCR2 = 0; // Apaga Motor 2
-					  vibrando = 0;   // Resetea el estado
-				  }
-	  	        // 5. ENVÍO DE DATOS A UNITY
-	  	        if (btn1 || btn2 || btn3 || btn4 || btn_suction || activate == 1) {
-	  	            printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d INS:%ld TOR:%ld\r\n",
-	  	                   btn1, btn2, btn3, btn4, btn_suction,
-						   enc2_send, enc1_send,
-	  	                   encoder_insercion, encoder_torsion);
+		if (enc2_accumulator >= MAGNETIC_THRESHOLD) {
+			enc2_send = 1; enc2_accumulator -= MAGNETIC_THRESHOLD; activate = 1;
+		} else if (enc2_accumulator <= -MAGNETIC_THRESHOLD) {
+			enc2_send = -1; enc2_accumulator += MAGNETIC_THRESHOLD; activate = 1;
+		}
 
-	  	            activate = 0;
-	  	            enc1_send = 0;
-	  	            enc2_send = 0;
-	  	            encoder_insercion = 0;
-	  	            encoder_torsion = 0;
-	  	        }
+	  // 3. RECEPCIÓN UNITY -> VIBRACIÓN
+		if(mensaje_completo == 1) {
+			int fuerza_motor = 0;
+			if(sscanf((char*)rx_buffer, "V1:%d", &fuerza_motor) == 1) {
+				TIM2->CCR1 = fuerza_motor; // Enciende el motor
+				  tiempo_inicio_vibracion = HAL_GetTick(); // Guarda la hora actual
+				  vibrando = 1; // Avisa que está vibrando
+			}
+			else if(sscanf((char*)rx_buffer, "V2:%d", &fuerza_motor) == 1) {
+				TIM2->CCR2 = fuerza_motor;
+				  tiempo_inicio_vibracion = HAL_GetTick();
+				  vibrando = 1;
+			}
+			mensaje_completo = 0;
+		}
 
-	  	        HAL_Delay(20);
-	    }
+		  // 4. EL AUTO-APAGADO DEL VIBRADOR (Cooldown de 1 segundo)
+		  if(vibrando == 1 && (HAL_GetTick() - tiempo_inicio_vibracion >= 1000)) {
+			  TIM2->CCR1 = 0; // Apaga Motor 1
+			  TIM2->CCR2 = 0; // Apaga Motor 2
+			  vibrando = 0;   // Resetea el estado
+		  }
+		// 5. ENVÍO DE DATOS A UNITY
+		  // 5. ENVÍO DE DATOS A UNITY
+		  if (btn_lim || btn_su || btn1 || btn2 || btn3 || btn4 || activate == 1) {
+
+		              // Limitador a +1 / -1 solo para Inserción
+		              if (encoder_insercion > 1) encoder_insercion = 1;
+		              else if (encoder_insercion < -1) encoder_insercion = -1;
+
+		              //FORMATO DE ENVÍO ORDENADO
+		              // Lim:0 Su:0 B1:0 B2:0 B3:0 B4:0 E1:0 E2:0 INS:0
+		              printf("Lim:%d Su:%d B1:%d B2:%d B3:%d B4:%d E1:%d E2:%d INS:%ld\r\n",
+		                     btn_lim, btn_su, btn1, btn2, btn3, btn4,
+		                     enc2_send, enc1_send, encoder_insercion);
+
+		              activate = 0;
+		              enc1_send = 0;
+		              enc2_send = 0;
+		              encoder_insercion = 0;
+		          }
+
+		          HAL_Delay(20);
+		      }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

@@ -94,7 +94,30 @@ public class ConfigManager : MonoBehaviour
         // Una vez que tenemos los datos limpios y listos, los enviamos a través de nuestro propio evento para que cualquier otro script pueda usarlos sin preocuparse por el hardware
         datosActuales = limpios;
         AlRecibirDatosProcesados?.Invoke(limpios);
+
+        d.boton1 = 0;
+        d.boton2 = 0;
+        d.boton3 = 0;
+        d.boton4 = 0;
+        d.botonSuccion = 0;
     }
+
+    void LateUpdate()
+    {
+        if (datosActuales != null)
+        {
+            // LateUpdate ocurre al final del frame, justo DESPUÉS de que el TutorialManager 
+            // o el SistemaHerramientas hayan leído las variables en sus Update().
+            // Forzamos las banderas a false para simular un "Gatillo". 
+            // Esto soluciona el problema de cuando la STM32 manda el 1 y se queda en silencio.
+            datosActuales.botonFreeze = false;
+            datosActuales.botonCapture = false;
+            datosActuales.botonZoom = false;
+            datosActuales.botonAccion = false;
+            datosActuales.botonSuccion = false;
+        }
+    }
+
     // Esta función toma el nombre del bind (por ejemplo, "INS_+") y devuelve el valor correspondiente del hardware, aplicando las condiciones de dirección (positivo/negativo) según el caso.
     private float ObtenerEje(string bind, DatosHardware d)
     {

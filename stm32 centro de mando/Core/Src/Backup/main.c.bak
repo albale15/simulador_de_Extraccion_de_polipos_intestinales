@@ -69,10 +69,15 @@ uint8_t mensaje_completo = 0;
 uint32_t tiempo_inicio_vibracion = 0;
 uint8_t vibrando = 0;
 
-// VARIABLES PARA FILTRO DE ENCODERS MECÁNICOS ---
-int8_t acum_mecanico_insercion = 0;
-int8_t acum_mecanico_torsion = 0;
-#define SENSITIVITY_THRESHOLD_MEC 2
+
+// LA MAGIA: Tabla de estados válidos del encoder
+// Solo suma 1 o resta -1 si la secuencia física es matemáticamente correcta.
+const int8_t tabla_encoder[16] = {0, 1, -1, 0, -1, 0, 0, 1, 1, 0, 0, -1, 0, -1, 1, 0};
+
+// Memoria para guardar el estado del milisegundo anterior
+uint8_t estado_ant_1 = 0;
+uint8_t estado_ant_2 = 0;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -90,21 +95,6 @@ void SystemClock_Config(void);
 extern I2C_HandleTypeDef hi2c1;
 extern I2C_HandleTypeDef hi2c3;
 
-
-int8_t processEncoderDelta(int8_t delta, int8_t *accumulator) {
-    int8_t output = 0;
-    *accumulator += delta;
-
-    while (*accumulator >= SENSITIVITY_THRESHOLD_MEC) {
-        output += 1;
-        *accumulator -= SENSITIVITY_THRESHOLD_MEC;
-    }
-    while (*accumulator <= -SENSITIVITY_THRESHOLD_MEC) {
-        output -= 1;
-        *accumulator += SENSITIVITY_THRESHOLD_MEC;
-    }
-    return output;
-}
 
 uint8_t readButton(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, uint8_t *lastState) {
     uint8_t current = HAL_GPIO_ReadPin(GPIOx, GPIO_Pin);
@@ -137,73 +127,54 @@ int _write(int file, char *ptr, int len) {
     HAL_UART_Transmit(&huart2, (uint8_t*)ptr, len, HAL_MAX_DELAY);
     return len;
 }
-// INTERRUPCIONES DE LOS ENCODERS (KY-040) Y UNITY
-// INTERRUPCIONES DE LOS ENCODERS (KY-040 / HW-040) Y UNITY
+// INTERRUPCIONES DE LOS ENCODERS (Máquina de Estados)
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
-    uint32_t current_time = HAL_GetTick();
 
-    // ---------------------------------------------------------
-    // Encoder 1: Inserción (PB5 = CLK, PA12 = DT)
-    // ---------------------------------------------------------
-    if(GPIO_Pin == GPIO_PIN_5) {
+    // ENCODER 1: Inserción (PB5 = CLK, PA12 = DT)
+    // Si la interrupción viene de CLK o de DT del Encoder 1...
+    if(GPIO_Pin == GPIO_PIN_5 || GPIO_Pin == GPIO_PIN_12) {
 
-        // FILTRO DE SOFTWARE: Aumentamos a 10ms.
-        // Es el tiempo que el microcontrolador "cierra los ojos" para ignorar rebotes.
-        if(current_time - last_irq_ins > 10) {
+        // Leemos el estado físico de ambos pines al mismo tiempo
+        uint8_t clk = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5);
+        uint8_t dt = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_12);
 
-            // VALIDACIÓN CRÍTICA: Solo actuamos si la "pelota ya está en el piso"
-            // Nos aseguramos de que el pin CLK realmente esté en estado BAJO (0)
-            if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5) == GPIO_PIN_RESET) {
+        // Unimos los bits para formar el estado actual (0, 1, 2 o 3)
+        uint8_t estado_actual = (clk << 1) | dt;
 
-                // Ahora que CLK está estable en 0, leemos DT para saber la dirección
-                GPIO_PinState dt_state = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_12);
+        // Creamos un índice combinando el estado anterior con el actual
+        uint8_t indice = (estado_ant_1 << 2) | estado_actual;
 
-                // Si DT es 1, giró a la derecha. Si es 0, giró a la izquierda.
-                int8_t delta = (dt_state == GPIO_PIN_SET) ? 1 : -1;
+        // Consultamos la tabla maestra
+        int8_t movimiento = tabla_encoder[indice];
 
-                // Pasamos por el filtro de sensibilidad que ya tenías
-                int8_t movimiento_real = processEncoderDelta(delta, &acum_mecanico_insercion);
-
-                if (movimiento_real != 0) {
-                    encoder_insercion += movimiento_real;
-                    activate = 1;
-                }
-            }
-            // Actualizamos el tiempo sin importar si entró o no al if anterior,
-            // para seguir bloqueando ruidos.
-            last_irq_ins = current_time;
+        if(movimiento != 0) {
+            encoder_insercion += movimiento;
+            activate = 1;
         }
+
+        // Guardamos el estado para la próxima vez
+        estado_ant_1 = estado_actual;
     }
 
-    // ---------------------------------------------------------
-    // Encoder 2: Torsión (PB1 = CLK, PB3 = DT)
-    // ---------------------------------------------------------
-    if(GPIO_Pin == GPIO_PIN_1) {
+    // ENCODER 2: Torsión (PB1 = CLK, PB3 = DT)
+    if(GPIO_Pin == GPIO_PIN_1 || GPIO_Pin == GPIO_PIN_3) {
 
-        // FILTRO DE SOFTWARE: Aumentamos a 10ms
-        if(current_time - last_irq_tor > 10) {
+        uint8_t clk = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_1);
+        uint8_t dt = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_3);
 
-            // Confirmamos que la señal CLK ya bajó y está estable
-            if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_1) == GPIO_PIN_RESET) {
+        uint8_t estado_actual = (clk << 1) | dt;
+        uint8_t indice = (estado_ant_2 << 2) | estado_actual;
 
-                // Leemos el pin DT
-                GPIO_PinState dt_state = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_3);
+        int8_t movimiento = tabla_encoder[indice];
 
-                int8_t delta = (dt_state == GPIO_PIN_SET) ? 1 : -1;
-
-                // Pasamos por el filtro de sensibilidad
-                int8_t movimiento_real = processEncoderDelta(delta, &acum_mecanico_torsion);
-
-                if (movimiento_real != 0) {
-                    encoder_torsion += movimiento_real;
-                    activate = 1;
-                }
-            }
-            last_irq_tor = current_time;
+        if(movimiento != 0) {
+            encoder_torsion += movimiento;
+            activate = 1;
         }
+
+        estado_ant_2 = estado_actual;
     }
 }
-
 // INTERRUPCIÓN DE RECEPCIÓN UART (Mensajes de Unity)
 // Unity debe enviar mensajes terminados en '\n', ej: "V1:100\n"
 
@@ -371,18 +342,31 @@ int main(void)
 					  vibrando = 0;   // Resetea el estado
 				  }
 	  	        // 5. ENVÍO DE DATOS A UNITY
-	  	        if (btn1 || btn2 || btn3 || btn4 || btn_suction || activate == 1) {
-	  	            printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d INS:%ld TOR:%ld\r\n",
-	  	                   btn1, btn2, btn3, btn4, btn_suction,
-						   enc2_send, enc1_send,
-	  	                   encoder_insercion, encoder_torsion);
+				  // 5. ENVÍO DE DATOS A UNITY
+				  if (btn1 || btn2 || btn3 || btn4 || btn_suction || activate == 1) {
 
-	  	            activate = 0;
-	  	            enc1_send = 0;
-	  	            enc2_send = 0;
-	  	            encoder_insercion = 0;
-	  	            encoder_torsion = 0;
-	  	        }
+				      // --- NUEVO FILTRO DE SALIDA (LIMITADOR A +1 / -1) ---
+				      // Si acumuló más de 1 paso rápido, lo limitamos a 1
+				      if (encoder_insercion > 1) encoder_insercion = 1;
+				      // Si acumuló más de -1 paso rápido, lo limitamos a -1
+				      else if (encoder_insercion < -1) encoder_insercion = -1;
+
+				      // Hacemos exactamente lo mismo para la torsión
+				      if (encoder_torsion > 1) encoder_torsion = 1;
+				      else if (encoder_torsion < -1) encoder_torsion = -1;
+				      // ----------------------------------------------------
+
+				      printf("B1:%d B2:%d B3:%d B4:%d Su:%d E1:%d E2:%d INS:%ld TOR:%ld\r\n",
+				             btn1, btn2, btn3, btn4, btn_suction,
+				             enc2_send, enc1_send,
+				             encoder_insercion, encoder_torsion);
+
+				      activate = 0;
+				      enc1_send = 0;
+				      enc2_send = 0;
+				      encoder_insercion = 0;
+				      encoder_torsion = 0;
+				  }
 
 	  	        HAL_Delay(20);
 	    }

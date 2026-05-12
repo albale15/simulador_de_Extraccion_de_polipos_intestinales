@@ -111,6 +111,14 @@ public class TutorialManager : MonoBehaviour
         // Fin del Tutorial
         txtInstrucciones.text = "Tutorial Completado. Regrese a la zona de extracción para finalizar.";
         mascara.Desactivar();
+        // Le damos 4 segundos al jugador para leer el texto final
+        yield return new WaitForSeconds(4f);
+
+        // Apagamos el panel principal
+        if (panelInstrucciones != null) panelInstrucciones.SetActive(false);
+
+        // Y por si acaso, aseguramos que el texto parpadeante también se apague
+        if (objTextoPresionar != null) objTextoPresionar.SetActive(false);
     }
 
     IEnumerator EvaluarCondicion(PasoTutorial p)
@@ -126,6 +134,7 @@ public class TutorialManager : MonoBehaviour
 
             case PasoTutorial.TipoEspera.AccionInput:
                 bool cumplido = false;
+                bool requiereSoltarBoton = false;
                 while (!cumplido)
                 {
                     hw = ConfigManager.instancia.datosActuales; // Refrescamos datos
@@ -163,6 +172,21 @@ public class TutorialManager : MonoBehaviour
                         if (!usandoPC && hw.botonSuccion) cumplido = true;
                     }
                     yield return null;
+                }
+                if (requiereSoltarBoton && !usandoPC)
+                {
+                    while (true)
+                    {
+                        hw = ConfigManager.instancia.datosActuales;
+
+                        // Rompemos este bucle de espera solo cuando el botón esté suelto (!hw.boton...)
+                        if (p.accionRequerida == "Freeze" && !hw.botonFreeze) break;
+                        if (p.accionRequerida == "Capture" && !hw.botonCapture) break;
+                        if (p.accionRequerida == "Accion" && !hw.botonAccion) break;
+                        if (p.accionRequerida == "Succion" && !hw.botonSuccion) break;
+
+                        yield return null;
+                    }
                 }
                 break;
 
