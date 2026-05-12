@@ -4,7 +4,6 @@ using System;
 public class DatosProcesados
 {
     public float insercionFinal;
-    public float torsionFinal;
     public float volanteXFinal;
     public float volanteYFinal;
 
@@ -13,6 +12,7 @@ public class DatosProcesados
     public bool botonZoom;
     public bool botonAccion;
     public bool botonSuccion;
+    public bool botonLimpiado;
 }
 // Obligamos a este script a iniciar primero
 [DefaultExecutionOrder(-50)]
@@ -26,14 +26,12 @@ public class ConfigManager : MonoBehaviour
 
     [Header("Sensibilidades")]
     public float sensInsercion = 1.0f;
-    public float sensTorsion = 1.0f;
     public float sensVolantes = 1.0f;
 
     [Header("Mapeo de Ejes (Hardware -> Juego)")]
     public string mapInsAdelante = "INS_+";
     public string mapInsAtras = "INS_-";
-    public string mapTorDer = "TOR_+";
-    public string mapTorIzq = "TOR_-";
+
     public string mapVolXDer = "E1_+";
     public string mapVolXIzq = "E1_-";
     public string mapVolYArr = "E2_+";
@@ -45,7 +43,7 @@ public class ConfigManager : MonoBehaviour
     public string mapZoom = "B3";
     public string mapAccion = "B4";
     public string mapSuccion = "Su";
-
+    public string mapLimpiado = "Lim";
     public DatosProcesados datosActuales = new DatosProcesados();
 
     void Awake()
@@ -82,7 +80,6 @@ public class ConfigManager : MonoBehaviour
         DatosProcesados limpios = new DatosProcesados();
 
         limpios.insercionFinal = (ObtenerEje(mapInsAdelante, d) - ObtenerEje(mapInsAtras, d)) * sensInsercion;
-        limpios.torsionFinal = (ObtenerEje(mapTorDer, d) - ObtenerEje(mapTorIzq, d)) * sensTorsion;
         limpios.volanteXFinal = (ObtenerEje(mapVolXDer, d) - ObtenerEje(mapVolXIzq, d)) * sensVolantes;
         limpios.volanteYFinal = (ObtenerEje(mapVolYArr, d) - ObtenerEje(mapVolYAba, d)) * sensVolantes;
 
@@ -91,6 +88,7 @@ public class ConfigManager : MonoBehaviour
         limpios.botonZoom = ObtenerBoton(mapZoom, d);
         limpios.botonAccion = ObtenerBoton(mapAccion, d);
         limpios.botonSuccion = ObtenerBoton(mapSuccion, d);
+        limpios.botonLimpiado = ObtenerBoton(mapLimpiado, d);
         // Una vez que tenemos los datos limpios y listos, los enviamos a través de nuestro propio evento para que cualquier otro script pueda usarlos sin preocuparse por el hardware
         datosActuales = limpios;
         AlRecibirDatosProcesados?.Invoke(limpios);
@@ -100,6 +98,7 @@ public class ConfigManager : MonoBehaviour
         d.boton3 = 0;
         d.boton4 = 0;
         d.botonSuccion = 0;
+        d.botonLimpiado = 0; 
     }
 
     void LateUpdate()
@@ -115,6 +114,7 @@ public class ConfigManager : MonoBehaviour
             datosActuales.botonZoom = false;
             datosActuales.botonAccion = false;
             datosActuales.botonSuccion = false;
+            datosActuales.botonLimpiado = false;
         }
     }
 
@@ -123,8 +123,6 @@ public class ConfigManager : MonoBehaviour
     {
         if (bind == "INS_+" && d.insercion > 0) return d.insercion;
         if (bind == "INS_-" && d.insercion < 0) return Mathf.Abs(d.insercion);
-        if (bind == "TOR_+" && d.torsion > 0) return d.torsion;
-        if (bind == "TOR_-" && d.torsion < 0) return Mathf.Abs(d.torsion);
         if (bind == "E1_+" && d.volante1 > 0) return d.volante1;
         if (bind == "E1_-" && d.volante1 < 0) return Mathf.Abs(d.volante1);
         if (bind == "E2_+" && d.volante2 > 0) return d.volante2;
@@ -139,19 +137,19 @@ public class ConfigManager : MonoBehaviour
         if (bind == "B3") return d.boton3 == 1;
         if (bind == "B4") return d.boton4 == 1;
         if (bind == "Su") return d.botonSuccion == 1;
+        if (bind == "Lim") return d.botonLimpiado == 1;
         return false;
     }
     // Esta función se puede llamar desde el menú de configuración para guardar los ajustes actuales en PlayerPrefs, lo que permite que persistan entre sesiones.
     public void GuardarAjustes()
     {
         PlayerPrefs.SetFloat("S_Ins", sensInsercion);
-        PlayerPrefs.SetFloat("S_Tor", sensTorsion);
+
         PlayerPrefs.SetFloat("S_Vol", sensVolantes);
 
         PlayerPrefs.SetString("M_InsA", mapInsAdelante);
         PlayerPrefs.SetString("M_InsB", mapInsAtras);
-        PlayerPrefs.SetString("M_TorD", mapTorDer);
-        PlayerPrefs.SetString("M_TorI", mapTorIzq);
+
         PlayerPrefs.SetString("M_VxD", mapVolXDer);
         PlayerPrefs.SetString("M_VxI", mapVolXIzq);
         PlayerPrefs.SetString("M_VyA", mapVolYArr);
@@ -162,19 +160,17 @@ public class ConfigManager : MonoBehaviour
         PlayerPrefs.SetString("M_BtnZ", mapZoom);
         PlayerPrefs.SetString("M_BtnA", mapAccion);
         PlayerPrefs.SetString("M_BtnS", mapSuccion);
+        PlayerPrefs.SetString("M_BtnL", mapLimpiado);
         PlayerPrefs.Save();
     }
     // Esta función se llama al iniciar el juego para cargar los ajustes guardados previamente, o usar los valores por defecto si no hay nada guardado.
     void CargarAjustes()
     {
         sensInsercion = PlayerPrefs.GetFloat("S_Ins", 1.0f);
-        sensTorsion = PlayerPrefs.GetFloat("S_Tor", 1.0f);
         sensVolantes = PlayerPrefs.GetFloat("S_Vol", 1.0f);
 
         mapInsAdelante = PlayerPrefs.GetString("M_InsA", "INS_+");
         mapInsAtras = PlayerPrefs.GetString("M_InsB", "INS_-");
-        mapTorDer = PlayerPrefs.GetString("M_TorD", "TOR_+");
-        mapTorIzq = PlayerPrefs.GetString("M_TorI", "TOR_-");
         mapVolXDer = PlayerPrefs.GetString("M_VxD", "E1_+");
         mapVolXIzq = PlayerPrefs.GetString("M_VxI", "E1_-");
         mapVolYArr = PlayerPrefs.GetString("M_VyA", "E2_+");
@@ -185,16 +181,17 @@ public class ConfigManager : MonoBehaviour
         mapZoom = PlayerPrefs.GetString("M_BtnZ", "B3");
         mapAccion = PlayerPrefs.GetString("M_BtnA", "B4");
         mapSuccion = PlayerPrefs.GetString("M_BtnS", "Su");
+        mapLimpiado = PlayerPrefs.GetString("M_BtnL", "Lim");
     }
     // Esta función se puede llamar desde el menú de configuración para restablecer todos los ajustes a sus valores predeterminados de fábrica, y luego guardarlos.
     public void RestablecerValores()
     {
-        sensInsercion = 1.0f; sensTorsion = 1.0f; sensVolantes = 1.0f;
+        sensInsercion = 1.0f; sensVolantes = 1.0f;
         mapInsAdelante = "INS_+"; mapInsAtras = "INS_-";
-        mapTorDer = "TOR_+"; mapTorIzq = "TOR_-";
         mapVolXDer = "E1_+"; mapVolXIzq = "E1_-";
         mapVolYArr = "E2_+"; mapVolYAba = "E2_-";
-        mapFreeze = "B1"; mapCapture = "B2"; mapZoom = "B3"; mapAccion = "B4"; mapSuccion = "Su";
+        mapFreeze = "B1"; mapCapture = "B2"; mapZoom = "B4"; mapAccion = "B3"; mapSuccion = "Su";
+        mapLimpiado = "Lim"; 
         GuardarAjustes();
     }
 }

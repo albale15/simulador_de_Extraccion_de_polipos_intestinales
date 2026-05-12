@@ -7,9 +7,15 @@ using System;
 // 1. EL CONTENEDOR DE DATOS TRADUCIDOS
 public class DatosHardware
 {
-    public int boton1, boton2, boton3, boton4, botonSuccion;
+    // Orden exacto de los botones
+    public int botonLimpiado; // "Lim"
+    public int botonSuccion;  // "Su"
+    public int boton1;        // "B1"
+    public int boton2;        // "B2"
+    public int boton3;        // "B3"
+    public int boton4;        // "B4"
     public int volante1, volante2; // E1 y E2
-    public int insercion, torsion; // INS y TOR
+    public int insercion; // "INS"
 }
 
 public class SerialManager : MonoBehaviour
@@ -213,15 +219,15 @@ public class SerialManager : MonoBehaviour
                     // Asignamos el valor a la variable correcta de Unity
                     switch (clave)
                     {
+                        case "Lim": datosActuales.botonLimpiado = valor; break;
+                        case "Su": datosActuales.botonSuccion = valor; break;
                         case "B1": datosActuales.boton1 = valor; break;
                         case "B2": datosActuales.boton2 = valor; break;
                         case "B3": datosActuales.boton3 = valor; break;
                         case "B4": datosActuales.boton4 = valor; break;
-                        case "Su": datosActuales.botonSuccion = valor; break;
                         case "E1": datosActuales.volante1 = valor; break;
                         case "E2": datosActuales.volante2 = valor; break;
                         case "INS": datosActuales.insercion = valor; break;
-                        case "TOR": datosActuales.torsion = valor; break;
                     }
                 }
             }

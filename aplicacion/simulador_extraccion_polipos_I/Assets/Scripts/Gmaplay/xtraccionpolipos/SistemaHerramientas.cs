@@ -31,7 +31,7 @@ public class SistemaHerramientas : MonoBehaviour
     public bool llevandoPolipo = false;
     public bool estaCongelado = false;
 
-    // --- NUEVO: Sensor de zona de extracción ---
+    // Sensor de zona de extracción
     [HideInInspector]
     public bool enZonaExtraccion = false;
 
@@ -51,13 +51,13 @@ public class SistemaHerramientas : MonoBehaviour
     // Memoria para Higiene
     public PolipoInteractuable ultimoPolipoCortado;
 
-    // --- NUEVO: Contadores de movimientos para higiene ---
+    // Contadores de movimientos para higiene
     private int movimientosSinSuccionar = 0;
     private bool endoscopioEstabaMoviendo = false;
     private int movimientosEnSeleccion = 0; // NUEVO: Para cancelar el menú si se mueve
 
     private DatosProcesados datosHardware;
-    private bool ultimoF, ultimoC, ultimoZ, ultimoS, ultimoA;
+    private bool ultimoF, ultimoC, ultimoZ, ultimoS, ultimoA, ultimoL;
     [Header("Fin de Procedimiento")]
     public bool enModoConfirmarSalida = false;
     public bool EstaEnModoSeleccion() { return enModoSeleccion; }
@@ -98,7 +98,7 @@ public class SistemaHerramientas : MonoBehaviour
 
     void Update()
     {
-        bool btnFreeze = false, btnCapture = false, btnZoom = false, btnSuccion = false, btnAccion = false;
+        bool btnFreeze = false, btnCapture = false, btnZoom = false, btnSuccion = false, btnAccion = false, btnLimpiado = false;
         bool moviendo = false; // Sensor local de movimiento
 
         bool modoPC = false;
@@ -114,9 +114,10 @@ public class SistemaHerramientas : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Alpha3)) { btnZoom = true; }
             if (Input.GetKeyDown(KeyCode.Alpha4)) { btnSuccion = true; }
             if (Input.GetKeyDown(KeyCode.Alpha5)) { btnAccion = true; }
+            if (Input.GetKeyDown(KeyCode.Alpha6)) { btnLimpiado = true; }
 
             // Verifica si está tocando teclas de movimiento
-            moviendo = Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D);
+            moviendo = Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow);
         }
         else
         {
@@ -127,15 +128,16 @@ public class SistemaHerramientas : MonoBehaviour
                 btnZoom = (datosHardware.botonZoom && !ultimoZ);
                 btnSuccion = (datosHardware.botonSuccion && !ultimoS);
                 btnAccion = (datosHardware.botonAccion && !ultimoA);
+                btnLimpiado = (datosHardware.botonLimpiado && !ultimoL);
 
                 // Verifica si los valores analógicos del hardware superan el reposo
-                moviendo = Mathf.Abs(datosHardware.insercionFinal) > 0.05f || Mathf.Abs(datosHardware.torsionFinal) > 0.05f || Mathf.Abs(datosHardware.volanteXFinal) > 0.05f || Mathf.Abs(datosHardware.volanteYFinal) > 0.05f;
-
+                moviendo = Mathf.Abs(datosHardware.insercionFinal) > 0.05f || Mathf.Abs(datosHardware.volanteXFinal) > 0.05f || Mathf.Abs(datosHardware.volanteYFinal) > 0.05f;
                 ultimoF = datosHardware.botonFreeze;
                 ultimoC = datosHardware.botonCapture;
                 ultimoZ = datosHardware.botonZoom;
                 ultimoS = datosHardware.botonSuccion;
                 ultimoA = datosHardware.botonAccion;
+                ultimoL = datosHardware.botonLimpiado;
             }
         }
 
@@ -149,6 +151,7 @@ public class SistemaHerramientas : MonoBehaviour
             btnZoom = false;
             btnSuccion = false;
             btnAccion = false;
+            btnLimpiado = false;
             moviendo = false;
         }
         if (TutorialManager.instancia != null && ManejadorPartida.dificultad == 0)
@@ -162,9 +165,10 @@ public class SistemaHerramientas : MonoBehaviour
                 if (filtro != "Accion") btnAccion = false;
                 if (filtro != "Succion") btnSuccion = false;
                 if (filtro != "Zoom") btnZoom = false;
+                if (filtro != "Limpiado") btnLimpiado = false;
             }
         }
-        // --- LÓGICA DE HIGIENE: 3 MOVIMIENTOS ---
+        // LÓGICA DE HIGIENE: 3 MOVIMIENTOS
         if (ultimoPolipoCortado != null && ultimoPolipoCortado.estadoActual == PolipoInteractuable.EstadoPolipo.CortadoSuelto)
         {
             if (moviendo && !endoscopioEstabaMoviendo)
@@ -184,7 +188,7 @@ public class SistemaHerramientas : MonoBehaviour
             }
         }
 
-        // --- NUEVA LÓGICA: CANCELAR SELECCIÓN SI SE MUEVE ---
+        // CANCELAR SELECCIÓN SI SE MUEVE
         if (enModoSeleccion)
         {
             if (moviendo && !endoscopioEstabaMoviendo)
@@ -206,7 +210,7 @@ public class SistemaHerramientas : MonoBehaviour
         endoscopioEstabaMoviendo = moviendo;
         // ----------------------------------------------------
 
-        // --- BLOQUEO DE FREEZE INTACTO QUE TÚ PROGRAMASTE ---
+        //BLOQUEO DE FREEZE INTACTO QUE TÚ PROGRAMASTE
         if (estaCongelado)
         {
             if (btnAccion || btnZoom || btnSuccion)
@@ -216,7 +220,7 @@ public class SistemaHerramientas : MonoBehaviour
 
             if (btnCapture) EjecutarCapture();
             if (btnFreeze) EjecutarFreeze();
-
+            if (btnLimpiado) EjecutarLimpiado();
             return;
         }
 
@@ -225,6 +229,7 @@ public class SistemaHerramientas : MonoBehaviour
             if (btnZoom && camaraPrincipal != null) EjecutarZoom();
             if (btnFreeze) EjecutarFreeze();
             if (btnCapture) EjecutarCapture();
+            if (btnLimpiado) EjecutarLimpiado();
 
             // --- LÓGICA DE SUCCIÓN MANUAL Y CONTAMINACIÓN ---
             if (btnSuccion)
@@ -332,6 +337,13 @@ public class SistemaHerramientas : MonoBehaviour
             ActivarModoSalida(true);
             return;
         }
+
+    }
+
+    //FUNCIÓN DE LAVADO DE LENTE
+    private void EjecutarLimpiado()
+    {
+        EnviarInfoUI("Lavado de lente activado. Campo visual irrigado.", "#00FFFF");
 
     }
 

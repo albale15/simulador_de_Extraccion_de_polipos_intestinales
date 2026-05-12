@@ -326,27 +326,26 @@ int main(void)
 			  vibrando = 0;   // Resetea el estado
 		  }
 		// 5. ENVÍO DE DATOS A UNITY
-		  // 5. ENVÍO DE DATOS A UNITY
 		  if (btn_lim || btn_su || btn1 || btn2 || btn3 || btn4 || activate == 1) {
 
-		              // Limitador a +1 / -1 solo para Inserción
-		              if (encoder_insercion > 1) encoder_insercion = 1;
-		              else if (encoder_insercion < -1) encoder_insercion = -1;
+			  // Limitador a +1 / -1 solo para Inserción
+			  if (encoder_insercion > 1) encoder_insercion = 1;
+			  else if (encoder_insercion < -1) encoder_insercion = -1;
 
-		              //FORMATO DE ENVÍO ORDENADO
-		              // Lim:0 Su:0 B1:0 B2:0 B3:0 B4:0 E1:0 E2:0 INS:0
-		              printf("Lim:%d Su:%d B1:%d B2:%d B3:%d B4:%d E1:%d E2:%d INS:%ld\r\n",
-		                     btn_lim, btn_su, btn1, btn2, btn3, btn4,
-		                     enc2_send, enc1_send, encoder_insercion);
+			  //FORMATO DE ENVÍO ORDENADO
+			  // Lim:0 Su:0 B1:0 B2:0 B3:0 B4:0 E1:0 E2:0 INS:0
+			  printf("Lim:%d Su:%d B1:%d B2:%d B3:%d B4:%d E1:%d E2:%d INS:%ld\r\n",
+					 btn_lim, btn_su, btn1, btn2, btn3, btn4,
+					 enc2_send, enc1_send, encoder_insercion);
 
-		              activate = 0;
-		              enc1_send = 0;
-		              enc2_send = 0;
-		              encoder_insercion = 0;
-		          }
+			  activate = 0;
+			  enc1_send = 0;
+			  enc2_send = 0;
+			  encoder_insercion = 0;
+		  }
 
-		          HAL_Delay(20);
-		      }
+		  HAL_Delay(20);
+	  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

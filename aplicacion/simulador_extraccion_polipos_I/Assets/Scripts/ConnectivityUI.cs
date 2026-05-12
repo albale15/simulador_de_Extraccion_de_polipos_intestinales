@@ -72,7 +72,7 @@ public class ConnectivityUI : MonoBehaviour
 
         if (config != null)
         {
-            // TRUCO DE SEGURIDAD PARA SINGLETONS:
+            // SEGURIDAD PARA SINGLETONS:
             // Desuscribimos antes de suscribir. Esto evita escuchar los datos dobles.
             config.AlRecibirDatosProcesados -= EscucharDatosLimpios;
             config.AlRecibirDatosProcesados += EscucharDatosLimpios;
@@ -108,14 +108,14 @@ public class ConnectivityUI : MonoBehaviour
         if (datos.insercionFinal > 0) feedback += "Tubo: Insertando \n";
         else if (datos.insercionFinal < 0) feedback += "Tubo: Retrayendo \n";
 
-        if (datos.torsionFinal > 0) feedback += "Torque: Girando Derecha \n";
-        else if (datos.torsionFinal < 0) feedback += "Torque: Girando Izquierda \n";
 
         if (datos.botonFreeze) feedback += "<color=#00FFFF>Acción: Freeze activada</color>\n";
         if (datos.botonCapture) feedback += "<color=#FFD700>Acción: Capture activada</color>\n";
         if (datos.botonZoom) feedback += "<color=#FF8C00>Acción: Zoom activado</color>\n";
         if (datos.botonSuccion) feedback += "<color=#1E90FF>Acción: Succión activada</color>\n";
 
+        if (datos.botonAccion) feedback += "<color=#FF69B4>Acción: Botón 5 (Acción) activado</color>\n";
+        if (datos.botonLimpiado) feedback += "<color=#32CD32>Acción: Limpiado de lente activado</color>\n";
         txtFeedbackAcciones.text = feedback;
     }
 
@@ -131,7 +131,7 @@ public class ConnectivityUI : MonoBehaviour
             ActualizarPanelVisual(serial.estadoActual);
         }
 
-        // --- SOLUCIÓN AL FEEDBACK DE "BUSCANDO..." ---
+        // FEEDBACK DE "BUSCANDO
         // El SerialManager actualiza su variable "mensajeInterfaz" constantemente.
         // Aquí le decimos a la UI que lea esa actualización frame a frame si está en modo "Buscando".
         if (serial.estadoActual == SerialManager.EstadoConexion.Buscando && txtEstado != null)

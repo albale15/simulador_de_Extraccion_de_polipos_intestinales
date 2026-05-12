@@ -15,12 +15,12 @@ public class EndoscopioCurvas : MonoBehaviour
     [Header("Configuración de Controles")]
     public float velocidadInsercion = 0.5f;
     public float velocidadExtraccion = 0.8f;
-    public float velocidadTorque = 100f;
+    
     public float velocidadGiroPunta = 80f;
     public float suavidadGiroHuesos = 15f;
 
     [Header("Mecánicas Médicas")]
-    public float fuerzaRigidezTorque = 1.5f;
+
     public float fuerzaArrectar = 5.0f;
     public float umbralBucleAtasco = 140f;
     public float caidaGravedad = 8f;
@@ -30,9 +30,7 @@ public class EndoscopioCurvas : MonoBehaviour
     public float limiteFlexionRelajada = 160f;
 
     [Header("Límites de Seguridad (Fatal Errors)")]
-    public float maxTorquePermitido = 540f;
-    public int maxIntentosTorque = 3;
-    public float tiempoMaximoTorque = 2f;
+
     public float tiempoMaximoForzandoBucle = 3f;
     public float tiempoMaximoTiron = 4f;
     public float valorDañoExtraccion = 5f;
@@ -48,9 +46,7 @@ public class EndoscopioCurvas : MonoBehaviour
     private bool controlActivo = false;
 
     // Contadores internos
-    private int contadorAvisoRoturaTorque = 0;
-    private bool teclaPresionadaEnLimite = false;
-    private float tiempoForzandoTorque = 0f;
+
     private float tiempoForzandoBucle = 0f;
     private float tiempoExtraccionBrusca = 0f;
 
@@ -63,12 +59,12 @@ public class EndoscopioCurvas : MonoBehaviour
     [HideInInspector]
     public float distanciaTotalInsertada = 0f; // El Odómetro real
 
-    public float rotX = 0f, rotZ = 0f, torqueGiro = 0f;
+    public float rotX = 0f, rotZ = 0f;
     private List<Quaternion> historialCurvas = new List<Quaternion>();
 
     private Rigidbody rb;
     private float empujeFisico = 0f;
-    private float inputTorqueActivo = 0f;
+
 
     private LineRenderer lr;
     private List<Vector3> rutaTubo = new List<Vector3>();
@@ -146,7 +142,6 @@ public class EndoscopioCurvas : MonoBehaviour
         float rotZAnterior = rotZ;
 
         empujeFisico = 0f;
-        inputTorqueActivo = 0f;
         bool tocandoFlechas = false;
         bool bloqueadoPorTutorial = (TutorialManager.instancia != null && TutorialManager.instancia.controlesBloqueados);
         bool modoPC = !usarControlHardware;
@@ -163,13 +158,9 @@ public class EndoscopioCurvas : MonoBehaviour
                 if (Input.GetKey(KeyCode.LeftArrow)) { rotZ += velocidadGiroPunta * Time.deltaTime; tocandoFlechas = true; }
                 if (Input.GetKey(KeyCode.RightArrow)) { rotZ -= velocidadGiroPunta * Time.deltaTime; tocandoFlechas = true; }
 
-                if (Input.GetKey(KeyCode.A)) inputTorqueActivo = -1f;
-                if (Input.GetKey(KeyCode.D)) inputTorqueActivo = 1f;
 
                 if (Input.GetKeyDown(KeyCode.W)) Debug.Log("[PC] Avanzando tubo (W)");
-                if (Input.GetKeyDown(KeyCode.S)) Debug.Log("[PC] Retrayendo tubo (S)");
-                if (Input.GetKeyDown(KeyCode.A)) Debug.Log("[PC] Torque Izquierda (A)");
-                if (Input.GetKeyDown(KeyCode.D)) Debug.Log("[PC] Torque Derecha (D)");
+                if (Input.GetKeyDown(KeyCode.S)) Debug.Log("[PC] Retrayendo tubo (S)");;
                 if (Input.GetKeyDown(KeyCode.UpArrow)) Debug.Log("[PC] Moviendo Punta (Flechas)");
             }
             else
@@ -179,7 +170,6 @@ public class EndoscopioCurvas : MonoBehaviour
                     if (Time.time - tiempoUltimoDatoHardware > 0.15f)
                     {
                         datosHardware.insercionFinal = 0f;
-                        datosHardware.torsionFinal = 0f;
                         datosHardware.volanteXFinal = 0f;
                         datosHardware.volanteYFinal = 0f;
                     }
@@ -187,8 +177,6 @@ public class EndoscopioCurvas : MonoBehaviour
                     empujeFisico = Mathf.Clamp(datosHardware.insercionFinal, -1f, 1f);
                     if (Mathf.Abs(empujeFisico) < 0.05f) empujeFisico = 0f;
 
-                    inputTorqueActivo = Mathf.Clamp(datosHardware.torsionFinal, -1f, 1f);
-                    if (Mathf.Abs(inputTorqueActivo) < 0.05f) inputTorqueActivo = 0f;
 
                     if (Mathf.Abs(datosHardware.volanteYFinal) > 0.05f)
                     {
@@ -215,9 +203,6 @@ public class EndoscopioCurvas : MonoBehaviour
                 // Si exigen jalar ("S"), anulamos el empuje hacia adelante ("W")
                 if (filtro != "S" && empujeFisico < 0) empujeFisico = 0f;
 
-                // Si la acción no es "Torque", anulamos cualquier rotación del cable
-                if (filtro != "Torque") inputTorqueActivo = 0f;
-
                 // Si la acción no es "Flechas", revertimos si intentan mover la punta con los volantes
                 if (filtro != "Flechas" && tocandoFlechas)
                 {
@@ -242,9 +227,9 @@ public class EndoscopioCurvas : MonoBehaviour
                 rotZ = rotZAnterior;
                 tocandoFlechas = false; // Esto apaga el sensor de movimiento de la punta
             }
-            controlActivo = (Mathf.Abs(empujeFisico) > 0 || Mathf.Abs(inputTorqueActivo) > 0 || tocandoFlechas);
+            controlActivo = (Mathf.Abs(empujeFisico) > 0 || tocandoFlechas);
         }
-        controlActivo = (Mathf.Abs(empujeFisico) > 0 || Mathf.Abs(inputTorqueActivo) > 0 || tocandoFlechas);
+        controlActivo = (Mathf.Abs(empujeFisico) > 0 || tocandoFlechas);
         if (herramientas != null && herramientas.estaCongelado)
         {
             if (controlActivo)
@@ -256,14 +241,12 @@ public class EndoscopioCurvas : MonoBehaviour
                 }
 
                 empujeFisico = 0f;
-                inputTorqueActivo = 0f;
                 tocandoFlechas = false;
                 controlActivo = false;
                 return;
             }
             else
             {
-                // --- EL FIX ESTÁ AQUÍ ---
                 // Si el jugador suelta los controles (deja de moverse), "recargamos" la penalización 
                 // para que le vuelva a quitar puntos si vuelve a tocar algo por error.
                 alertaFreezeDada = false;
@@ -276,8 +259,7 @@ public class EndoscopioCurvas : MonoBehaviour
 
         if (empujeFisico > 0 && !tocandoFlechas)
         {
-            float factorFlexibilidad = 1f - Mathf.Clamp01(Mathf.Abs(torqueGiro) / 40f);
-            rotX += caidaGravedad * factorFlexibilidad * Time.deltaTime;
+            rotX += caidaGravedad * Time.deltaTime;
         }
 
         if (empujeFisico < 0)
@@ -289,56 +271,13 @@ public class EndoscopioCurvas : MonoBehaviour
             rotX = Mathf.Lerp(rotX, 0f, Time.deltaTime * velocidadRelajacion);
             rotZ = Mathf.Lerp(rotZ, 0f, Time.deltaTime * velocidadRelajacion);
 
-            // Reducir la rotación lateral (torque) lentamente al extraer 
-            // para que el tubo no ruede sobre sí mismo y se "desenrede" naturalmente.
-            if (inputTorqueActivo == 0)
-            {
-                torqueGiro = Mathf.Lerp(torqueGiro, 0f, Time.deltaTime * 3f);
-            }
         }
 
         float limiteActual = (empujeFisico > 0) ? limiteFlexionNormal : limiteFlexionRelajada;
         rotX = Mathf.Clamp(rotX, -limiteActual, limiteActual);
         rotZ = Mathf.Clamp(rotZ, -limiteActual, limiteActual);
 
-        if (inputTorqueActivo != 0)
-        {
-            float nuevoTorque = torqueGiro + (inputTorqueActivo * velocidadTorque * Time.deltaTime);
-
-            if (Mathf.Abs(nuevoTorque) > maxTorquePermitido)
-            {
-                if (!teclaPresionadaEnLimite)
-                {
-                    contadorAvisoRoturaTorque++;
-                    teclaPresionadaEnLimite = true;
-
-                    if (monitorUI != null) monitorUI.RegistrarErrorEstandarizado(MonitorEndoscopiaUI.CategoriaEvaluacion.Seguridad, 1, "Suavidad de Desplazamiento: Forzó bruscamente los límites de torque.");
-
-                    if (contadorAvisoRoturaTorque >= maxIntentosTorque)
-                        ProcesarGameOver("Rompiste la fibra óptica por forzar el límite de torque.");
-                    else
-                        Debug.LogWarning($"<color=orange>CUIDADO: Forzando Torque. Toques: ({contadorAvisoRoturaTorque}/{maxIntentosTorque}). Suelta y gira al otro lado para relajar.</color>");
-                }
-                tiempoForzandoTorque += Time.deltaTime;
-                if (tiempoForzandoTorque >= tiempoMaximoTorque)
-                    ProcesarGameOver("Rompiste la fibra óptica por mantener tensión extrema.");
-
-                torqueGiro = Mathf.Clamp(nuevoTorque, -maxTorquePermitido, maxTorquePermitido);
-            }
-            else
-            {
-                torqueGiro = nuevoTorque;
-                teclaPresionadaEnLimite = false;
-                tiempoForzandoTorque = 0f;
-            }
-        }
-        else
-        {
-            teclaPresionadaEnLimite = false;
-            tiempoForzandoTorque = 0f;
-        }
-
-        if (Mathf.Abs(torqueGiro) < maxTorquePermitido - 10f) contadorAvisoRoturaTorque = 0;
+        
     }
 
     void FixedUpdate()
@@ -391,7 +330,7 @@ public class EndoscopioCurvas : MonoBehaviour
                 else
                 {
                     int porcentaje = (int)((tiempoForzandoBucle / tiempoMaximoForzandoBucle) * 100);
-                    Debug.LogWarning($"<color=orange>¡ATASCO! Ángulo ({anguloBucle}°). USA S + A/D PARA ARRECTAR. Daño: {porcentaje}%</color>");
+                    Debug.LogWarning($"<color=orange>¡ATASCO! Ángulo ({anguloBucle}°). USA S PARA ARRECTAR. Daño: {porcentaje}%</color>"); 
                     if (porcentaje >= siguienteUmbralSuavidad)
                     {
                         if (monitorUI != null)
@@ -509,10 +448,8 @@ public class EndoscopioCurvas : MonoBehaviour
 
         if (empujeFisico != 0)
         {
-            float nivelDeTension = Mathf.Abs(torqueGiro);
-            float rigidezPorTension = nivelDeTension * 0.01f * fuerzaRigidezTorque;
-            float fuerzaFinalDeEnderezado = (empujeFisico > 0) ? rigidezPorTension : (inputTorqueActivo != 0 ? fuerzaArrectar : 0f);
 
+            float fuerzaFinalDeEnderezado = (empujeFisico < 0) ? fuerzaArrectar : 0f;
             if (fuerzaFinalDeEnderezado > 0)
             {
                 for (int i = 1; i < olaDeCurvas.Length; i++)
@@ -599,6 +536,7 @@ public class EndoscopioCurvas : MonoBehaviour
     {
         if (juegoTerminado || huesos.Length < 2) return;
 
+        // --- ELIMINADO: La rotación axial Y multiplicada por el Torque ---
         olaDeCurvas[0] = olaDeCurvas[1] * Quaternion.Euler(rotX, 0, rotZ);
         Quaternion curvaCuello = Quaternion.identity;
 
@@ -610,12 +548,12 @@ public class EndoscopioCurvas : MonoBehaviour
 
             if (i == 1) curvaCuello = curvaSuave;
 
-            Quaternion rotacionObjetivo = rotacionesGlobalesIniciales[i] * curvaSuave * Quaternion.Euler(0, torqueGiro, 0);
+            Quaternion rotacionObjetivo = rotacionesGlobalesIniciales[i] * curvaSuave;
             huesos[i].rotation = Quaternion.Slerp(huesos[i].rotation, rotacionObjetivo, Time.deltaTime * suavidadGiroHuesos);
         }
 
         Quaternion curvaPunta = curvaCuello * Quaternion.Euler(rotX, 0, rotZ);
-        Quaternion objPunta = rotacionesGlobalesIniciales[0] * curvaPunta * Quaternion.Euler(0, torqueGiro, 0);
+        Quaternion objPunta = rotacionesGlobalesIniciales[0] * curvaPunta;
         huesos[0].rotation = Quaternion.Slerp(huesos[0].rotation, objPunta, Time.deltaTime * suavidadGiroHuesos);
     }
 }

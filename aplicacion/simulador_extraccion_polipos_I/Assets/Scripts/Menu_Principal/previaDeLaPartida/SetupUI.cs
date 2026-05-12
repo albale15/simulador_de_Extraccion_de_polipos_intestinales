@@ -74,7 +74,7 @@ public class SetupUI : MonoBehaviour
         popupAvisoNoGuardado.SetActive(false);
     }
 
-    // --- NUEVO: SISTEMA DE ESCUCHA ---
+    // SISTEMA DE ESCUCHA 
     void OnEnable()
     {
         if (HistoryManager.instancia != null)
@@ -253,7 +253,7 @@ public class SetupUI : MonoBehaviour
             sliders[idB].value = restante - sliders[idA].value;
         }
 
-        // --- CAMBIO: ESCRIBIMOS EN LOS INPUTS EN VEZ DE LOS TXT ---
+        // ESCRIBIMOS EN LOS INPUTS EN VEZ DE LOS TXT
         for (int i = 0; i < 3; i++)
         {
             if (inputs[i] != null) inputs[i].text = sliders[i].value.ToString("0");
@@ -261,7 +261,7 @@ public class SetupUI : MonoBehaviour
 
         ajustandoSliders = false;
     }
-    // --- NUEVA FUNCIÓN: DEL INPUT AL SLIDER ---
+    // DEL INPUT AL SLIDER
     private void AlCambiarInputPeso(int indice, string valorTxt)
     {
         if (ajustandoSliders) return;
@@ -335,17 +335,17 @@ public class SetupUI : MonoBehaviour
 
     public void BotonEmpezar()
     {
-        // 1. Limpiamos cualquier error previo
+        // Limpiamos cualquier error previo
         if (txtFeedbackError != null) txtFeedbackError.text = "";
 
-        // 2. VALIDACIÓN: Nombre vacío
+        // VALIDACIÓN: Nombre vacío
         if (string.IsNullOrWhiteSpace(inputNombre.text))
         {
             if (txtFeedbackError != null) txtFeedbackError.text = "<color=red>Error: Ingrese el nombre del estudiante para poder iniciar.</color>";
             return; // Detiene el código, no inicia la partida
         }
 
-        // 3. VALIDACIÓN: Suma exacta de pólipos
+        // Suma exacta de pólipos
         int total, y1, y2, y3, y4;
         int.TryParse(inputTotalPolipos.text, out total);
         int.TryParse(inputY1.text, out y1);
@@ -364,7 +364,7 @@ public class SetupUI : MonoBehaviour
             return; // Detiene el código, no inicia la partida
         }
 
-        // 4. Si todo es correcto, permitimos el inicio
+        // Si todo es correcto, permitimos el inicio
         if (configAvanzadaModificada)
         {
             popupAvisoNoGuardado.SetActive(true);

@@ -10,12 +10,10 @@ public class ConfigUI : MonoBehaviour
 
     [Header("Sliders de Sensibilidad")]
     public Slider sliderSensIns;
-    public Slider sliderSensTor;
     public Slider sliderSensVol;
 
     [Header("Textos de Sensibilidad")]
     public TextMeshProUGUI txtValIns;
-    public TextMeshProUGUI txtValTor;
     public TextMeshProUGUI txtValVol;
 
     [Header("Textos de Mapeo: Volantes")]
@@ -27,8 +25,7 @@ public class ConfigUI : MonoBehaviour
     [Header("Textos de Mapeo: Tubo")]
     public TextMeshProUGUI txtMapInsAdelante;
     public TextMeshProUGUI txtMapInsAtras;
-    public TextMeshProUGUI txtMapTorDer;
-    public TextMeshProUGUI txtMapTorIzq;
+
 
     [Header("Textos de Mapeo: Botones")]
     public TextMeshProUGUI txtMapFreeze;
@@ -36,6 +33,7 @@ public class ConfigUI : MonoBehaviour
     public TextMeshProUGUI txtMapZoom;
     public TextMeshProUGUI txtMapSuccion;
     public TextMeshProUGUI txtMapAccion; // NUEVO: El texto para el botón de Acción
+    public TextMeshProUGUI txtMapLimpiado;
 
     [Header("Feedback al Usuario")]
     public TextMeshProUGUI txtFeedback;
@@ -86,7 +84,7 @@ public class ConfigUI : MonoBehaviour
 
         if (serial != null)
         {
-            // TRUCO DE SEGURIDAD PARA SINGLETONS:
+            // SEGURIDAD PARA SINGLETONS:
             // Desuscribimos antes de suscribir. Esto evita bugs de mapeo múltiple
             // si la escena se recarga y el Singleton sobrevive.
             serial.AlRecibirNuevosDatos -= EscucharParaMapear;
@@ -107,7 +105,6 @@ public class ConfigUI : MonoBehaviour
         if (config == null) return;
 
         if (sliderSensIns) sliderSensIns.SetValueWithoutNotify(config.sensInsercion);
-        if (sliderSensTor) sliderSensTor.SetValueWithoutNotify(config.sensTorsion);
         if (sliderSensVol) sliderSensVol.SetValueWithoutNotify(config.sensVolantes);
 
         if (txtMapVolXIzq) txtMapVolXIzq.text = config.mapVolXIzq;
@@ -116,14 +113,13 @@ public class ConfigUI : MonoBehaviour
         if (txtMapVolYAba) txtMapVolYAba.text = config.mapVolYAba;
         if (txtMapInsAdelante) txtMapInsAdelante.text = config.mapInsAdelante;
         if (txtMapInsAtras) txtMapInsAtras.text = config.mapInsAtras;
-        if (txtMapTorDer) txtMapTorDer.text = config.mapTorDer;
-        if (txtMapTorIzq) txtMapTorIzq.text = config.mapTorIzq;
         if (txtMapFreeze) txtMapFreeze.text = config.mapFreeze;
         if (txtMapCapture) txtMapCapture.text = config.mapCapture;
         if (txtMapZoom) txtMapZoom.text = config.mapZoom;
         if (txtMapSuccion) txtMapSuccion.text = config.mapSuccion;
 
         if (txtMapAccion) txtMapAccion.text = config.mapAccion;
+        if (txtMapLimpiado) txtMapLimpiado.text = config.mapLimpiado;
 
         txtFeedback.text = "Modifica los valores y presiona 'Guardar' para aplicar.";
         ActualizarTextosSensibilidad();
@@ -133,13 +129,6 @@ public class ConfigUI : MonoBehaviour
     {
         if (config == null) return;
         config.sensInsercion = val;
-        ActualizarTextosSensibilidad();
-    }
-
-    public void CambiarSensibilidadTorsion(float val)
-    {
-        if (config == null) return;
-        config.sensTorsion = val;
         ActualizarTextosSensibilidad();
     }
 
@@ -154,7 +143,6 @@ public class ConfigUI : MonoBehaviour
     {
         if (config == null) return;
         if (txtValIns) txtValIns.text = config.sensInsercion.ToString("F1") + "x";
-        if (txtValTor) txtValTor.text = config.sensTorsion.ToString("F1") + "x";
         if (txtValVol) txtValVol.text = config.sensVolantes.ToString("F1") + "x";
     }
 
@@ -164,15 +152,13 @@ public class ConfigUI : MonoBehaviour
     public void MapearVolYAba() { PrepararMapeo("VolYAba", true, txtMapVolYAba); }
     public void MapearInsAdelante() { PrepararMapeo("InsAde", true, txtMapInsAdelante); }
     public void MapearInsAtras() { PrepararMapeo("InsAtr", true, txtMapInsAtras); }
-    public void MapearTorDer() { PrepararMapeo("TorDer", true, txtMapTorDer); }
-    public void MapearTorIzq() { PrepararMapeo("TorIzq", true, txtMapTorIzq); }
     public void MapearFreeze() { PrepararMapeo("Freeze", false, txtMapFreeze); }
     public void MapearCapture() { PrepararMapeo("Capture", false, txtMapCapture); }
     public void MapearZoom() { PrepararMapeo("Zoom", false, txtMapZoom); }
     public void MapearSuccion() { PrepararMapeo("Succion", false, txtMapSuccion); }
 
     public void MapearAccion() { PrepararMapeo("Accion", false, txtMapAccion); }
-
+    public void MapearLimpiado() { PrepararMapeo("Limpiado", false, txtMapLimpiado); }
     private void PrepararMapeo(string accion, bool requiereEje, TextMeshProUGUI textoUI)
     {
         accionEsperando = accion;
@@ -207,8 +193,6 @@ public class ConfigUI : MonoBehaviour
         {
             if (d.insercion > 0) return "INS_+";
             if (d.insercion < 0) return "INS_-";
-            if (d.torsion > 0) return "TOR_+";
-            if (d.torsion < 0) return "TOR_-";
             if (d.volante1 > 0) return "E1_+";
             if (d.volante1 < 0) return "E1_-";
             if (d.volante2 > 0) return "E2_+";
@@ -221,6 +205,7 @@ public class ConfigUI : MonoBehaviour
             if (d.boton3 == 1) return "B3";
             if (d.boton4 == 1) return "B4";
             if (d.botonSuccion == 1) return "Su";
+            if (d.botonLimpiado == 1) return "Lim";
         }
         return "";
     }
@@ -237,13 +222,12 @@ public class ConfigUI : MonoBehaviour
             case "VolYAba": config.mapVolYAba = inputDetectado; break;
             case "InsAde": config.mapInsAdelante = inputDetectado; break;
             case "InsAtr": config.mapInsAtras = inputDetectado; break;
-            case "TorDer": config.mapTorDer = inputDetectado; break;
-            case "TorIzq": config.mapTorIzq = inputDetectado; break;
             case "Freeze": config.mapFreeze = inputDetectado; break;
             case "Capture": config.mapCapture = inputDetectado; break;
             case "Zoom": config.mapZoom = inputDetectado; break;
             case "Succion": config.mapSuccion = inputDetectado; break;
             case "Accion": config.mapAccion = inputDetectado; break;
+            case "Limpiado": config.mapLimpiado = inputDetectado; break;
         }
     }
 
@@ -271,6 +255,7 @@ public class ConfigUI : MonoBehaviour
         if (serial != null && serial.estadoActual == SerialManager.EstadoConexion.Conectado)
         {
             serial.EnviarDato("V1:1000\n");
+            serial.EnviarDato("V2:1000\n");
             txtFeedback.text = "<color=green>Probando vibrador...</color>";
         }
         else

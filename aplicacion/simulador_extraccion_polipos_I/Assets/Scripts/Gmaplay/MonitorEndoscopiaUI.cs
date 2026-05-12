@@ -191,7 +191,7 @@ public class MonitorEndoscopiaUI : MonoBehaviour
         int centimetros = Mathf.RoundToInt(endoscopio.distanciaTotalInsertada * 10f);
         txtProfundidad.text = $"Cm: {centimetros}";
 
-        float giroPuro = endoscopio.torqueGiro;
+        float giroPuro = 0;
         txtTorque.text = $"Torque: {Mathf.RoundToInt(giroPuro)}°";
 
         if (indicadorOctagono != null)
