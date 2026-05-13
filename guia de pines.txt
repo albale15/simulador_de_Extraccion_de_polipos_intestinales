@@ -1,9 +1,9 @@
-bt1	pa3
+bt1succion	pa3
 bt2	pa4
 bt3	pa6
 bt4	pa8
 bt5	pb0
-
+bt6limpieza	pb1 
 *********as5600
 primero
 
@@ -29,7 +29,7 @@ DT	PA12  (naranja)
 vcc	(verde)
 gnd	(blanco-naranja)
 
-segundo (cable cafe y azul) torcion
+segundo (cable cafe y azul) torcion (ELEMENTO ELIMINADO)
 
 
 
