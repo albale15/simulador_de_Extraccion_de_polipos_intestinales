@@ -37,15 +37,15 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  16 .debug_macro  00022af6  00000000  00000000  00025f60  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   0001b79e  00000000  00000000  00048a56  2**0
+ 17 .debug_line   0001b79c  00000000  00000000  00048a56  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    000ce80f  00000000  00000000  000641f4  2**0
+ 18 .debug_str    000ce80f  00000000  00000000  000641f2  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000043  00000000  00000000  00132a03  2**0
+ 19 .comment      00000043  00000000  00000000  00132a01  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00005ba4  00000000  00000000  00132a48  2**2
+ 20 .debug_frame  00005ba4  00000000  00000000  00132a44  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 00000089  00000000  00000000  001385ec  2**0
+ 21 .debug_line_str 00000089  00000000  00000000  001385e8  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -1932,7 +1932,6 @@ int main(void)
  8000f8e:	701a      	strb	r2, [r3, #0]
 		  }
 		// 5. ENVÍO DE DATOS A UNITY
-		  // 5. ENVÍO DE DATOS A UNITY
 		  if (btn_lim || btn_su || btn1 || btn2 || btn3 || btn4 || activate == 1) {
  8000f90:	4b3b      	ldr	r3, [pc, #236]	@ (8001080 <main+0x4cc>)
  8000f92:	781b      	ldrb	r3, [r3, #0]
@@ -1963,8 +1962,8 @@ int main(void)
  8000fc6:	2b01      	cmp	r3, #1
  8000fc8:	d144      	bne.n	8001054 <main+0x4a0>
 
-		              // Limitador a +1 / -1 solo para Inserción
-		              if (encoder_insercion > 1) encoder_insercion = 1;
+			  // Limitador a +1 / -1 solo para Inserción
+			  if (encoder_insercion > 1) encoder_insercion = 1;
  8000fca:	4b33      	ldr	r3, [pc, #204]	@ (8001098 <main+0x4e4>)
  8000fcc:	681b      	ldr	r3, [r3, #0]
  8000fce:	2b01      	cmp	r3, #1
@@ -1973,7 +1972,7 @@ int main(void)
  8000fd4:	2201      	movs	r2, #1
  8000fd6:	601a      	str	r2, [r3, #0]
  8000fd8:	e008      	b.n	8000fec <main+0x438>
-		              else if (encoder_insercion < -1) encoder_insercion = -1;
+			  else if (encoder_insercion < -1) encoder_insercion = -1;
  8000fda:	4b2f      	ldr	r3, [pc, #188]	@ (8001098 <main+0x4e4>)
  8000fdc:	681b      	ldr	r3, [r3, #0]
  8000fde:	f1b3 3fff 	cmp.w	r3, #4294967295
@@ -1982,9 +1981,9 @@ int main(void)
  8000fe6:	f04f 32ff 	mov.w	r2, #4294967295
  8000fea:	601a      	str	r2, [r3, #0]
 
-		              //FORMATO DE ENVÍO ORDENADO
-		              // Lim:0 Su:0 B1:0 B2:0 B3:0 B4:0 E1:0 E2:0 INS:0
-		              printf("Lim:%d Su:%d B1:%d B2:%d B3:%d B4:%d E1:%d E2:%d INS:%ld\r\n",
+			  //FORMATO DE ENVÍO ORDENADO
+			  // Lim:0 Su:0 B1:0 B2:0 B3:0 B4:0 E1:0 E2:0 INS:0
+			  printf("Lim:%d Su:%d B1:%d B2:%d B3:%d B4:%d E1:%d E2:%d INS:%ld\r\n",
  8000fec:	4b24      	ldr	r3, [pc, #144]	@ (8001080 <main+0x4cc>)
  8000fee:	781b      	ldrb	r3, [r3, #0]
  8000ff0:	461e      	mov	r6, r3
@@ -2022,29 +2021,29 @@ int main(void)
  8001034:	4631      	mov	r1, r6
  8001036:	481a      	ldr	r0, [pc, #104]	@ (80010a0 <main+0x4ec>)
  8001038:	f006 fd6a 	bl	8007b10 <iprintf>
-		                     btn_lim, btn_su, btn1, btn2, btn3, btn4,
-		                     enc2_send, enc1_send, encoder_insercion);
+					 btn_lim, btn_su, btn1, btn2, btn3, btn4,
+					 enc2_send, enc1_send, encoder_insercion);
 
-		              activate = 0;
+			  activate = 0;
  800103c:	4b09      	ldr	r3, [pc, #36]	@ (8001064 <main+0x4b0>)
  800103e:	2200      	movs	r2, #0
  8001040:	701a      	strb	r2, [r3, #0]
-		              enc1_send = 0;
+			  enc1_send = 0;
  8001042:	4b16      	ldr	r3, [pc, #88]	@ (800109c <main+0x4e8>)
  8001044:	2200      	movs	r2, #0
  8001046:	701a      	strb	r2, [r3, #0]
-		              enc2_send = 0;
+			  enc2_send = 0;
  8001048:	4b05      	ldr	r3, [pc, #20]	@ (8001060 <main+0x4ac>)
  800104a:	2200      	movs	r2, #0
  800104c:	701a      	strb	r2, [r3, #0]
-		              encoder_insercion = 0;
+			  encoder_insercion = 0;
  800104e:	4b12      	ldr	r3, [pc, #72]	@ (8001098 <main+0x4e4>)
  8001050:	2200      	movs	r2, #0
  8001052:	601a      	str	r2, [r3, #0]
-		          }
+		  }
 
-		          HAL_Delay(20);
- 8001054:	2014      	movs	r0, #20
+		  HAL_Delay(10);
+ 8001054:	200a      	movs	r0, #10
  8001056:	f000 fba3 	bl	80017a0 <HAL_Delay>
     {
  800105a:	e629      	b.n	8000cb0 <main+0xfc>

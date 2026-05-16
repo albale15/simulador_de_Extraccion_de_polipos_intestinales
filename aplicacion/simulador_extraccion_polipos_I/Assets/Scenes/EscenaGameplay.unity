@@ -9023,9 +9023,9 @@ MonoBehaviour:
     instruccion: "Ahora jala el tubo para practicar la Extracci\xF3n o s si estas
       en modo por computadora"
     uiAResaltar: {fileID: 0}
-    espera: 0
-    tiempoSegundos: 4
-    accionRequerida: 
+    espera: 1
+    tiempoSegundos: 0
+    accionRequerida: S
     colliderABloquear: {fileID: 0}
     bloquearControles: 0
     mostrarTextoPresionar: 0
@@ -10410,29 +10410,23 @@ MonoBehaviour:
   - {fileID: 535037705}
   - {fileID: 423532366}
   usarControlHardware: 0
-  velocidadInsercion: 3
-  velocidadExtraccion: 3
-  velocidadTorque: 100
+  velocidadInsercion: 2
+  velocidadExtraccion: 2
   velocidadGiroPunta: 80
   suavidadGiroHuesos: 15
-  fuerzaRigidezTorque: 1.5
   fuerzaArrectar: 5
-  umbralBucleAtasco: 90
+  umbralBucleAtasco: 120
   caidaGravedad: 8
   limiteFlexionNormal: 90
   limiteFlexionRelajada: 160
-  maxTorquePermitido: 540
-  maxIntentosTorque: 3
-  tiempoMaximoTorque: 2
   tiempoMaximoForzandoBucle: 3
   tiempoMaximoTiron: 30
-  "valorDa\xF1oExtraccion": 5
+  "valorDa\xF1oExtraccion": 3
   dibujarTuboExterior: 1
   grosorTubo: 0.5
   distanciaTotalInsertada: 0
   rotX: 0
   rotZ: 0
-  torqueGiro: 0
 --- !u!54 &1325639775
 Rigidbody:
   m_ObjectHideFlags: 0
