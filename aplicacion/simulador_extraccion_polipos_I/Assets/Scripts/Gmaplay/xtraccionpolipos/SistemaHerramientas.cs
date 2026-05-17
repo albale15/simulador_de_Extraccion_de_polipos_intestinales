@@ -8,13 +8,13 @@ public class SistemaHerramientas : MonoBehaviour
     public EndoscopioCurvas endoscopio;
     public Camera camaraPrincipal;
 
-    [Header("Herramienta: Pinza Biopsia (Yamada 1 y 2)")]
+    [Header("Herramienta: Pinza Biopsia (<5cm)")]
     public GameObject pinzaDientes;
     public Transform pinzaDerecha;
     public Transform pinzaIzquierda;
     public float anguloAperturaPinza = 45f;
 
-    [Header("Herramienta: Asa Diatérmica (Yamada 3 y 4)")]
+    [Header("Herramienta: Asa Diatérmica (>5cm)")]
     public GameObject pinzaAsas;
     public Transform lazoBezier;
     public Vector3 escalaLazoCerrado = new Vector3(0.1f, 0.1f, 0.1f);
@@ -25,6 +25,17 @@ public class SistemaHerramientas : MonoBehaviour
     public float anguloToleranciaFoto = 25f;
     public float distanciaExtensionHerramienta = 0.05f;
     public LayerMask capaPolipos;
+
+    [Header("Efecto de Lente Sucio")]
+    public UnityEngine.UI.Image imagenSuciedadLente; // imagen UI con textura de suciedad/gotas
+    public LayerMask capaIntestino; // capa de las paredes del intestino
+    public float duracionDesvanecimientoLimpieza = 2f; // Tiempo en segundos que tarda en limpiarse del todo
+    private Coroutine rutinaLimpiezaActiva = null; // Para asegurar que solo corra una limpieza a la vez
+    private bool estaLimpiando = false; // Bandera para bloquear que se ensucie mientras se limpia
+    private float nivelSuciedad = 0f;
+
+    private float tiempoLenteSucio = 0f;
+    private bool penalizadoPorSuciedad = false;
 
     [Header("Estado del Sistema")]
     public bool estaCortando = false;
@@ -63,6 +74,7 @@ public class SistemaHerramientas : MonoBehaviour
     public bool EstaEnModoSeleccion() { return enModoSeleccion; }
     public PolipoInteractuable ObtenerPolipoEnMira() { return polipoEnMira; }
     public PolipoInteractuable ObtenerUltimoPolipoCortado() { return ultimoPolipoCortado; }
+
     void Start()
     {
         if (ManejadorPartida.dificultad == 0)
@@ -144,6 +156,41 @@ public class SistemaHerramientas : MonoBehaviour
         Vector3 origenRayo = canalDeTrabajo.position;
         Vector3 direccionRayo = canalDeTrabajo.forward;
         bool bloqueadoPorTutorial = (TutorialManager.instancia != null && TutorialManager.instancia.controlesBloqueados);
+        // ENSUCIAR EL LENTE POR ROCE 
+        if (moviendo && !bloqueadoPorTutorial && !estaCongelado)
+        {
+            // Creamos una esfera invisible de 2cm en la punta. Si toca la pared, se ensucia gradualmente.
+            if (Physics.CheckSphere(origenRayo, 0.10f, capaIntestino))
+            {
+                nivelSuciedad += Time.deltaTime * 0.05f; // Ajusta el 0.35f si quieres que se ensucie más rápido o lento
+                nivelSuciedad = Mathf.Clamp01(nivelSuciedad); // Mantiene el valor entre 0 (limpio) y 1 (opaco)
+            }
+        }
+
+        // Actualizamos la opacidad de la imagen de suciedad en la pantalla
+        if (imagenSuciedadLente != null)
+        {
+            Color colorSuciedad = imagenSuciedadLente.color;
+            colorSuciedad.a = nivelSuciedad;
+            imagenSuciedadLente.color = colorSuciedad;
+        }
+        if (nivelSuciedad > 0.5f) // Si está sucio a más del 50%
+        {
+            tiempoLenteSucio += Time.deltaTime;
+
+            // Si pasan 6 segundos y aún no lo hemos penalizado
+            if (tiempoLenteSucio > 6f && !penalizadoPorSuciedad)
+            {
+                EnviarErrorUI(MonitorEndoscopiaUI.CategoriaEvaluacion.Tecnica, 9, "Mala higiene visual: El lente estuvo muy obstruido por más de 6 segundos sin irrigación.");
+                penalizadoPorSuciedad = true; // Seguro para que no le quite puntos 60 veces por segundo
+            }
+        }
+        else
+        {
+            // Si el doctor limpia el lente (nivel baja del 50%), reiniciamos todo
+            tiempoLenteSucio = 0f;
+            penalizadoPorSuciedad = false;
+        }
         if (bloqueadoPorTutorial)
         {
             btnFreeze = false;
@@ -213,14 +260,14 @@ public class SistemaHerramientas : MonoBehaviour
         //BLOQUEO DE FREEZE INTACTO QUE TÚ PROGRAMASTE
         if (estaCongelado)
         {
-            if (btnAccion || btnZoom || btnSuccion)
+            if (btnAccion || btnZoom || btnSuccion || btnLimpiado)
             {
                 EnviarErrorUI(MonitorEndoscopiaUI.CategoriaEvaluacion.Seguridad, 2, "Operación a ciegas: Intentó usar herramientas con la imagen congelada.");
             }
 
             if (btnCapture) EjecutarCapture();
             if (btnFreeze) EjecutarFreeze();
-            if (btnLimpiado) EjecutarLimpiado();
+
             return;
         }
 
@@ -343,16 +390,54 @@ public class SistemaHerramientas : MonoBehaviour
     //FUNCIÓN DE LAVADO DE LENTE
     private void EjecutarLimpiado()
     {
-        EnviarInfoUI("Lavado de lente activado. Campo visual irrigado.", "#00FFFF");
+        if (nivelSuciedad > 0f)
+        {
+            // Si ya se estaba limpiando, detenemos esa rutina para empezar una nueva (evita errores)
+            if (rutinaLimpiezaActiva != null) StopCoroutine(rutinaLimpiezaActiva);
 
+            // Lanzamos el desvanecimiento progresivo
+            rutinaLimpiezaActiva = StartCoroutine(RutinaDesvanecimientoLimpiezaLente());
+
+            EnviarInfoUI("Lavado de lente iniciado...", "#00FFFF");
+        }
+        else
+        {
+            EnviarInfoUI("Lavado de lente activado.", "#00FFFF");
+        }
     }
 
+    // La Corrutina que hace el trabajo matemático frame a frame
+    private IEnumerator RutinaDesvanecimientoLimpiezaLente()
+    {
+        estaLimpiando = true; // Bloqueamos el ensuciado por roce temporalmente
+        float velocidadLimpieza = 1f / duracionDesvanecimientoLimpieza; // Calculamos cuánto quitar por segundo
+
+        // Mientras siga quedando suciedad...
+        while (nivelSuciedad > 0f)
+        {
+            // Reducimos el nivelSuciedad progresivamente basado en el tiempo transcurrido
+            nivelSuciedad -= velocidadLimpieza * Time.deltaTime;
+
+            // Nos aseguramos de no bajar de cero
+            nivelSuciedad = Mathf.Max(0f, nivelSuciedad);
+
+            // Update() automáticamente leerá este 'nivelSuciedad' actualizado y suavizará la opacidad visual de la imagen en pantalla en el siguiente frame.
+
+            yield return null; // Esperamos al siguiente frame
+        }
+
+        // Finalización
+        nivelSuciedad = 0f; // Aseguramos el cero absoluto
+        EnviarInfoUI("Lavado de lente completado.", "#00FFFF");
+        rutinaLimpiezaActiva = null; // Liberamos la referencia de la rutina
+        estaLimpiando = false; // Permitimos que se vuelva a ensuciar si choca
+    }
     private void ActivarModoSeleccion(bool activar)
     {
         enModoSeleccion = activar;
         if (monitorUI != null) monitorUI.ActualizarTextosBotones(activar);
 
-        if (activar) EnviarInfoUI("Modo Herramientas: Seleccione Pinza (1) o Asa (2)", "#FFFFFF");
+        if (activar) EnviarInfoUI("Modo Herramientas: Seleccione Pinza de Biopsia (1) o Asa de Polipectomía (2)", "#FFFFFF");
         else EnviarInfoUI("Modo Herramientas Cancelado", "#888888");
     }
 
@@ -365,25 +450,27 @@ public class SistemaHerramientas : MonoBehaviour
         if (esPinza)
         {
             EnviarInfoUI("Preparando Pinza de Biopsia...", "#FFFF00");
-            if (polipoEnMira.tipo == PolipoInteractuable.TipoPolipo.Yamada1 || polipoEnMira.tipo == PolipoInteractuable.TipoPolipo.Yamada2)
+
+            if (polipoEnMira.tamanoMilimetros <= 5f)
             {
                 StartCoroutine(AnimacionPinzaFria());
             }
             else
             {
-                EnviarErrorUI(MonitorEndoscopiaUI.CategoriaEvaluacion.Protocolo, 6, "Regla de Yamada violada: Se requiere Asa Diatérmica para pólipos grandes/pediculados.");
+                EnviarErrorUI(MonitorEndoscopiaUI.CategoriaEvaluacion.Protocolo, 6, $"Error de Criterio: El pólipo mide {polipoEnMira.tamanoMilimetros:F1}mm. Pólipos mayores a 5mm requieren Asa de Polipectomía por riesgo de sangrado.");
             }
         }
         else
         {
-            EnviarInfoUI("Preparando Asa Diatérmica...", "#FF4500");
-            if (polipoEnMira.tipo == PolipoInteractuable.TipoPolipo.Yamada3 || polipoEnMira.tipo == PolipoInteractuable.TipoPolipo.Yamada4)
+            EnviarInfoUI("Preparando Asa de Polipectomía...", "#FF4500");
+
+            if (polipoEnMira.tamanoMilimetros > 5f)
             {
                 StartCoroutine(AnimacionAsaCaliente());
             }
             else
             {
-                EnviarErrorUI(MonitorEndoscopiaUI.CategoriaEvaluacion.Protocolo, 6, "Regla de Yamada violada: El asa es excesiva y riesgosa para pólipos planos.");
+                EnviarErrorUI(MonitorEndoscopiaUI.CategoriaEvaluacion.Protocolo, 6, $"Error de Criterio: El pólipo es diminuto ({polipoEnMira.tamanoMilimetros:F1}mm). El Asa de Polipectomía resbalará o quemará tejido sano innecesariamente. Use Pinza de Biopsia.");
             }
         }
     }
@@ -415,6 +502,12 @@ public class SistemaHerramientas : MonoBehaviour
         if (estaCongelado)
         {
             EnviarInfoUI("Fotografía guardada en expediente del paciente.", "#FFD700");
+            if (nivelSuciedad > 0.4f)
+            {
+                // Penaliza el índice 5 (Calidad de Captura)
+                EnviarErrorUI(MonitorEndoscopiaUI.CategoriaEvaluacion.Protocolo, 5, "Calidad Fotográfica Deficiente: Lente obstruido por suciedad durante la captura.");
+                return;
+            }
 
             if (polipoEnMira != null && polipoEnMira.estadoActual == PolipoInteractuable.EstadoPolipo.Intacto)
             {
@@ -673,5 +766,6 @@ public class SistemaHerramientas : MonoBehaviour
             monitorUI.ActualizarTextosBotones(enModoSeleccion, puedeSalir);
         }
     }
+
     
 }

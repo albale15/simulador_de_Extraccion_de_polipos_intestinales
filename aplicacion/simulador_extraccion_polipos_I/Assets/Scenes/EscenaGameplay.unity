@@ -3350,7 +3350,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &148690523
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3562,6 +3562,7 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1852607039}
   - {fileID: 689849874}
   - {fileID: 1948923969}
   - {fileID: 1934338134}
@@ -3598,9 +3599,7 @@ MonoBehaviour:
   txtDatosDoctor: {fileID: 1632158497}
   txtReloj: {fileID: 615846295}
   txtProfundidad: {fileID: 1245012113}
-  txtTorque: {fileID: 1872585729}
   txtRespuestas: {fileID: 1053785844}
-  indicadorOctagono: {fileID: 756089729}
   txtDanioPaciente: {fileID: 1203967617}
   txtListaBotones: {fileID: 822146241}
   txtEstadisticasPolipos: {fileID: 2035928788}
@@ -6385,7 +6384,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -42.246826, y: -4.4472046}
+  m_AnchoredPosition: {x: -42.246826, y: -4.4472656}
   m_SizeDelta: {x: 522.2471, y: 44.4705}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &689849875
@@ -6857,7 +6856,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &756089729
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7318,6 +7317,11 @@ MonoBehaviour:
   capaPolipos:
     serializedVersion: 2
     m_Bits: 256
+  imagenSuciedadLente: {fileID: 1852607040}
+  capaIntestino:
+    serializedVersion: 2
+    m_Bits: 128
+  duracionDesvanecimientoLimpieza: 2
   estaCortando: 0
   llevandoPolipo: 0
   estaCongelado: 0
@@ -8953,8 +8957,8 @@ MonoBehaviour:
     mostrarTextoPresionar: 1
     mostrarTemporalmente: 0
   - nombrePaso: paso 4
-    instruccion: "Circulo: Indica la rotaci\xF3n espacial del endoscopio el circulo
-      de menor tama\xF1o indica la ubicacion de la herramienta."
+    instruccion: 'Imagen Guia del Control: la imagen te indicara la posicion de botones
+      para que si te pierdes te puedas ubicar'
     uiAResaltar: {fileID: 756089729}
     espera: 1
     tiempoSegundos: 0
@@ -9043,8 +9047,8 @@ MonoBehaviour:
     mostrarTemporalmente: 0
   - nombrePaso: paso 10.2
     instruccion: Si en la insersion o extraccion generas un BUCLE se te indicara
-      en las dificultades mas bajas. Para salir de un BUCLE has la extraccion o presiona
-      s si estas en modo computadora.
+      en las dificultades mas bajas. Para salir de un BUCLE has la rectificacion
+      (extrayendo y girnado el tubo) o presiona S si estas en modo computadora.
     uiAResaltar: {fileID: 1504859466}
     espera: 1
     tiempoSegundos: 0
@@ -10412,10 +10416,10 @@ MonoBehaviour:
   usarControlHardware: 0
   velocidadInsercion: 2
   velocidadExtraccion: 2
-  velocidadGiroPunta: 80
+  velocidadGiroPunta: 60
   suavidadGiroHuesos: 15
   fuerzaArrectar: 5
-  umbralBucleAtasco: 120
+  umbralBucleAtasco: 110
   caidaGravedad: 8
   limiteFlexionNormal: 90
   limiteFlexionRelajada: 160
@@ -13426,6 +13430,81 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &1852607038
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1852607039}
+  - component: {fileID: 1852607041}
+  - component: {fileID: 1852607040}
+  m_Layer: 5
+  m_Name: Imagemagen Suciedad Lente
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1852607039
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1852607038}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 154574839}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 211.9485, y: -0.000011444}
+  m_SizeDelta: {x: 1496.103, y: 1080}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1852607040
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1852607038}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.98039216, g: 0.5803922, b: 0.5803922, a: 0}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: ecd3f196e5737734dbd3a2f015e694ef, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1852607041
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1852607038}
+  m_CullTransparentMesh: 1
 --- !u!1 &1853053504
 GameObject:
   m_ObjectHideFlags: 0
@@ -13518,7 +13597,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1872585728
 RectTransform:
   m_ObjectHideFlags: 0

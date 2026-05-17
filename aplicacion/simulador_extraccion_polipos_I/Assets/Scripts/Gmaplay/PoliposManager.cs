@@ -74,6 +74,35 @@ public class PoliposManager : MonoBehaviour
                     nuevoPolipo.transform.position = hit.point;
                     nuevoPolipo.transform.SetParent(contenedorPuntosSpawn, true);
 
+
+                    // ASIGNACIÓN DE TAMAÑO ALEATORIO COHERENTE
+                    PolipoInteractuable componenteInteractuable = nuevoPolipo.GetComponent<PolipoInteractuable>();
+                    if (componenteInteractuable != null)
+                    {
+                        float tamanoAleatorio = 2f; // Base por seguridad
+
+                        // Le damos rangos realistas según la forma que eligieron en el menú
+                        switch (tipoPolipo)
+                        {
+                            case 0: // Yamada 1 (Planos/Diminutos): Mayormente chicos, algunos medianos
+                                tamanoAleatorio = Random.Range(2f, 6f);
+                                break;
+                            case 1: // Yamada 2 (Sésiles): Rango intermedio
+                                tamanoAleatorio = Random.Range(3f, 8f);
+                                break;
+                            case 2: // Yamada 3 (Semi-pediculados): Mayormente grandes
+                                tamanoAleatorio = Random.Range(4f, 8f);
+                                break;
+                            case 3: // Yamada 4 (Pediculados/Grandes): Claramente grandes
+                                tamanoAleatorio = Random.Range(4f, 10f);
+                                break;
+                        }
+
+                        // Enviamos el tamaño al pólipo para que altere su escala visual y su lógica
+                        componenteInteractuable.InicializarTamanoClinico(tamanoAleatorio);
+                    }
+
+
                     poliposActivos.Add(nuevoPolipo);
                     Debug.DrawLine(puntoCentro.position, hit.point, Color.green, 15f);
 

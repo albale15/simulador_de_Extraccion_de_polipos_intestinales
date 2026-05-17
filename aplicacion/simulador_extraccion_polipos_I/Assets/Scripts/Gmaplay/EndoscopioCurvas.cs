@@ -79,7 +79,9 @@ public class EndoscopioCurvas : MonoBehaviour
     private bool penalizadoTiron = false;
     private int siguienteUmbralSuavidad = 5;
 
+    private int siguienteUmbralTiron = 35;
     private bool atascadoPorBucle = false;
+
     void OnEnable()
     {
         if (ConfigManager.instancia != null) ConfigManager.instancia.AlRecibirDatosProcesados += ActualizarDatosHardware;
@@ -297,7 +299,6 @@ public class EndoscopioCurvas : MonoBehaviour
 
         float anguloBucle = Vector3.Angle(huesos[huesos.Length - 1].up, huesos[0].up);
         float multiplicadorAvance = 1f;
-
         // Penalización por Suavidad si entra en bucle peligroso
         if (anguloBucle > umbralBucleAtasco)
         {
@@ -372,7 +373,7 @@ public class EndoscopioCurvas : MonoBehaviour
             if (curvaturaCuerpo > 60f)
             {
                 float factorFriccion = Mathf.Clamp01((curvaturaCuerpo - 60f) / 100f);
-                multiplicadorAvance = 1f - (factorFriccion * 0.8f);
+                multiplicadorAvance = 1f - (factorFriccion * 0.4f);
 
                 if (curvaturaCuerpo > 120f)
                 {
@@ -384,28 +385,32 @@ public class EndoscopioCurvas : MonoBehaviour
                         int dolor = (int)((tiempoExtraccionBrusca / tiempoMaximoTiron) * 100);
                         Debug.LogWarning($"<color=orange>¡PACIENTE CON DOLOR! Fricción alta. Daño tisular: {dolor}% (Suelta S un momento para relajar)</color>");
 
-                        if (dolor >= 25 && !penalizadoTiron)
+                        if (dolor >= siguienteUmbralTiron)
                         {
                             if (monitorUI != null) monitorUI.RegistrarErrorEstandarizado(MonitorEndoscopiaUI.CategoriaEvaluacion.Seguridad, 3, "Seguridad en la Retirada: Tirones bruscos causando laceración.");
+                            siguienteUmbralTiron += 20; // Preparamos el siguiente castigo
                             penalizadoTiron = true;
                         }
                     }
                 }
-                else tiempoExtraccionBrusca = Mathf.Max(0, tiempoExtraccionBrusca - (Time.fixedDeltaTime * 4f));
+                else tiempoExtraccionBrusca = Mathf.Max(0, tiempoExtraccionBrusca - (Time.fixedDeltaTime * 8f));
             }
-            else tiempoExtraccionBrusca = Mathf.Max(0, tiempoExtraccionBrusca - (Time.fixedDeltaTime * 4f));
+            else tiempoExtraccionBrusca = Mathf.Max(0, tiempoExtraccionBrusca - (Time.fixedDeltaTime * 8f));
         }
         else
         {
-            tiempoExtraccionBrusca = Mathf.Max(0, tiempoExtraccionBrusca - (Time.fixedDeltaTime * 4f));
+            tiempoExtraccionBrusca = Mathf.Max(0, tiempoExtraccionBrusca - (Time.fixedDeltaTime * 8f));
         }
 
-        if (tiempoExtraccionBrusca == 0) penalizadoTiron = false;
-
+        if (tiempoExtraccionBrusca == 0)
+        {
+            penalizadoTiron = false;
+            siguienteUmbralTiron = 35;
+        }
 
         // --- UNIFICACIÓN DE UI DE DAÑO ---
         // Calcula el daño mayor actual y se lo envía a MonitorEndoscopiaUI para que lo dibuje.
-        // Como las variables 'tiempoForzandoBucle' y 'tiempoExtraccionBrusca' ahora bajan poco a poco, 
+        // Como las variables 'tiempoForzandoBucle' y 'tiempoExtraccionBrusca', 
         // el texto de la UI también bajará su porcentaje suavemente.
         if (monitorUI != null)
         {
@@ -448,13 +453,6 @@ public class EndoscopioCurvas : MonoBehaviour
 
         if (empujeFisico != 0)
         {
-
-            float fuerzaFinalDeEnderezado = (empujeFisico < 0) ? fuerzaArrectar : 0f;
-            if (fuerzaFinalDeEnderezado > 0)
-            {
-                for (int i = 1; i < olaDeCurvas.Length; i++)
-                    olaDeCurvas[i] = Quaternion.Slerp(olaDeCurvas[i], Quaternion.identity, Time.fixedDeltaTime * fuerzaFinalDeEnderezado);
-            }
 
             Vector3 direccionFinal = huesos[1].up;
             if (empujeFisico < 0 && huesos.Length >= 4)

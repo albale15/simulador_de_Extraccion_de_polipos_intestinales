@@ -16,11 +16,9 @@ public class MonitorEndoscopiaUI : MonoBehaviour
 
     [Header("Panel Medio (Telemetría)")]
     public TextMeshProUGUI txtProfundidad;
-    public TextMeshProUGUI txtTorque;
     public TextMeshProUGUI txtRespuestas;
-    public RectTransform indicadorOctagono;
 
-    // --- NUEVO: TEXTO DE DAÑO ---
+    // TEXTO DE DAÑO 
     public TextMeshProUGUI txtDanioPaciente;
 
     [Header("Panel Azul (Configuración Botones)")]
@@ -67,7 +65,7 @@ public class MonitorEndoscopiaUI : MonoBehaviour
     private TipoConfirmacion contextoConfirmacion = TipoConfirmacion.Ninguno;
 
     private float profundidadMaximaAlcanzada = 0f;
-    private const float META_PROFUNDIDAD = 400f;
+    private const float META_PROFUNDIDAD = 150f;
     [Header("Reporte de Errores")]
     public GameObject panelResultadosFinales; // El panel que mostrará la nota final
     public TextMeshProUGUI txtResultadosFinales;
@@ -155,7 +153,7 @@ public class MonitorEndoscopiaUI : MonoBehaviour
 
     void Update()
     {
-        float profundidadActualCm = endoscopio.distanciaTotalInsertada * 10f;
+        float profundidadActualCm = endoscopio.distanciaTotalInsertada * 3.3f;
         txtReloj.text = DateTime.Now.ToString("dd/MM/yyyy\nHH:mm:ss");
 
         if (!estaPausado && endoscopio != null)
@@ -188,16 +186,9 @@ public class MonitorEndoscopiaUI : MonoBehaviour
 
     private void ActualizarTelemetria()
     {
-        int centimetros = Mathf.RoundToInt(endoscopio.distanciaTotalInsertada * 10f);
+        int centimetros = Mathf.RoundToInt(endoscopio.distanciaTotalInsertada * 3.75f);
         txtProfundidad.text = $"Cm: {centimetros}";
 
-        float giroPuro = 0;
-        txtTorque.text = $"Torque: {Mathf.RoundToInt(giroPuro)}°";
-
-        if (indicadorOctagono != null)
-        {
-            indicadorOctagono.localRotation = Quaternion.Euler(0, 0, +giroPuro);
-        }
 
         if (herramientas != null)
         {
@@ -208,7 +199,7 @@ public class MonitorEndoscopiaUI : MonoBehaviour
                 txtNotaEstudiante.text =
                     $"Seguridad y Nav:\n<color={(notaSeguridad > 60 ? "white" : "red")}>{notaSeguridad:F1} / 100</color>\n\n" +
                     $"Protocolo y Diag:\n<color={(notaProtocolo > 60 ? "white" : "red")}>{notaProtocolo:F1} / 100</color>\n\n" +
-                    $"Técnica Quirúrgica:\n<color={(notaTecnica > 60 ? "white" : "red")}>{notaTecnica:F1} / 100</color>";
+                    $"Técnica Endoscópica:\n<color={(notaTecnica > 60 ? "white" : "red")}>{notaTecnica:F1} / 100</color>";
             }
             else
             {
@@ -346,24 +337,25 @@ public class MonitorEndoscopiaUI : MonoBehaviour
             {
                 txtListaBotones.text =
                     $"<color=#FFD700>(Elija Herramienta)</color>\n" +
-                    $"1: Pinza Biopsia [{cfg.mapFreeze}]\n" +
-                    $"2: Asa Diatérmica [{cfg.mapCapture}]\n" +
-                    $"<color=#888888>3: ---</color>\n" +
-                    $"<color=#888888>4: ---</color>\n" +
-                    $"5: Cancelar [{cfg.mapAccion}]";
+                    $"Pinza Biopsia [{cfg.mapFreeze}]\n" +
+                    $"Asa de Polipectomía [{cfg.mapCapture}]\n" +
+                    $"<color=#888888>---</color>\n" +
+                    $"<color=#888888>---</color>\n" +
+                    $"Cancelar [{cfg.mapAccion}]";
             }
             else
             {
-                string textoBoton5 = habilitarSalida
-                ? $"<color=red><b>5: Finalizar Endoscopia [{cfg.mapAccion}]</b></color>"
-                : $"5: Herramientas [{cfg.mapAccion}]";
+                string textoAccionFinal = habilitarSalida
+                ? $"<color=red><b>Finalizar Procedimiento [{cfg.mapAccion}]</b></color>"
+                : $"Menú Herramientas [{cfg.mapAccion}]";
                 txtListaBotones.text =
-                    $"<color=#00FFFF>(Configuración Activa)</color>\n" +
-                    $"1: Freeze [{cfg.mapFreeze}]\n" +
-                    $"2: Capture [{cfg.mapCapture}]\n" +
-                    $"3: Zoom [{cfg.mapZoom}]\n" +
-                    $"4: Succión [{cfg.mapSuccion}]\n" +
-                    textoBoton5; ;
+                    $"<color=#00FFFF>(Controles)</color>\n" +
+                    $"Lavar Lente [{cfg.mapLimpiado}]\n" +
+                    $"Freeze [{cfg.mapFreeze}]\n" +
+                    $"Capture [{cfg.mapCapture}]\n" +
+                    $"Zoom [{cfg.mapZoom}]\n" +
+                    $"Succión [{cfg.mapSuccion}]\n" +
+                    textoAccionFinal;
             }
         }
     }
@@ -481,7 +473,7 @@ public class MonitorEndoscopiaUI : MonoBehaviour
             ImprimirMensajeConsola($"[-] Omisión: {poliposRestantes} pólipos no detectados.", "red");
         }
 
-        // Condición B: Profundidad insuficiente (Meta 400cm)
+        // Condición B: Profundidad insuficiente (Meta 150cm)
         if (profundidadMaximaAlcanzada < META_PROFUNDIDAD)
         {
             float distanciaFaltante = META_PROFUNDIDAD - profundidadMaximaAlcanzada;
@@ -507,8 +499,8 @@ public class MonitorEndoscopiaUI : MonoBehaviour
         }
 
         // ABANDONO PREMATURO (Seguridad a 0)
-        // Si no avanzó ni el 20% (80cm) y no sacó nada, reprueba Seguridad automáticamente
-        if (profundidadMaximaAlcanzada < 80f && herramientas.ObtenerTotalEliminados() == 0)
+        // Si no avanzó ni el 20% (20cm) y no sacó nada, reprueba Seguridad automáticamente
+        if (profundidadMaximaAlcanzada < 30f && herramientas.ObtenerTotalEliminados() == 0)
         {
             notaSeguridad = 0f;
             ImprimirMensajeConsola("[-] ABANDONO CRÍTICO: Procedimiento abortado sin exploración inicial. Seguridad anulada.", "red");
@@ -783,10 +775,11 @@ public class MonitorEndoscopiaUI : MonoBehaviour
             PolipoInteractuable polipo = herramientas.ObtenerPolipoEnMira();
             if (polipo != null)
             {
-                if (polipo.tipo == PolipoInteractuable.TipoPolipo.Yamada1 || polipo.tipo == PolipoInteractuable.TipoPolipo.Yamada2)
-                    mensajeGuia = "Pólipo sésil/pequeño. Selecciona la <color=yellow>Pinza de Biopsia (Botón 1)</color> para extirparlo.";
+                // GUÍA BASADA EN TAMAÑO REAL
+                if (polipo.tamanoMilimetros <= 5f)
+                    mensajeGuia = $"Pólipo diminuto ({polipo.tamanoMilimetros:F1}mm). Selecciona la <color=yellow>Pinza de Biopsia</color> para extirparlo.";
                 else
-                    mensajeGuia = "Pólipo pediculado/grande. Selecciona el <color=#FF4500>Asa Diatérmica (Botón 2)</color> para seccionarlo.";
+                    mensajeGuia = $"Pólipo mediano/grande ({polipo.tamanoMilimetros:F1}mm). Selecciona el <color=#FF4500>Asa de Polipectomía</color> para seccionarlo.";
             }
         }
         // 5. PÓLIPO EN LA MIRA (Protocolo Médico)
