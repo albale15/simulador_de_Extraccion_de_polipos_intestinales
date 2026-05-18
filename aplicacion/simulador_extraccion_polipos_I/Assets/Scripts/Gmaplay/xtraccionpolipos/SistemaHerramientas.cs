@@ -34,6 +34,12 @@ public class SistemaHerramientas : MonoBehaviour
     private bool estaLimpiando = false; // Bandera para bloquear que se ensucie mientras se limpia
     private float nivelSuciedad = 0f;
 
+    [Header("Manejo de Fluidos (Succión)")]
+    public ParticleSystem particulasSangrado; // Arrastraremos el Particle System aquí
+    private float nivelSangrado = 0f;
+    private int lavadosSinSuccionar = 0; // Castiga si el doctor echa mucha agua sin aspirar
+    private bool estabaSuccionandoSangre = false;
+
     private float tiempoLenteSucio = 0f;
     private bool penalizadoPorSuciedad = false;
 
@@ -65,7 +71,7 @@ public class SistemaHerramientas : MonoBehaviour
     // Contadores de movimientos para higiene
     private int movimientosSinSuccionar = 0;
     private bool endoscopioEstabaMoviendo = false;
-    private int movimientosEnSeleccion = 0; // NUEVO: Para cancelar el menú si se mueve
+    private int movimientosEnSeleccion = 0; // Para cancelar el menú si se mueve
 
     private DatosProcesados datosHardware;
     private bool ultimoF, ultimoC, ultimoZ, ultimoS, ultimoA, ultimoL;
@@ -75,8 +81,10 @@ public class SistemaHerramientas : MonoBehaviour
     public PolipoInteractuable ObtenerPolipoEnMira() { return polipoEnMira; }
     public PolipoInteractuable ObtenerUltimoPolipoCortado() { return ultimoPolipoCortado; }
 
+    private Vector3 escalaOriginalLazoBase;
     void Start()
     {
+        Vector3 escalaOriginalLazo = escalaOriginalLazoBase;
         if (ManejadorPartida.dificultad == 0)
         {
             anguloTolerancia = 180f;
@@ -89,6 +97,10 @@ public class SistemaHerramientas : MonoBehaviour
 
         if (camaraPrincipal == null) camaraPrincipal = Camera.main;
         if (camaraPrincipal != null) fovOriginal = camaraPrincipal.fieldOfView;
+        if (particulasSangrado != null)
+        {
+            particulasSangrado.Stop(); // Asegura que no haya sangre al empezar
+        }
     }
 
     void OnEnable()
@@ -112,6 +124,7 @@ public class SistemaHerramientas : MonoBehaviour
     {
         bool btnFreeze = false, btnCapture = false, btnZoom = false, btnSuccion = false, btnAccion = false, btnLimpiado = false;
         bool moviendo = false; // Sensor local de movimiento
+        bool manteniendoSuccion = false;
 
         bool modoPC = false;
         if (endoscopio != null)
@@ -128,6 +141,8 @@ public class SistemaHerramientas : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Alpha5)) { btnAccion = true; }
             if (Input.GetKeyDown(KeyCode.Alpha6)) { btnLimpiado = true; }
 
+
+            manteniendoSuccion = Input.GetKey(KeyCode.Alpha4); // Detecta si lo mantiene apretado
             // Verifica si está tocando teclas de movimiento
             moviendo = Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow);
         }
@@ -142,6 +157,7 @@ public class SistemaHerramientas : MonoBehaviour
                 btnAccion = (datosHardware.botonAccion && !ultimoA);
                 btnLimpiado = (datosHardware.botonLimpiado && !ultimoL);
 
+                manteniendoSuccion = datosHardware.botonSuccion; // Detecta si el hardware manda señal continua
                 // Verifica si los valores analógicos del hardware superan el reposo
                 moviendo = Mathf.Abs(datosHardware.insercionFinal) > 0.05f || Mathf.Abs(datosHardware.volanteXFinal) > 0.05f || Mathf.Abs(datosHardware.volanteYFinal) > 0.05f;
                 ultimoF = datosHardware.botonFreeze;
@@ -191,6 +207,46 @@ public class SistemaHerramientas : MonoBehaviour
             tiempoLenteSucio = 0f;
             penalizadoPorSuciedad = false;
         }
+
+        // EFECTO 3D DE SANGRADO Y SUCCIÓN
+
+        if (manteniendoSuccion && !estaCongelado)
+        {
+            if (nivelSangrado > 0)
+            {
+                estabaSuccionandoSangre = true;
+                nivelSangrado -= Time.deltaTime * 0.5f; // Tarda 2 segundos en aspirarse
+                nivelSangrado = Mathf.Max(0, nivelSangrado);
+
+                // Si ya aspiró toda la sangre, apagamos las partículas
+                if (nivelSangrado == 0 && particulasSangrado != null && particulasSangrado.isPlaying)
+                {
+                    particulasSangrado.Stop();
+                    EnviarInfoUI("Hemorragia controlada. Campo visual despejado.", "#00FF00");
+                    estabaSuccionandoSangre = false;
+                }
+            }
+        }
+        else if (!manteniendoSuccion && estabaSuccionandoSangre)
+        {
+            // Si soltó el botón y la sangre NO llegó a cero, lo penalizamos
+            if (nivelSangrado > 0)
+            {
+                EnviarErrorUI(MonitorEndoscopiaUI.CategoriaEvaluacion.Seguridad, 1, "Manejo de Fluidos: Interrumpió la aspiración antes de controlar totalmente la hemorragia.");
+            }
+            estabaSuccionandoSangre = false; // Reseteamos la bandera para evitar que le quite puntos en cada frame
+        }
+
+        // Si la pantalla está llena de partículas de sangre, bloqueamos herramientas y cámara
+        if (nivelSangrado > 0.3f && (btnCapture || btnFreeze || btnAccion))
+        {
+            EnviarErrorUI(MonitorEndoscopiaUI.CategoriaEvaluacion.Tecnica, 9, "Campo visual obstruido por hemorragia. Mantenga la Succión para limpiar.");
+            btnCapture = false;
+            btnFreeze = false;
+            btnAccion = false;
+        }
+
+
         if (bloqueadoPorTutorial)
         {
             btnFreeze = false;
@@ -228,7 +284,7 @@ public class SistemaHerramientas : MonoBehaviour
                 float distanciaAlResto = Vector3.Distance(origenRayo, ultimoPolipoCortado.transform.position);
                 if (distanciaAlResto > 0.3f)
                 {
-                    EnviarErrorUI(MonitorEndoscopiaUI.CategoriaEvaluacion.Tecnica, 9, "Mala higiene visual: Abandonó el área dejando tejido suelto sin succionar.");
+                    EnviarErrorUI(MonitorEndoscopiaUI.CategoriaEvaluacion.Tecnica, 9, "Mala higiene visual: Abandonó el área dejando tejido suelto sin recuperar.");
                     ultimoPolipoCortado = null; // Detiene el castigo
                     movimientosSinSuccionar = 0;
                 }
@@ -289,13 +345,23 @@ public class SistemaHerramientas : MonoBehaviour
                     }
                     else
                     {
-                        // Solo penalizamos, pero NO cambiamos llevandoPolipo a false 
-                        EnviarErrorUI(MonitorEndoscopiaUI.CategoriaEvaluacion.Tecnica, 9, "Contaminación: Intentó apagar la succión dentro del paciente. Manténgala encendida hasta salir.");
+                        EnviarErrorUI(MonitorEndoscopiaUI.CategoriaEvaluacion.Tecnica, 9, "Contaminación: No puede soltar la muestra dentro del tracto. Llévela hasta la salida.");
                     }
                 }
+                else if (nivelSangrado > 0f)
+                {
+                    EnviarInfoUI("Succión activada. Aspirando hemorragia...", "#1E90FF");
+                }
+                // PRIORIDAD 3: Hay agua de lavado acumulada (Ignora la herramienta)
+                else if (lavadosSinSuccionar > 0)
+                {
+                    lavadosSinSuccionar = 0; // Vaciamos el agua acumulada
+                    EnviarInfoUI("Succión activada. Aspirando fluidos de irrigación...", "#1E90FF");
+                }
+                // PRIORIDAD 4: El campo visual está limpio, se procede a intentar atrapar
                 else
                 {
-                    IntentarSuccion(origenRayo, direccionRayo);
+                    IntentarAtrapar(origenRayo, direccionRayo);
                 }
             }
         }
@@ -403,6 +469,12 @@ public class SistemaHerramientas : MonoBehaviour
         else
         {
             EnviarInfoUI("Lavado de lente activado.", "#00FFFF");
+        }
+        // Penalización por inundar al paciente
+        lavadosSinSuccionar++;
+        if (lavadosSinSuccionar >= 3)
+        {
+            EnviarErrorUI(MonitorEndoscopiaUI.CategoriaEvaluacion.Seguridad, 1, "Acumulación de fluidos: Ha irrigado demasiada agua sin succionar. Riesgo de aspiración.");
         }
     }
 
@@ -532,7 +604,49 @@ public class SistemaHerramientas : MonoBehaviour
         }
     }
 
-    private void IntentarSuccion(Vector3 origen, Vector3 direccion)
+    //private void IntentarSuccion(Vector3 origen, Vector3 direccion)
+    //{
+    //    if (Physics.Raycast(origen, direccion, out RaycastHit hit, distanciaAccion * 1.5f, capaPolipos))
+    //    {
+    //        PolipoInteractuable polipoTocado = hit.collider.GetComponent<PolipoInteractuable>();
+
+    //        if (polipoTocado != null && polipoTocado.estadoActual == PolipoInteractuable.EstadoPolipo.CortadoSuelto)
+    //        {
+    //            StartCoroutine(RutinaSuccion(polipoTocado));
+
+    //            // Limpia la higiene al succionar
+    //            if (ultimoPolipoCortado == polipoTocado)
+    //            {
+    //                ultimoPolipoCortado = null;
+    //                movimientosSinSuccionar = 0;
+    //            }
+    //        }
+    //        else if (polipoTocado != null && polipoTocado.estadoActual == PolipoInteractuable.EstadoPolipo.Intacto)
+    //        {
+    //            EnviarErrorUI(MonitorEndoscopiaUI.CategoriaEvaluacion.Tecnica, 9, "Enfermera: No podemos succionar un pólipo que no ha sido cortado.");
+    //        }
+    //    }
+    //}
+
+    //private IEnumerator RutinaSuccion(PolipoInteractuable polipo)
+    //{
+    //    float tiempo = 0;
+    //    Vector3 posInicial = polipo.transform.position;
+
+    //    while (tiempo < 1f)
+    //    {
+    //        tiempo += Time.unscaledDeltaTime * 5f;
+    //        polipo.transform.position = Vector3.Lerp(posInicial, canalDeTrabajo.position, tiempo);
+    //        yield return null;
+    //    }
+
+    //    polipo.SerSuccionado(canalDeTrabajo);
+    //    llevandoPolipo = true;
+    //    EnviarInfoUI("Pólipo succionado. Proceda a retirarlo del paciente.", "#1E90FF");
+    //}
+
+
+    private void IntentarAtrapar(Vector3 origen, Vector3 direccion)
     {
         if (Physics.Raycast(origen, direccion, out RaycastHit hit, distanciaAccion * 1.5f, capaPolipos))
         {
@@ -540,9 +654,9 @@ public class SistemaHerramientas : MonoBehaviour
 
             if (polipoTocado != null && polipoTocado.estadoActual == PolipoInteractuable.EstadoPolipo.CortadoSuelto)
             {
-                StartCoroutine(RutinaSuccion(polipoTocado));
+                StartCoroutine(AnimacionAsaAtrapar(polipoTocado));
 
-                // Limpia la higiene al succionar
+                // Limpia la higiene al atraparlo
                 if (ultimoPolipoCortado == polipoTocado)
                 {
                     ultimoPolipoCortado = null;
@@ -551,27 +665,50 @@ public class SistemaHerramientas : MonoBehaviour
             }
             else if (polipoTocado != null && polipoTocado.estadoActual == PolipoInteractuable.EstadoPolipo.Intacto)
             {
-                EnviarErrorUI(MonitorEndoscopiaUI.CategoriaEvaluacion.Tecnica, 9, "Enfermera: No podemos succionar un pólipo que no ha sido cortado.");
+                EnviarErrorUI(MonitorEndoscopiaUI.CategoriaEvaluacion.Tecnica, 9, "Enfermera: No podemos atrapar un pólipo que no ha sido seccionado.");
             }
         }
     }
 
-    private IEnumerator RutinaSuccion(PolipoInteractuable polipo)
+    private IEnumerator AnimacionAsaAtrapar(PolipoInteractuable polipo)
     {
+        IniciarCorteSeguro();
+        pinzaAsas.SetActive(true);
+
+        pinzaAsas.transform.localPosition = Vector3.zero;
+        Vector3 posExtendida = new Vector3(0, 0, distanciaExtensionHerramienta);
+        Vector3 escalaOriginalLazo = lazoBezier.localScale;
+
+        // 1. Extiende el Asa
+        yield return MoverHerramienta(pinzaAsas.transform, Vector3.zero, posExtendida, 0.5f);
+        if (!estaCortando) yield break;
+
+        // 2. Trae el pólipo hacia el asa (simulando que el médico lo enlaza)
         float tiempo = 0;
         Vector3 posInicial = polipo.transform.position;
-
         while (tiempo < 1f)
         {
-            tiempo += Time.unscaledDeltaTime * 5f;
-            polipo.transform.position = Vector3.Lerp(posInicial, canalDeTrabajo.position, tiempo);
+            tiempo += Time.unscaledDeltaTime * 4f; // Movimiento rápido y fluido
+            polipo.transform.position = Vector3.Lerp(posInicial, pinzaAsas.transform.position, tiempo);
             yield return null;
         }
 
-        polipo.SerSuccionado(canalDeTrabajo);
+        // 3. Cierra el lazo para atraparlo
+        yield return EscalarLazo(escalaOriginalLazo, escalaLazoCerrado, 0.5f);
+        if (!estaCortando) yield break;
+
+        // 4. Lo adhiere a la punta
+        polipo.SerAtrapado(canalDeTrabajo);
         llevandoPolipo = true;
-        EnviarInfoUI("Pólipo succionado. Proceda a retirarlo del paciente.", "#1E90FF");
+        EnviarInfoUI("Pólipo asegurado con Asa de Polipectomía. Extraiga el endoscopio.", "#1E90FF");
+
+        // 5. Retrae el Asa con el pólipo
+        yield return MoverHerramienta(pinzaAsas.transform, posExtendida, Vector3.zero, 0.5f);
+        lazoBezier.localScale = escalaOriginalLazo;
+
+        TerminarCorteSeguro();
     }
+
 
     private void SoltarPolipoEnLaboratorio()
     {
@@ -611,6 +748,13 @@ public class SistemaHerramientas : MonoBehaviour
 
         polipoEnMira.ProcesarCorte();
 
+        if (Random.value <= 0.30f)
+        {
+            nivelSangrado = 1.0f;
+            if (particulasSangrado != null) particulasSangrado.Play(); // Dispara la nube de sangre
+            EnviarInfoUI("Hemorragia leve post-corte. Mantenga Succión para aspirar los fluidos.", "#FF0000");
+        }
+
         ultimoPolipoCortado = polipoEnMira;
         movimientosSinSuccionar = 0;
 
@@ -641,7 +785,12 @@ public class SistemaHerramientas : MonoBehaviour
         if (!estaCortando) yield break;
 
         polipoEnMira.ProcesarCorte();
-
+        if (Random.value <= 0.30f)
+        {
+            nivelSangrado = 1.0f;
+            if (particulasSangrado != null) particulasSangrado.Play(); // Dispara la nube de sangre
+            EnviarInfoUI("Hemorragia leve post-corte. Mantenga Succión para aspirar los fluidos.", "#FF0000");
+        }
         ultimoPolipoCortado = polipoEnMira;
         movimientosSinSuccionar = 0;
 
@@ -672,7 +821,7 @@ public class SistemaHerramientas : MonoBehaviour
     private IEnumerator MoverHerramienta(Transform obj, Vector3 inicio, Vector3 fin, float duracion)
     {
         float tiempo = 0;
-        while (tiempo < 1f)
+        while (tiempo < 1f && estaCortando)
         {
             tiempo += Time.unscaledDeltaTime / duracion;
             obj.localPosition = Vector3.Lerp(inicio, fin, tiempo);
@@ -683,7 +832,7 @@ public class SistemaHerramientas : MonoBehaviour
     private IEnumerator RotarPinzas(float anguloInicio, float anguloFin, float duracion)
     {
         float tiempo = 0;
-        while (tiempo < 1f)
+        while (tiempo < 1f && estaCortando)
         {
             tiempo += Time.unscaledDeltaTime / duracion;
             float anguloActual = Mathf.Lerp(anguloInicio, anguloFin, tiempo);
@@ -698,7 +847,7 @@ public class SistemaHerramientas : MonoBehaviour
     private IEnumerator EscalarLazo(Vector3 inicio, Vector3 fin, float duracion)
     {
         float tiempo = 0;
-        while (tiempo < 1f)
+        while (tiempo < 1f && estaCortando)
         {
             tiempo += Time.unscaledDeltaTime / duracion;
             lazoBezier.localScale = Vector3.Lerp(inicio, fin, tiempo);
@@ -716,6 +865,16 @@ public class SistemaHerramientas : MonoBehaviour
     private void TerminarCorteSeguro()
     {
         estaCortando = false;
+
+        pinzaDientes.transform.localPosition = Vector3.zero;
+        pinzaAsas.transform.localPosition = Vector3.zero;
+
+        // FIX: Usamos la memoria en lugar de Vector3.one
+        if (lazoBezier != null) lazoBezier.localScale = escalaOriginalLazoBase;
+
+        pinzaDerecha.localRotation = Quaternion.identity;
+        pinzaIzquierda.localRotation = Quaternion.identity;
+
         pinzaDientes.SetActive(false);
         pinzaAsas.SetActive(false);
     }

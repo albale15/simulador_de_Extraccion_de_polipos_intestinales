@@ -47,15 +47,15 @@ public class PolipoInteractuable : MonoBehaviour
         }
     }
 
-    // Se llama cuando presionamos el botón de succión (Tecla 5)
-    public void SerSuccionado(Transform canalDeTrabajo)
+    // Se llama cuando atrapamos el pólipo con el asa (Botón 4)
+    public void SerAtrapado(Transform canalDeTrabajo)
     {
         estadoActual = EstadoPolipo.Capturado;
-        Debug.Log($"<color=green>[Pólipo] {tipo} succionado. ¡Llévalo a la salida!</color>");
+        Debug.Log($"<color=green>[Pólipo] {tipo} atrapado. ¡Llévalo a la salida!</color>");
 
         transform.SetParent(canalDeTrabajo);
-        // Lo ponemos justo en la "boca" del canal de trabajo
-        transform.localPosition = new Vector3(0, 0, 0.02f);
-        transform.localScale *= 0.5f;
+        // Lo ponemos un poquito más afuera (0.04f) para que se vea colgado en el asa
+        transform.localPosition = new Vector3(0, 0.03f, 0.2f);
+        //transform.localScale *= 0.7f; // No lo encogemos tanto para que sea visible
     }
 }

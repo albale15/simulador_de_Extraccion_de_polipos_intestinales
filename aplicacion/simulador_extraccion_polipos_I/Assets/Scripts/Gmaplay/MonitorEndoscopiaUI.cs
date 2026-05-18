@@ -348,13 +348,17 @@ public class MonitorEndoscopiaUI : MonoBehaviour
                 string textoAccionFinal = habilitarSalida
                 ? $"<color=red><b>Finalizar Procedimiento [{cfg.mapAccion}]</b></color>"
                 : $"Menú Herramientas [{cfg.mapAccion}]";
+
+                // Texto dinámico para el botón 4
+                string textoAgarre = herramientas.llevandoPolipo ? "Soltar Pólipo" : "Atrapar Pólipo";
+
                 txtListaBotones.text =
                     $"<color=#00FFFF>(Controles)</color>\n" +
-                    $"Lavar Lente [{cfg.mapLimpiado}]\n" +
                     $"Freeze [{cfg.mapFreeze}]\n" +
                     $"Capture [{cfg.mapCapture}]\n" +
                     $"Zoom [{cfg.mapZoom}]\n" +
-                    $"Succión [{cfg.mapSuccion}]\n" +
+                    $"Lavar Lente [{cfg.mapLimpiado}]\n" +
+                    $"{textoAgarre} [{cfg.mapSuccion}]\n" +
                     textoAccionFinal;
             }
         }
@@ -759,15 +763,15 @@ public class MonitorEndoscopiaUI : MonoBehaviour
         else if (herramientas.llevandoPolipo)
         {
             if (herramientas.enZonaExtraccion)
-                mensajeGuia = "¡Llegaste a la salida! Apaga la succión (Botón 4) para depositar la muestra en el laboratorio.";
+                mensajeGuia = "¡Llegaste a la salida! Usa <color=#1E90FF>Soltar Pólipo</color> para depositar la muestra en el laboratorio.";
             else
-                mensajeGuia = "Saca el pólipo extrayendo el tubo hacia la zona de inicio. Cuidado con los tirones bruscos.";
+                mensajeGuia = "Saca el pólipo atrapado extrayendo el tubo hacia la zona de inicio. Cuidado con los tirones bruscos.";
         }
-        // 3. SUCCIÓN (Cortó un pólipo grande y está suelto)
+        // 3. ATRApar (Cortó un pólipo grande y está suelto)
         else if (herramientas.ObtenerUltimoPolipoCortado() != null &&
                  herramientas.ObtenerUltimoPolipoCortado().estadoActual == PolipoInteractuable.EstadoPolipo.CortadoSuelto)
         {
-            mensajeGuia = "El pólipo está suelto. Enciende la succión (Botón 4) apuntando hacia él para capturarlo.";
+            mensajeGuia = "El pólipo está suelto. Apunta hacia él y usa <color=#1E90FF>Atrapar Pólipo</color> (4) para asegurarlo con el asa.";
         }
         // 4. MENÚ DE HERRAMIENTAS ABIERTO
         else if (herramientas.EstaEnModoSeleccion())
