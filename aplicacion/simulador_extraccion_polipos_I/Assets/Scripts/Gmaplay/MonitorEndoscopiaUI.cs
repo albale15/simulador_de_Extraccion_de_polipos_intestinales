@@ -450,8 +450,26 @@ public class MonitorEndoscopiaUI : MonoBehaviour
         }
         if (SerialManager.instancia != null && SerialManager.instancia.estadoActual == SerialManager.EstadoConexion.Conectado)
         {
-            // Mandamos el comando de vibración por 1 segundo (1000 ms)
-            SerialManager.instancia.EnviarDato("V1:1000\n");
+            // HILO SECUNDARIO Y ANTI-COLAPSO DE BUFFER
+            // Ejecutamos la comunicación USB por fuera del hilo principal de Unity
+            // para evitar que el juego se congele y las físicas se bugueen.
+            System.Threading.ThreadPool.QueueUserWorkItem(state =>
+            {
+                try
+                {
+                    SerialManager.instancia.EnviarDato("V1:1000\n");
+
+                    // Le damos 50 milisegundos a la placa STM32 para "masticar" el V1
+                    // antes de lanzarle el V2, evitando que se asfixie el buffer.
+                    System.Threading.Thread.Sleep(50);
+
+                    SerialManager.instancia.EnviarDato("V2:1000\n");
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogWarning("Error en hilo de vibración: " + e.Message);
+                }
+            });
         }
     }
 

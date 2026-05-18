@@ -713,7 +713,9 @@ public class SistemaHerramientas : MonoBehaviour
         pinzaAsas.SetActive(true);
 
         pinzaAsas.transform.localPosition = Vector3.zero;
-        Vector3 posExtendida = new Vector3(0, 0, distanciaExtensionHerramienta);
+        // Calculamos la distancia exacta hasta donde quedó flotando el pólipo suelto
+        float distanciaReal = Vector3.Distance(canalDeTrabajo.position, polipo.transform.position);
+        Vector3 posExtendida = new Vector3(0, 0, distanciaReal);
         Vector3 escalaOriginalLazo = escalaOriginalLazoBase;
 
         // 1. Extiende el Asa
@@ -723,9 +725,9 @@ public class SistemaHerramientas : MonoBehaviour
         // 2. Trae el pólipo hacia el asa (simulando que el médico lo enlaza)
         float tiempo = 0;
         Vector3 posInicial = polipo.transform.position;
-        while (tiempo < 1f)
+        while (tiempo < 1f && estaCortando)
         {
-            tiempo += Time.unscaledDeltaTime * 4f; // Movimiento rápido y fluido
+            tiempo += Time.unscaledDeltaTime * 4f;
             polipo.transform.position = Vector3.Lerp(posInicial, pinzaAsas.transform.position, tiempo);
             yield return null;
         }
@@ -734,15 +736,19 @@ public class SistemaHerramientas : MonoBehaviour
         yield return EscalarLazo(escalaOriginalLazo, escalaLazoCerrado, 0.5f);
         if (!estaCortando) yield break;
 
-        // 4. Lo adhiere a la punta
+        // 4. Pegamos el pólipo al Asa temporalmente para que viajen juntos
+        polipo.transform.SetParent(pinzaAsas.transform, true);
+
+        // 5. Retrae el Asa (el pólipo será arrastrado suavemente por la pantalla)
+        yield return MoverHerramienta(pinzaAsas.transform, posExtendida, Vector3.zero, 0.5f);
+        if (!estaCortando) yield break;
+
+        // 6. Ahora que ya llegaron al lente, activamos el estado final en el canal de trabajo
         polipo.SerAtrapado(canalDeTrabajo);
         llevandoPolipo = true;
         EnviarInfoUI("Pólipo asegurado con Asa de Polipectomía. Extraiga el endoscopio.", "#1E90FF");
 
-        // 5. Retrae el Asa con el pólipo
-        yield return MoverHerramienta(pinzaAsas.transform, posExtendida, Vector3.zero, 0.5f);
         lazoBezier.localScale = escalaOriginalLazo;
-
         TerminarCorteSeguro();
     }
 
@@ -772,7 +778,10 @@ public class SistemaHerramientas : MonoBehaviour
         pinzaDientes.SetActive(true);
 
         pinzaDientes.transform.localPosition = Vector3.zero;
-        Vector3 posExtendida = new Vector3(0, 0, distanciaExtensionHerramienta);
+        // Medimos la distancia exacta entre la punta del endoscopio y el pólipo
+        float distanciaReal = Vector3.Distance(canalDeTrabajo.position, polipoEnMira.transform.position);
+        // Le restamos 0.015f para que la pinza se detenga "mordiendo" la superficie, no el centro
+        Vector3 posExtendida = new Vector3(0, 0, distanciaReal - 0.015f);
 
         yield return MoverHerramienta(pinzaDientes.transform, Vector3.zero, posExtendida, 0.5f);
         if (!estaCortando) yield break;
@@ -809,7 +818,10 @@ public class SistemaHerramientas : MonoBehaviour
         pinzaAsas.SetActive(true);
 
         pinzaAsas.transform.localPosition = Vector3.zero;
-        Vector3 posExtendida = new Vector3(0, 0, distanciaExtensionHerramienta);
+        // CÁLCULO DE DISTANCIA DINÁMICA
+        float distanciaReal = Vector3.Distance(canalDeTrabajo.position, polipoEnMira.transform.position);
+        // Le restamos solo 0.005f porque el asa necesita abrazar un poco más adentro que la pinza
+        Vector3 posExtendida = new Vector3(0, 0, distanciaReal - 0.15f);
         Vector3 escalaOriginalLazo = escalaOriginalLazoBase;
 
         yield return MoverHerramienta(pinzaAsas.transform, Vector3.zero, posExtendida, 0.8f);
@@ -918,6 +930,12 @@ public class SistemaHerramientas : MonoBehaviour
 
     private void VerificarMovimientoProhibido()
     {
+        // ESCUDO ANTI-LAG (Cuello de botella USB)
+        // Si el frame tardó más de 50 milisegundos, significa que Unity se congeló
+        // enviando el dato de vibración. Ignoramos este frame para evitar que
+        // el salto visual cancele el corte de la cirugía.
+        if (Time.deltaTime > 0.05f) return;
+
         if (Vector3.Distance(transform.position, posInicialPunta) > 0.005f || Quaternion.Angle(transform.rotation, rotInicialPunta) > 3f)
         {
             EnviarErrorUI(MonitorEndoscopiaUI.CategoriaEvaluacion.Tecnica, 7, "Corte Abortado: Pérdida de estabilidad del endoscopio durante intervención.");

@@ -50,7 +50,8 @@ uint8_t btn_lim, btn_su, btn1, btn2, btn3, btn4;
 uint8_t bl_last=0, bs_last=0, b1_last=0, b2_last=0, b3_last=0, b4_last=0;
 uint16_t angulo_anterior_1 = 0, angulo_anterior_2 = 0;
 int32_t enc1_accumulator = 0, enc2_accumulator = 0;
-const int32_t MAGNETIC_THRESHOLD = 200;
+const int32_t MAGNETIC_THRESHOLD_1 = 200; // Para el volante 1 e2
+const int32_t MAGNETIC_THRESHOLD_2 = 120; // Para el volante 2 e1
 int8_t enc1_send = 0, enc2_send = 0, activate = 0;
 
 volatile int32_t encoder_insercion = 0;
@@ -112,14 +113,14 @@ uint8_t readButton(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, uint8_t *lastState) {
 }
 
 // Leer ángulo del AS5600
-uint16_t Leer_Angulo_AS5600(I2C_HandleTypeDef *hi2c) {
+uint16_t Leer_Angulo_AS5600(I2C_HandleTypeDef *hi2c, uint16_t angulo_seguro) {
     uint8_t buffer[2];
     // Solicitamos 2 bytes desde el registro 0x0C
     if (HAL_I2C_Mem_Read(hi2c, AS5600_ADDR, RAW_ANGLE_REG, I2C_MEMADD_SIZE_8BIT, buffer, 2, 10) == HAL_OK) {
         uint16_t angulo = (buffer[0] << 8) | buffer[1];
         return angulo & 0x0FFF; // Filtramos la basura para dejar solo 12 bits
     }
-    return 1512; // Retorna 0 si el sensor está desconectado
+    return angulo_seguro; // Si el I2C falla Retorna 0 si el sensor está desconectado
 }
 
 int _write(int file, char *ptr, int len) {
@@ -252,8 +253,8 @@ int main(void)
   HAL_UART_Receive_IT(&huart2, &rx_byte, 1);
 
   // Lectura inicial de AS5600
-  angulo_anterior_1 = Leer_Angulo_AS5600(&hi2c1);
-  angulo_anterior_2 = Leer_Angulo_AS5600(&hi2c3);
+  angulo_anterior_1 = Leer_Angulo_AS5600(&hi2c1, 1512);
+  angulo_anterior_2 = Leer_Angulo_AS5600(&hi2c3, 1512);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -271,8 +272,8 @@ int main(void)
 	    btn4    = readButton(GPIOB, GPIO_PIN_0, &b4_last);
 
 		// 2. VOLANTES (AS5600)
-		uint16_t angulo_actual_1 = Leer_Angulo_AS5600(&hi2c1);
-		uint16_t angulo_actual_2 = Leer_Angulo_AS5600(&hi2c3);
+	    uint16_t angulo_actual_1 = Leer_Angulo_AS5600(&hi2c1, angulo_anterior_1);
+		uint16_t angulo_actual_2 = Leer_Angulo_AS5600(&hi2c3, angulo_anterior_2);
 
 		if(angulo_actual_1 == 1512 && angulo_actual_2 == 1512) err_encoder = 1;
 		else err_encoder = 0;
@@ -291,16 +292,16 @@ int main(void)
 		enc1_accumulator += diff_1;
 		enc2_accumulator += diff_2;
 
-		if (enc1_accumulator >= MAGNETIC_THRESHOLD) {
-			enc1_send = 1; enc1_accumulator -= MAGNETIC_THRESHOLD; activate = 1;
-		} else if (enc1_accumulator <= -MAGNETIC_THRESHOLD) {
-			enc1_send = -1; enc1_accumulator += MAGNETIC_THRESHOLD; activate = 1;
+		if (enc1_accumulator >= MAGNETIC_THRESHOLD_1) {
+					enc1_send = 1; enc1_accumulator -= MAGNETIC_THRESHOLD_1; activate = 1;
+		} else if (enc1_accumulator <= -MAGNETIC_THRESHOLD_1) {
+			enc1_send = -1; enc1_accumulator += MAGNETIC_THRESHOLD_1; activate = 1;
 		}
 
-		if (enc2_accumulator >= MAGNETIC_THRESHOLD) {
-			enc2_send = 1; enc2_accumulator -= MAGNETIC_THRESHOLD; activate = 1;
-		} else if (enc2_accumulator <= -MAGNETIC_THRESHOLD) {
-			enc2_send = -1; enc2_accumulator += MAGNETIC_THRESHOLD; activate = 1;
+		if (enc2_accumulator >= MAGNETIC_THRESHOLD_2) {
+			enc2_send = 1; enc2_accumulator -= MAGNETIC_THRESHOLD_2; activate = 1;
+		} else if (enc2_accumulator <= -MAGNETIC_THRESHOLD_2) {
+			enc2_send = -1; enc2_accumulator += MAGNETIC_THRESHOLD_2; activate = 1;
 		}
 
 	  // 3. RECEPCIÓN UNITY -> VIBRACIÓN
@@ -336,7 +337,7 @@ int main(void)
 			  // Lim:0 Su:0 B1:0 B2:0 B3:0 B4:0 E1:0 E2:0 INS:0
 			  printf("Lim:%d Su:%d B1:%d B2:%d B3:%d B4:%d E1:%d E2:%d INS:%ld\r\n",
 					 btn_lim, btn_su, btn1, btn2, btn3, btn4,
-					 enc2_send, enc1_send, encoder_insercion);
+					 enc2_send, enc1_send, -encoder_insercion);
 
 			  activate = 0;
 			  enc1_send = 0;
