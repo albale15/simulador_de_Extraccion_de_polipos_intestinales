@@ -194,6 +194,10 @@ public class MonitorEndoscopiaUI : MonoBehaviour
         {
             ActualizarPanelPolipos();
 
+            // Forzamos al panel azul a actualizarse en tiempo real
+            bool puedeSalir = herramientas.enZonaExtraccion && !herramientas.llevandoPolipo && !herramientas.EstaEnModoSeleccion() && herramientas.ObtenerPolipoEnMira() == null;
+            ActualizarTextosBotones(herramientas.EstaEnModoSeleccion(), puedeSalir);
+
             if (ManejadorPartida.dificultad == 0 || ManejadorPartida.dificultad == 1)
             {
                 txtNotaEstudiante.text =
@@ -208,7 +212,7 @@ public class MonitorEndoscopiaUI : MonoBehaviour
         }
     }
 
-    // --- NUEVA FUNCIÓN PARA ACTUALIZAR DAÑO ---
+    // --- FUNCIÓN PARA ACTUALIZAR DAÑO ---
     public void MostrarDanio(int porcentaje, string mensaje)
     {
         if (txtDanioPaciente != null)
@@ -350,7 +354,34 @@ public class MonitorEndoscopiaUI : MonoBehaviour
                 : $"Menú Herramientas [{cfg.mapAccion}]";
 
                 // Texto dinámico para el botón 4
-                string textoAgarre = herramientas.llevandoPolipo ? "Soltar Pólipo" : "Atrapar Pólipo";
+                string textoSuccion = "Succión"; // Nombre por defecto
+
+                if (herramientas != null)
+                {
+                    // 1. Si el canal está tapado por un pólipo
+                    if (herramientas.llevandoPolipo)
+                    {
+                        textoSuccion = "<color=#32CD32>Soltar Pólipo</color>";
+                    }
+                    // 2. Si hay hemorragia
+                    else if (herramientas.ObtenerNivelSangrado() > 0f)
+                    {
+                        textoSuccion = "<color=#FF0000>Aspirar Sangre</color>";
+                    }
+                    // 3. Si hay agua de lavado
+                    else if (herramientas.ObtenerLavadosSinSuccionar() > 0)
+                    {
+                        textoSuccion = "<color=#1E90FF>Aspirar Agua</color>";
+                    }
+                    // 4. Si hay un pólipo cortado esperando
+                    else if (
+                        (herramientas.ObtenerUltimoPolipoCortado() != null && herramientas.ObtenerUltimoPolipoCortado().estadoActual == PolipoInteractuable.EstadoPolipo.CortadoSuelto) ||
+                        (herramientas.ObtenerPolipoEnMira() != null && herramientas.ObtenerPolipoEnMira().estadoActual == PolipoInteractuable.EstadoPolipo.CortadoSuelto)
+                    )
+                    {
+                        textoSuccion = "<color=#FFD700>Atrapar Pólipo</color>";
+                    }
+                }
 
                 txtListaBotones.text =
                     $"<color=#00FFFF>(Controles)</color>\n" +
@@ -358,7 +389,7 @@ public class MonitorEndoscopiaUI : MonoBehaviour
                     $"Capture [{cfg.mapCapture}]\n" +
                     $"Zoom [{cfg.mapZoom}]\n" +
                     $"Lavar Lente [{cfg.mapLimpiado}]\n" +
-                    $"{textoAgarre} [{cfg.mapSuccion}]\n" +
+                    $"{textoSuccion} [{cfg.mapSuccion}]\n" +
                     textoAccionFinal;
             }
         }
@@ -751,29 +782,62 @@ public class MonitorEndoscopiaUI : MonoBehaviour
 
         int poliposRestantes = ManejadorPartida.totalPolipos - herramientas.ObtenerTotalEliminados();
 
+        string btnFreeze = "Teclado 1";
+        string btnCapture = "Teclado 2";
+        string btnSuccion = "Teclado 4";
+        string btnAccion = "Teclado 5";
+        string btnLimpiado = "Teclado 6";
+
+        bool usandoHardware = (endoscopio != null && endoscopio.usarControlHardware);
+
+        if (usandoHardware && ConfigManager.instancia != null)
+        {
+            btnFreeze = ConfigManager.instancia.mapFreeze;
+            btnCapture = ConfigManager.instancia.mapCapture;
+            btnSuccion = ConfigManager.instancia.mapSuccion;
+            btnAccion = ConfigManager.instancia.mapAccion;
+            btnLimpiado = ConfigManager.instancia.mapLimpiado;
+        }
         // 1. CONDICIÓN DE VICTORIA (Ya no hay pólipos)
         if (poliposRestantes <= 0)
         {
             if (herramientas.enZonaExtraccion)
-                mensajeGuia = "<color=#32CD32>¡Excelente! Has terminado. Presiona el Botón de Acción (5) para salir y ver tus resultados.</color>";
+                mensajeGuia = $"<color=#32CD32>¡Excelente! Has terminado. Presiona Acción <color=yellow>[{btnAccion}]</color> para salir y ver resultados.</color>";
             else
                 mensajeGuia = "¡Todos los pólipos extraídos! Vuelve a la zona de extracción al inicio del tracto y presiona salir.";
         }
-        // 2. EXTRACCIÓN (Llevando pólipo en la punta)
+        // 2. sangre del corte (Bloquea visión, máxima prioridad)
+        else if (herramientas.ObtenerNivelSangrado() > 0f)
+        {
+            mensajeGuia = $"<color=#FF0000>Sangre de corte.</color> Mantenga presionado Succión <color=yellow>[{btnSuccion}]</color> para limpiar el campo visual.";
+        }
+        // 3. EXTRACCIÓN (Llevando pólipo en la punta)
         else if (herramientas.llevandoPolipo)
         {
             if (herramientas.enZonaExtraccion)
-                mensajeGuia = "¡Llegaste a la salida! Usa <color=#1E90FF>Soltar Pólipo</color> para depositar la muestra en el laboratorio.";
+                mensajeGuia = $"¡Llegaste a la salida! Usa Soltar Pólipo <color=yellow>[{btnSuccion}]</color> para depositar la muestra en el laboratorio.";
             else
-                mensajeGuia = "Saca el pólipo atrapado extrayendo el tubo hacia la zona de inicio. Cuidado con los tirones bruscos.";
+                mensajeGuia = "Saca el pólipo atrapado extrayendo el tubo hacia la zona de inicio. Cuidado con los tirones.";
         }
-        // 3. ATRApar (Cortó un pólipo grande y está suelto)
-        else if (herramientas.ObtenerUltimoPolipoCortado() != null &&
-                 herramientas.ObtenerUltimoPolipoCortado().estadoActual == PolipoInteractuable.EstadoPolipo.CortadoSuelto)
+        // 4. EXCESO DE AGUA (Peligro de aspiración del paciente)
+        else if (herramientas.ObtenerLavadosSinSuccionar() > 0)
         {
-            mensajeGuia = "El pólipo está suelto. Apunta hacia él y usa <color=#1E90FF>Atrapar Pólipo</color> (4) para asegurarlo con el asa.";
+            mensajeGuia = $"Fluidos acumulados por lavado. Presione Succión <color=yellow>[{btnSuccion}]</color> para aspirar el agua.";
         }
-        // 4. MENÚ DE HERRAMIENTAS ABIERTO
+        // 5. LENTE SUCIO (Peligro de mala captura)
+        else if (herramientas.ObtenerNivelSuciedad() > 0.2f)
+        {
+            mensajeGuia = $"<color=#FF8C00>Lente obstruido.</color> Presione Lavar Lente <color=yellow>[{btnLimpiado}]</color> para irrigar la óptica.";
+        }
+        // 6. ATRAPAR (Cortó un pólipo grande y está suelto)
+        else if (
+            (herramientas.ObtenerUltimoPolipoCortado() != null && herramientas.ObtenerUltimoPolipoCortado().estadoActual == PolipoInteractuable.EstadoPolipo.CortadoSuelto) ||
+            (herramientas.ObtenerPolipoEnMira() != null && herramientas.ObtenerPolipoEnMira().estadoActual == PolipoInteractuable.EstadoPolipo.CortadoSuelto)
+        )
+        {
+            mensajeGuia = $"El pólipo está suelto. Apunta hacia él y usa Atrapar Pólipo <color=yellow>[{btnSuccion}]</color> para asegurarlo con el asa.";
+        }
+        // 7. MENÚ DE HERRAMIENTAS ABIERTO
         else if (herramientas.EstaEnModoSeleccion())
         {
             PolipoInteractuable polipo = herramientas.ObtenerPolipoEnMira();
@@ -781,12 +845,12 @@ public class MonitorEndoscopiaUI : MonoBehaviour
             {
                 // GUÍA BASADA EN TAMAÑO REAL
                 if (polipo.tamanoMilimetros <= 5f)
-                    mensajeGuia = $"Pólipo diminuto ({polipo.tamanoMilimetros:F1}mm). Selecciona la <color=yellow>Pinza de Biopsia</color> para extirparlo.";
+                    mensajeGuia = $"Pólipo diminuto ({polipo.tamanoMilimetros:F1}mm). Usa Pinza de Biopsia <color=yellow>[{btnFreeze}]</color>.";
                 else
-                    mensajeGuia = $"Pólipo mediano/grande ({polipo.tamanoMilimetros:F1}mm). Selecciona el <color=#FF4500>Asa de Polipectomía</color> para seccionarlo.";
+                    mensajeGuia = $"Pólipo grande ({polipo.tamanoMilimetros:F1}mm). Usa Asa de Polipectomía <color=yellow>[{btnCapture}]</color>.";
             }
         }
-        // 5. PÓLIPO EN LA MIRA (Protocolo Médico)
+        // 8. PÓLIPO EN LA MIRA (Protocolo Médico)
         else if (herramientas.ObtenerPolipoEnMira() != null)
         {
             PolipoInteractuable polipo = herramientas.ObtenerPolipoEnMira();
@@ -794,33 +858,33 @@ public class MonitorEndoscopiaUI : MonoBehaviour
             if (!polipo.fueFotografiado)
             {
                 if (!herramientas.estaCongelado)
-                    mensajeGuia = "¡Pólipo detectado! Sigue el protocolo:\n<color=#00FFFF>1. Congela la imagen (Freeze)</color>";
+                    mensajeGuia = $"¡Pólipo detectado! Sigue el protocolo:\n1. Congela la imagen <color=yellow>[{btnFreeze}]</color>";
                 else
-                    mensajeGuia = "Imagen congelada.\n<color=#FFD700>2. Toma la fotografía (Capture)</color> para documentarlo.";
+                    mensajeGuia = $"Imagen congelada.\n2. Toma la fotografía <color=yellow>[{btnCapture}]</color> para documentarlo.";
             }
             else
             {
                 if (herramientas.estaCongelado)
-                    mensajeGuia = "Fotografía guardada.\n<color=#00FFFF>1. Descongela la imagen (Freeze)</color> para volver a moverte.";
+                    mensajeGuia = $"Fotografía guardada.\n1. Descongela la imagen <color=yellow>[{btnFreeze}]</color> para volver a moverte.";
                 else
-                    mensajeGuia = "Protocolo visual completo.\nPresiona el <color=white>Botón de Acción (5)</color> para elegir herramienta.";
+                    mensajeGuia = $"Protocolo visual completo.\nPresiona el Botón de Acción <color=yellow>[{btnAccion}]</color> para elegir herramienta.";
             }
         }
-        // 6. CONGELADO POR ERROR
+        // 9. CONGELADO POR ERROR
         else if (herramientas.estaCongelado)
         {
-            mensajeGuia = "La pantalla está congelada pero no hay ningún pólipo a la vista. Vuelve a presionar <color=#00FFFF>Freeze</color> para seguir moviéndote.";
+            mensajeGuia = $"La pantalla está congelada. Presiona Freeze <color=yellow>[{btnFreeze}]</color> para seguir moviéndote.";
         }
-        // 7. ZONA DE EXTRACCIÓN (Buscando)
+        // 10. ZONA DE EXTRACCIÓN (Buscando)
         else if (herramientas.enZonaExtraccion)
         {
             mensajeGuia = "Aún no hemos acabado. Inserta el endoscopio y busca más pólipos.";
         }
-        // 8. EXPLORACIÓN NORMAL
+        // 11. EXPLORACIÓN NORMAL
         else
         {
             if (!endoscopio.MoviendoControles())
-                mensajeGuia = "Busca un pólipo. Muévete insertando el tubo en la ranura de inserción. Puedes usar los volantes para guiar tu camino.";
+                mensajeGuia = "Busca un pólipo. Muévete insertando el tubo en la ranura de inserción.";
             else
                 mensajeGuia = "Explorando... Revisa bien detrás de los pliegues intestinales usando el torque.";
         }

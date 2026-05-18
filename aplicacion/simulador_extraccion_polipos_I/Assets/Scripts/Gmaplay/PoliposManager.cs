@@ -85,16 +85,16 @@ public class PoliposManager : MonoBehaviour
                         switch (tipoPolipo)
                         {
                             case 0: // Yamada 1 (Planos/Diminutos): Mayormente chicos, algunos medianos
-                                tamanoAleatorio = Random.Range(1f, 6f);
+                                tamanoAleatorio = Random.Range(2f, 6f);
                                 break;
                             case 1: // Yamada 2 (Sésiles): Rango intermedio
-                                tamanoAleatorio = Random.Range(1f, 8f);
+                                tamanoAleatorio = Random.Range(2f, 7f);
                                 break;
                             case 2: // Yamada 3 (Semi-pediculados): Mayormente grandes
                                 tamanoAleatorio = Random.Range(4f, 8f);
                                 break;
                             case 3: // Yamada 4 (Pediculados/Grandes): Claramente grandes
-                                tamanoAleatorio = Random.Range(4f, 10f);
+                                tamanoAleatorio = Random.Range(4f, 9f);
                                 break;
                         }
 

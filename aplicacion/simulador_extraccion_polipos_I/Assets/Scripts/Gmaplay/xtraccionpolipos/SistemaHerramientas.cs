@@ -43,6 +43,8 @@ public class SistemaHerramientas : MonoBehaviour
     private float tiempoLenteSucio = 0f;
     private bool penalizadoPorSuciedad = false;
 
+    private float tiempoSangrandoSinSuccion = 0f;
+    private bool penalizadoPorSangrado = false;
     [Header("Estado del Sistema")]
     public bool estaCortando = false;
     public bool llevandoPolipo = false;
@@ -80,11 +82,17 @@ public class SistemaHerramientas : MonoBehaviour
     public bool EstaEnModoSeleccion() { return enModoSeleccion; }
     public PolipoInteractuable ObtenerPolipoEnMira() { return polipoEnMira; }
     public PolipoInteractuable ObtenerUltimoPolipoCortado() { return ultimoPolipoCortado; }
+    public float ObtenerNivelSangrado() { return nivelSangrado; }
+    public float ObtenerNivelSuciedad() { return nivelSuciedad; }
+    public int ObtenerLavadosSinSuccionar() { return lavadosSinSuccionar; }
 
     private Vector3 escalaOriginalLazoBase;
     void Start()
     {
-        Vector3 escalaOriginalLazo = escalaOriginalLazoBase;
+        if (lazoBezier != null)
+        {
+            escalaOriginalLazoBase = lazoBezier.localScale; // Guardamos su tamaño real de trabajo
+        }
         if (ManejadorPartida.dificultad == 0)
         {
             anguloTolerancia = 180f;
@@ -210,9 +218,9 @@ public class SistemaHerramientas : MonoBehaviour
 
         // EFECTO 3D DE SANGRADO Y SUCCIÓN
 
-        if (manteniendoSuccion && !estaCongelado)
+        if (nivelSangrado > 0)
         {
-            if (nivelSangrado > 0)
+            if (manteniendoSuccion && !estaCongelado)
             {
                 estabaSuccionandoSangre = true;
                 nivelSangrado -= Time.deltaTime * 0.5f; // Tarda 2 segundos en aspirarse
@@ -224,17 +232,46 @@ public class SistemaHerramientas : MonoBehaviour
                     particulasSangrado.Stop();
                     EnviarInfoUI("Hemorragia controlada. Campo visual despejado.", "#00FF00");
                     estabaSuccionandoSangre = false;
+
+                    // Reseteamos los castigos para el próximo pólipo
+                    tiempoSangrandoSinSuccion = 0f;
+                    penalizadoPorSangrado = false;
+                }
+            }
+            else
+            {
+                // EL CRONÓMETRO: Si hay sangre y NO está apretando el botón, el tiempo corre
+                tiempoSangrandoSinSuccion += Time.deltaTime;
+
+                // Si pasan 5 segundos y no lo hemos castigado aún
+                if (tiempoSangrandoSinSuccion >= 5f)
+                {
+                    EnviarErrorUI(MonitorEndoscopiaUI.CategoriaEvaluacion.Seguridad, 1, "Negligencia Quirúrgica: Demoró más de 5 segundos en atender la hemorragia.");
+                    tiempoSangrandoSinSuccion = 0f;
+                }
+
+                // Castigo por interrupción (Soltó el botón antes de tiempo)
+                if (estabaSuccionandoSangre)
+                {
+                    EnviarErrorUI(MonitorEndoscopiaUI.CategoriaEvaluacion.Seguridad, 1, "Manejo de Fluidos: Interrumpió la aspiración antes de controlar totalmente la hemorragia.");
+                    estabaSuccionandoSangre = false;
                 }
             }
         }
-        else if (!manteniendoSuccion && estabaSuccionandoSangre)
+        else
         {
-            // Si soltó el botón y la sangre NO llegó a cero, lo penalizamos
-            if (nivelSangrado > 0)
-            {
-                EnviarErrorUI(MonitorEndoscopiaUI.CategoriaEvaluacion.Seguridad, 1, "Manejo de Fluidos: Interrumpió la aspiración antes de controlar totalmente la hemorragia.");
-            }
-            estabaSuccionandoSangre = false; // Reseteamos la bandera para evitar que le quite puntos en cada frame
+            // Seguridad: Si no hay sangre, los relojes siempre están en cero
+            tiempoSangrandoSinSuccion = 0f;
+            penalizadoPorSangrado = false;
+        }
+
+        // Si la pantalla está llena de partículas de sangre, bloqueamos herramientas y cámara
+        if (nivelSangrado > 0.3f && (btnCapture || btnFreeze || btnAccion))
+        {
+            EnviarErrorUI(MonitorEndoscopiaUI.CategoriaEvaluacion.Tecnica, 9, "Campo visual obstruido por hemorragia. Mantenga la Succión para limpiar.");
+            btnCapture = false;
+            btnFreeze = false;
+            btnAccion = false;
         }
 
         // Si la pantalla está llena de partículas de sangre, bloqueamos herramientas y cámara
@@ -677,7 +714,7 @@ public class SistemaHerramientas : MonoBehaviour
 
         pinzaAsas.transform.localPosition = Vector3.zero;
         Vector3 posExtendida = new Vector3(0, 0, distanciaExtensionHerramienta);
-        Vector3 escalaOriginalLazo = lazoBezier.localScale;
+        Vector3 escalaOriginalLazo = escalaOriginalLazoBase;
 
         // 1. Extiende el Asa
         yield return MoverHerramienta(pinzaAsas.transform, Vector3.zero, posExtendida, 0.5f);
@@ -773,7 +810,7 @@ public class SistemaHerramientas : MonoBehaviour
 
         pinzaAsas.transform.localPosition = Vector3.zero;
         Vector3 posExtendida = new Vector3(0, 0, distanciaExtensionHerramienta);
-        Vector3 escalaOriginalLazo = lazoBezier.localScale;
+        Vector3 escalaOriginalLazo = escalaOriginalLazoBase;
 
         yield return MoverHerramienta(pinzaAsas.transform, Vector3.zero, posExtendida, 0.8f);
         if (!estaCortando) yield break;
@@ -885,7 +922,6 @@ public class SistemaHerramientas : MonoBehaviour
         {
             EnviarErrorUI(MonitorEndoscopiaUI.CategoriaEvaluacion.Tecnica, 7, "Corte Abortado: Pérdida de estabilidad del endoscopio durante intervención.");
             TerminarCorteSeguro();
-            if (lazoBezier != null) lazoBezier.localScale = Vector3.one;
         }
     }
 
