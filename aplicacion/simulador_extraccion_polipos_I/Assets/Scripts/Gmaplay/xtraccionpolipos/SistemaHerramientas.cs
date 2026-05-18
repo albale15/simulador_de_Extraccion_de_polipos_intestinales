@@ -19,6 +19,9 @@ public class SistemaHerramientas : MonoBehaviour
     public Transform lazoBezier;
     public Vector3 escalaLazoCerrado = new Vector3(0.1f, 0.1f, 0.1f);
 
+    [Header("Efectos Visuales de Herramientas")]
+    public LineRenderer cableHerramienta;
+
     [Header("Configuración de Interacción")]
     public float distanciaAccion = 0.2f;
     public float anguloTolerancia = 35f;
@@ -489,7 +492,31 @@ public class SistemaHerramientas : MonoBehaviour
         }
 
     }
-
+    void LateUpdate()
+    {
+        if (cableHerramienta != null)
+        {
+            // Si la Pinza Fría está encendida
+            if (pinzaDientes != null && pinzaDientes.activeInHierarchy)
+            {
+                cableHerramienta.enabled = true;
+                cableHerramienta.SetPosition(0, canalDeTrabajo.position); // Inicio en el endoscopio
+                cableHerramienta.SetPosition(1, pinzaDientes.transform.position); // Fin en la pinza
+            }
+            // Si el Asa Caliente está encendida
+            else if (pinzaAsas != null && pinzaAsas.activeInHierarchy)
+            {
+                cableHerramienta.enabled = true;
+                cableHerramienta.SetPosition(0, canalDeTrabajo.position);
+                cableHerramienta.SetPosition(1, pinzaAsas.transform.position);
+            }
+            // Si ninguna está activa, apagamos el cable
+            else
+            {
+                cableHerramienta.enabled = false;
+            }
+        }
+    }
     //FUNCIÓN DE LAVADO DE LENTE
     private void EjecutarLimpiado()
     {
