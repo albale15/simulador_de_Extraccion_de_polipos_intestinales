@@ -93,12 +93,12 @@ public class ConfigManager : MonoBehaviour
         datosActuales = limpios;
         AlRecibirDatosProcesados?.Invoke(limpios);
 
-        d.boton1 = 0;
-        d.boton2 = 0;
-        d.boton3 = 0;
-        d.boton4 = 0;
-        d.botonSuccion = 0;
-        d.botonLimpiado = 0; 
+        //d.boton1 = 0;
+        //d.boton2 = 0;
+        //d.boton3 = 0;
+        //d.boton4 = 0;
+        //d.botonSuccion = 0;
+        //d.botonLimpiado = 0; 
     }
 
     void LateUpdate()

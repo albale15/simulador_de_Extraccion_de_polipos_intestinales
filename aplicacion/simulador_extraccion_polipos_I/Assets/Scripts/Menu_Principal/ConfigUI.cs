@@ -204,8 +204,8 @@ public class ConfigUI : MonoBehaviour
             if (d.boton2 == 1) return "B2";
             if (d.boton3 == 1) return "B3";
             if (d.boton4 == 1) return "B4";
-            if (d.botonSuccion == 1) return "Su";
-            if (d.botonLimpiado == 1) return "Lim";
+            //if (d.botonSuccion == 1) return "Su";
+            //if (d.botonLimpiado == 1) return "Lim";
         }
         return "";
     }
