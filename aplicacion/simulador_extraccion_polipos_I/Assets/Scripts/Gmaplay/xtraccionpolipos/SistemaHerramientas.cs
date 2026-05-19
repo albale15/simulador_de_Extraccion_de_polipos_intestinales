@@ -89,9 +89,18 @@ public class SistemaHerramientas : MonoBehaviour
     public float ObtenerNivelSuciedad() { return nivelSuciedad; }
     public int ObtenerLavadosSinSuccionar() { return lavadosSinSuccionar; }
 
+
+ 
+    private bool forzarPrimerSangradoTutorial = true;    // Variable para asegurar que el tutorial muestre la emergencia al menos una vez
     private Vector3 escalaOriginalLazoBase;
     void Start()
     {
+        if (ManejadorPartida.dificultad == 0)
+        {
+            anguloTolerancia = 90f; // <--- CÁMBIALO A 2f
+            anguloToleranciaFoto = 40f; // <--- CÁMBIALO A 2f (o déjalo más alto si solo quieres castigar la pinza)
+            // Detiene la ejecución del script aquí
+        }
         if (lazoBezier != null)
         {
             escalaOriginalLazoBase = lazoBezier.localScale; // Guardamos su tamaño real de trabajo
@@ -821,7 +830,14 @@ public class SistemaHerramientas : MonoBehaviour
 
         polipoEnMira.ProcesarCorte();
 
-        if (Random.value <= 0.30f)
+        bool debeSangrar = (Random.value <= 0.30f);
+        if (ManejadorPartida.dificultad == 0 && forzarPrimerSangradoTutorial)
+        {
+            debeSangrar = true;
+            forzarPrimerSangradoTutorial = false; // Desactivamos la trampa para los siguientes cortes
+        }
+
+        if (debeSangrar)
         {
             nivelSangrado = 1.0f;
             if (particulasSangrado != null) particulasSangrado.Play(); // Dispara la nube de sangre

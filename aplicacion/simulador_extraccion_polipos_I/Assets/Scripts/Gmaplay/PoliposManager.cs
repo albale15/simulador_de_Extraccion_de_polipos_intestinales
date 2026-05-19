@@ -16,6 +16,10 @@ public class PoliposManager : MonoBehaviour
     [Tooltip("Selecciona aquí la capa 'Intestino' para que el láser solo choque con las paredes")]
     public LayerMask capaIntestino;
 
+    [Header("Configuración del Tutorial")]
+    [Tooltip("Arrastra aquí los 5 pólipos que pusiste manualmente en la escena.")]
+    public List<PolipoInteractuable> poliposTutorial;
+
 
     private List<Transform> puntosDisponibles = new List<Transform>();
     private GameObject[] prefabDiccionario;
@@ -27,9 +31,14 @@ public class PoliposManager : MonoBehaviour
     {
         if (ManejadorPartida.dificultad == 0)
         {
-            Debug.Log("Dificultad Tutorial: Spawning aleatorio desactivado.");
-            return; // Detiene la ejecución del script aquí
+            Debug.Log("Dificultad Tutorial: Inicializando pólipos desde el Inspector...");
+
+            // Llamamos a una corrutina para darle a Unity un milisegundo de respiro
+            StartCoroutine(InicializarPoliposTutorial());
+
+            return; // Detenemos la ejecución normal
         }
+
         prefabDiccionario = new GameObject[] { prefabYamada1, prefabYamada2, prefabYamada3, prefabYamada4 };
 
         foreach (Transform punto in contenedorPuntosSpawn)
@@ -38,6 +47,36 @@ public class PoliposManager : MonoBehaviour
         }
 
         StartCoroutine(GenerarPoliposAleatorios());
+    }
+
+    private IEnumerator InicializarPoliposTutorial()
+    {
+        // Esperamos 0.1 segundos para asegurar que los pólipos ya ejecutaron su propio Awake/Start
+        yield return new WaitForSecondsRealtime(0.1f);
+
+        if (poliposTutorial != null)
+        {
+            foreach (PolipoInteractuable polipo in poliposTutorial)
+            {
+                if (polipo == null) continue; // Por si hay un hueco vacío en la lista
+
+                float tamanoFijo = 4f; // Base pequeña por defecto (<=5mm para Pinza Fría)
+
+                // Si el pólipo que se tiene es Yamada 3 o 4, lo hacemos GRANDE
+                if (polipo.tipo == PolipoInteractuable.TipoPolipo.Yamada3 || polipo.tipo == PolipoInteractuable.TipoPolipo.Yamada4)
+                {
+                    tamanoFijo = 8f; // >5mm para obligar a usar el Asa Diatérmica
+                }
+
+                // Inicializamos el pólipo con su tamaño (ahora sí lo aceptará)
+                polipo.InicializarTamanoClinico(tamanoFijo);
+
+                // Lo añadimos a la lista de activos
+                poliposActivos.Add(polipo.gameObject);
+            }
+
+            Debug.Log("<color=cyan>Pólipos del tutorial inicializados con éxito.</color>");
+        }
     }
 
     private IEnumerator GenerarPoliposAleatorios()

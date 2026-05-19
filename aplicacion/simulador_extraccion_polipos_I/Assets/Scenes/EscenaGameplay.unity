@@ -3665,10 +3665,10 @@ RectTransform:
   - {fileID: 1290634862}
   m_Father: {fileID: 154574839}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -933.3602, y: 0}
+  m_SizeDelta: {x: 986.6398, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &162133099
 MonoBehaviour:
@@ -4060,11 +4060,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1942030677}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 5.6385, y: -268.23}
-  m_SizeDelta: {x: 2200, y: 2200}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 0, y: -659.54}
+  m_SizeDelta: {x: 2200, y: 1200}
+  m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &209172938
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4952,11 +4952,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1942030677}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 5.6224, y: 268.24}
-  m_SizeDelta: {x: 2200, y: 2200}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: 660.45996}
+  m_SizeDelta: {x: 2200, y: 1200}
+  m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &425968640
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5148,10 +5148,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 162133098}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -82.10327, y: -410.0522}
+  m_SizeDelta: {x: 903.8967, y: 669.9478}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &435203674
 CanvasRenderer:
@@ -5285,8 +5285,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 20.56, y: -394}
-  m_SizeDelta: {x: 464.0592, y: 258.6156}
+  m_AnchoredPosition: {x: 10, y: -422}
+  m_SizeDelta: {x: 470.42, y: 272.495}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &445210975
 MonoBehaviour:
@@ -5361,10 +5361,10 @@ RectTransform:
   - {fileID: 1528901827}
   m_Father: {fileID: 154574839}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -1000, y: -60}
+  m_SizeDelta: {x: 920, y: 1020}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &455842473
 MonoBehaviour:
@@ -6489,8 +6489,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -42.246826, y: -4.4472656}
-  m_SizeDelta: {x: 522.2471, y: 44.4705}
+  m_AnchoredPosition: {x: -26.054932, y: -4.4472656}
+  m_SizeDelta: {x: 506.055, y: 44.47}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &689849875
 MonoBehaviour:
@@ -6941,7 +6941,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0.0000095367}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 454.6784, y: 308.6082}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &756089728
@@ -6978,8 +6978,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 25.109, y: -132}
-  m_SizeDelta: {x: 226.21, y: 250.7144}
+  m_AnchoredPosition: {x: 0.52031, y: -141.9}
+  m_SizeDelta: {x: 270.16, y: 266.907}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &756089730
 MonoBehaviour:
@@ -7680,10 +7680,10 @@ RectTransform:
   - {fileID: 1633378207}
   m_Father: {fileID: 154574839}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -1470.031, y: -727.6897}
+  m_SizeDelta: {x: 449.969, y: 352.3103}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &831216806
 GameObject:
@@ -7717,11 +7717,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1942030677}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -497.79, y: 0.0050049}
-  m_SizeDelta: {x: 2200, y: 2200}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 0, y: 0.5}
+  m_AnchoredPosition: {x: -237, y: 0.0049950257}
+  m_SizeDelta: {x: 1200, y: 1200}
+  m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &831216808
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8008,7 +8008,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: -0.0011597, y: 0}
+  m_AnchoredPosition: {x: -0.001159668, y: 0}
   m_SizeDelta: {x: 884.17, y: 584.2792}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &916352748
@@ -8233,11 +8233,11 @@ RectTransform:
   - {fileID: 1267545799}
   m_Father: {fileID: 154574839}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 726.26, y: 286}
-  m_SizeDelta: {x: -1452.5131, y: -861.6603}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0.0034179688, y: -144.83014}
+  m_SizeDelta: {x: 467.48694, y: 218.33972}
+  m_Pivot: {x: 1, y: 1}
 --- !u!114 &970984855
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13770,6 +13770,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6666325845448536447, guid: 3cfd241cb540c4142b954daded24fc21, type: 3}
   m_PrefabInstance: {fileID: 1049655955}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1123982342 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5489161856986395100, guid: 3cfd241cb540c4142b954daded24fc21, type: 3}
+  m_PrefabInstance: {fileID: 1049655955}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23bc1662f8547f843bb20c2d55af301a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1126798075
 GameObject:
   m_ObjectHideFlags: 0
@@ -13852,8 +13863,9 @@ MonoBehaviour:
   controlesBloqueados: 0
   pasos:
   - nombrePaso: paso 0
-    instruccion: "Bienvenido al simulador de extraccion de polipos intestinales.
-      Te guiar\xE9 por los elementos para que comprendas que hacen."
+    instruccion: "Te doy la bienvenida al simulador para la extracci\xF3n de p\xF3lipos
+      intestinales. Te acompa\xF1ar\xE9 a trav\xE9s de los elementos para que entiendas
+      su funci\xF3n."
     uiAResaltar: {fileID: 0}
     espera: 1
     tiempoSegundos: 0
@@ -13863,7 +13875,8 @@ MonoBehaviour:
     mostrarTextoPresionar: 1
     mostrarTemporalmente: 0
   - nombrePaso: paso 1
-    instruccion: 'Panel Izquierdo: tendras la informacion del Doctor, fecha y dificultad.'
+    instruccion: "Panel Izquierdo: contar\xE1s con la informaci\xF3n del Doctor,
+      la fecha y el nivel de dificultad."
     uiAResaltar: {fileID: 689849874}
     espera: 1
     tiempoSegundos: 0
@@ -13873,8 +13886,8 @@ MonoBehaviour:
     mostrarTextoPresionar: 1
     mostrarTemporalmente: 0
   - nombrePaso: paso 2
-    instruccion: "Cuentas con la informacion de Telemetr\xEDa: Profundidad (cm insertados)
-      y Torque (rotaci\xF3n)."
+    instruccion: "Cuentas con la informaci\xF3n de telemetr\xEDa Profundidad (cm
+      insertados)"
     uiAResaltar: {fileID: 689849874}
     espera: 1
     tiempoSegundos: 0
@@ -13884,7 +13897,7 @@ MonoBehaviour:
     mostrarTextoPresionar: 1
     mostrarTemporalmente: 0
   - nombrePaso: paso 3
-    instruccion: "Consola de Respuestas: Aqu\xED ver\xE1s el historial de tus acciones
+    instruccion: "Consola de respuestas Aqu\xED ver\xE1s el historial de tus acciones
       y errores."
     uiAResaltar: {fileID: 1973696619}
     espera: 1
@@ -13895,8 +13908,8 @@ MonoBehaviour:
     mostrarTextoPresionar: 1
     mostrarTemporalmente: 0
   - nombrePaso: paso 4
-    instruccion: 'Imagen Guia del Control: la imagen te indicara la posicion de botones
-      para que si te pierdes te puedas ubicar'
+    instruccion: "Gu\xEDa de Control de Imagen: la imagen te mostrar\xE1 la ubicaci\xF3n
+      de los botones para que, si te confundes, puedas orientarte."
     uiAResaltar: {fileID: 756089729}
     espera: 1
     tiempoSegundos: 0
@@ -13906,9 +13919,9 @@ MonoBehaviour:
     mostrarTextoPresionar: 1
     mostrarTemporalmente: 0
   - nombrePaso: paso 5
-    instruccion: "Panel Azul: Muestra la funci\xF3n actual de tus botones debes estar
-      atento a ellos puesto que el simulador los usara para simular acciones de tus
-      enfermeras."
+    instruccion: "Panel Azul: Muestra la funci\xF3n actual de tus botones; debes
+      estar atento a ellos, puesto que el simulador los usar\xE1 para simular acciones
+      de tus enfermeras."
     uiAResaltar: {fileID: 445210974}
     espera: 1
     tiempoSegundos: 0
@@ -13919,7 +13932,7 @@ MonoBehaviour:
     mostrarTemporalmente: 0
   - nombrePaso: paso 6
     instruccion: "Panel Morado: Muestra la calificaci\xF3n de las 3 \xE1reas principales
-      y conteo de p\xF3lipos."
+      y el conteo de p\xF3lipos."
     uiAResaltar: {fileID: 1948923969}
     espera: 1
     tiempoSegundos: 0
@@ -13940,8 +13953,8 @@ MonoBehaviour:
     mostrarTextoPresionar: 1
     mostrarTemporalmente: 0
   - nombrePaso: paso 8
-    instruccion: "Gu\xEDa Contextual: este elemento te dar\xE1 instrucciones paso
-      a paso para que te sirva de guia en las dificultades bajas."
+    instruccion: "Gu\xEDa contextual: Este elemento te dar\xE1 instrucciones paso
+      a paso para que te sirva de gu\xEDa en las dificultades bajas."
     uiAResaltar: {fileID: 970984854}
     espera: 1
     tiempoSegundos: 0
@@ -13951,8 +13964,8 @@ MonoBehaviour:
     mostrarTextoPresionar: 1
     mostrarTemporalmente: 0
   - nombrePaso: paso 9
-    instruccion: "Con eso concluimos con la interfaz. Empecemos empuja el tubo para
-      realizar la Inserci\xF3n o  w si estas en modo por computadora."
+    instruccion: "Con eso concluimos con la interfaz. Empecemos: empuja el tubo para
+      realizar la inserci\xF3n o w si est\xE1s en modo por computadora."
     uiAResaltar: {fileID: 0}
     espera: 1
     tiempoSegundos: 0
@@ -13962,8 +13975,8 @@ MonoBehaviour:
     mostrarTextoPresionar: 0
     mostrarTemporalmente: 0
   - nombrePaso: paso 10
-    instruccion: "Ahora jala el tubo para practicar la Extracci\xF3n o s si estas
-      en modo por computadora"
+    instruccion: "Ahora jala el tubo para practicar la extracci\xF3n o si est\xE1s
+      en modo por computadora."
     uiAResaltar: {fileID: 0}
     espera: 1
     tiempoSegundos: 0
@@ -13973,8 +13986,8 @@ MonoBehaviour:
     mostrarTextoPresionar: 0
     mostrarTemporalmente: 0
   - nombrePaso: paso 10.1
-    instruccion: "Debes tener cuidado con la extracion del tubo, ya que generas friccion
-      en el paciente, ten cuidado con el da\xF1o que le haces"
+    instruccion: "Debes tener cuidado con la extracci\xF3n del tubo, ya que generas
+      fricci\xF3n en el paciente; ten cuidado con el da\xF1o que le haces."
     uiAResaltar: {fileID: 113892073}
     espera: 1
     tiempoSegundos: 0
@@ -13984,9 +13997,9 @@ MonoBehaviour:
     mostrarTextoPresionar: 1
     mostrarTemporalmente: 0
   - nombrePaso: paso 10.2
-    instruccion: Si en la insersion o extraccion generas un BUCLE se te indicara
-      en las dificultades mas bajas. Para salir de un BUCLE has la rectificacion
-      (extrayendo y girnado el tubo) o presiona S si estas en modo computadora.
+    instruccion: "Si en la inserci\xF3n o extracci\xF3n generas un BUCLE, se te indicar\xE1
+      en las dificultades m\xE1s bajas. Para salir de un BUCLE, haz la rectificaci\xF3n
+      (extrayendo y girando el tubo) o presiona S si est\xE1s en modo computadora."
     uiAResaltar: {fileID: 1504859466}
     espera: 1
     tiempoSegundos: 0
@@ -13996,8 +14009,8 @@ MonoBehaviour:
     mostrarTextoPresionar: 1
     mostrarTemporalmente: 1
   - nombrePaso: paso 10.3
-    instruccion: Ahora que conoces la insercion y extraccion vamos a empezar con
-      la busqueda de un polipo. Avanza hasta el polipo
+    instruccion: "Ahora que conoces la inserci\xF3n y extracci\xF3n, vamos a empezar
+      con la b\xFAsqueda de un p\xF3lipo Avanza hasta el p\xF3lipo."
     uiAResaltar: {fileID: 732441917}
     espera: 1
     tiempoSegundos: 0
@@ -14017,9 +14030,9 @@ MonoBehaviour:
     mostrarTextoPresionar: 0
     mostrarTemporalmente: 0
   - nombrePaso: 12
-    instruccion: Encontraste un polipo Yamada 1 por protocolo debemos tomarle una
-      foto asi que presiona Freeze o 1 si estas en modo computadora para congelar
-      la imagen.
+    instruccion: "Encontraste un p\xF3lipo Yamada 1; por protocolo debemos tomarle
+      una foto, as\xED que presiona Freeze o 1 si est\xE1s en modo computadora para
+      congelar la imagen."
     uiAResaltar: {fileID: 732441917}
     espera: 1
     tiempoSegundos: 0
@@ -14029,8 +14042,8 @@ MonoBehaviour:
     mostrarTextoPresionar: 0
     mostrarTemporalmente: 1
   - nombrePaso: 13
-    instruccion: Freeze congelara la pantalla procura no moverte o hacer otra accion
-      para no recibir penalizaciones en tu calificacion.
+    instruccion: "Freeze congelar\xE1 la pantalla; procura no moverte o hacer otra
+      acci\xF3n para no recibir penalizaciones en tu calificaci\xF3n."
     uiAResaltar: {fileID: 732441917}
     espera: 1
     tiempoSegundos: 0
@@ -14040,8 +14053,8 @@ MonoBehaviour:
     mostrarTextoPresionar: 1
     mostrarTemporalmente: 1
   - nombrePaso: 14
-    instruccion: 'Una vez congelada la Imagen le tomaremos la foto con el boton Capture
-      o 2 si estas en modo computadora '
+    instruccion: "Una vez congelada la imagen, le tomaremos la foto con el bot\xF3n
+      Capture o 2 si est\xE1s en modo computadora. "
     uiAResaltar: {fileID: 732441917}
     espera: 1
     tiempoSegundos: 0
@@ -14051,9 +14064,9 @@ MonoBehaviour:
     mostrarTextoPresionar: 0
     mostrarTemporalmente: 1
   - nombrePaso: 15
-    instruccion: Despues de tomar la foto saldremos del modo Freeze debes volver
-      presionar el boton Freeze o 1 si estas en modo computadora para salir del modo
-      Freeze
+    instruccion: "Despu\xE9s de tomar la foto, saldremos del modo Freeze; debes volver
+      a presionar el bot\xF3n Freeze o 1 si est\xE1s en modo computadora para salir
+      del modo Freeze."
     uiAResaltar: {fileID: 732441917}
     espera: 1
     tiempoSegundos: 0
@@ -14074,9 +14087,9 @@ MonoBehaviour:
     mostrarTextoPresionar: 1
     mostrarTemporalmente: 1
   - nombrePaso: 16
-    instruccion: Una vez salgas del modo Freeze procederemos al corte del polipo
-      para eso el simulador te obligara a estar en una buena posicion para las pinzas
-      de insercion
+    instruccion: "Una vez salgas del modo Freeze, procederemos al corte del p\xF3lipo;
+      para eso, el simulador te obligar\xE1 a estar en una buena posici\xF3n para
+      las pinzas."
     uiAResaltar: {fileID: 732441917}
     espera: 1
     tiempoSegundos: 0
@@ -14086,8 +14099,8 @@ MonoBehaviour:
     mostrarTextoPresionar: 1
     mostrarTemporalmente: 1
   - nombrePaso: 16.1
-    instruccion: Las pinzas se encuentran en la parte baja del endoscopio lo puedes
-      ver en el circulo ubicacion de pinzas
+    instruccion: "Las pinzas se encuentran en la parte baja del endoscopio; lo puedes
+      ver en el c\xEDrculo de ubicaci\xF3n de pinzas."
     uiAResaltar: {fileID: 732441917}
     espera: 1
     tiempoSegundos: 0
@@ -14097,8 +14110,8 @@ MonoBehaviour:
     mostrarTextoPresionar: 1
     mostrarTemporalmente: 1
   - nombrePaso: 16.2
-    instruccion: Presiona el boton de accion o 5 si estas en modo computadora para
-      entrar en las opciones de corte
+    instruccion: "Presiona el bot\xF3n de acci\xF3n o 5 si est\xE1s en modo computadora
+      para entrar en las opciones de corte."
     uiAResaltar: {fileID: 732441917}
     espera: 1
     tiempoSegundos: 0
@@ -14108,8 +14121,8 @@ MonoBehaviour:
     mostrarTextoPresionar: 0
     mostrarTemporalmente: 1
   - nombrePaso: 16.3
-    instruccion: Una vez entres en las opciones de corte notaras en el recuadro azul
-      las opciones de botones han cambiado.
+    instruccion: "Una vez entres en las opciones de corte, notar\xE1s que en el recuadro
+      azul las opciones de botones han cambiado."
     uiAResaltar: {fileID: 732441917}
     espera: 1
     tiempoSegundos: 0
@@ -14119,8 +14132,9 @@ MonoBehaviour:
     mostrarTextoPresionar: 1
     mostrarTemporalmente: 1
   - nombrePaso: 16.4
-    instruccion: Deberas escoger la pinza correcta para la accion con los polipos,
-      en las dificultades bajas se te dara indicaciones por el panel de intrucciones.
+    instruccion: "Deber\xE1s escoger la pinza correcta para la acci\xF3n con los
+      p\xF3lipos; en las dificultades bajas se te dar\xE1n indicaciones por el panel
+      de instrucciones."
     uiAResaltar: {fileID: 732441917}
     espera: 1
     tiempoSegundos: 0
@@ -14130,8 +14144,8 @@ MonoBehaviour:
     mostrarTextoPresionar: 1
     mostrarTemporalmente: 1
   - nombrePaso: 16.5
-    instruccion: Selecciona la pinza con el boton de freeze o 1 si estas en modo
-      computadora
+    instruccion: "Selecciona la pinza de Biopsia con el bot\xF3n de freeze o 1 si
+      est\xE1s en modo computadora."
     uiAResaltar: {fileID: 732441917}
     espera: 1
     tiempoSegundos: 0
@@ -14151,8 +14165,8 @@ MonoBehaviour:
     mostrarTextoPresionar: 0
     mostrarTemporalmente: 0
   - nombrePaso: 16.7
-    instruccion: Este tipo de polipos salen facilmente por el endoscopio, dirigete
-      al siguiente polipo
+    instruccion: "Este tipo de p\xF3lipos sale f\xE1cilmente por el endoscopio; dir\xEDgete
+      al siguiente p\xF3lipo."
     uiAResaltar: {fileID: 732441917}
     espera: 1
     tiempoSegundos: 0
@@ -14172,8 +14186,8 @@ MonoBehaviour:
     mostrarTextoPresionar: 0
     mostrarTemporalmente: 0
   - nombrePaso: 18
-    instruccion: Encontraste un polipo Yamada 3  tomale una foto, presiona Freeze
-      o 1 si estas en modo computadora para congelar la imagen.
+    instruccion: "Encontraste un p\xF3lipo Yamada 3; t\xF3male una foto, presiona
+      Freeze o 1 si est\xE1s en modo computadora para congelar la imagen."
     uiAResaltar: {fileID: 732441917}
     espera: 1
     tiempoSegundos: 0
@@ -14183,8 +14197,8 @@ MonoBehaviour:
     mostrarTextoPresionar: 0
     mostrarTemporalmente: 1
   - nombrePaso: 18.1
-    instruccion: 'Una vez congelada la Imagen le tomaremos la foto con el boton Capture
-      o 2 si estas en modo computadora '
+    instruccion: "Una vez congelada la imagen, le tomaremos la foto con el bot\xF3n
+      Capture o 2 si est\xE1s en modo computadora. "
     uiAResaltar: {fileID: 732441917}
     espera: 1
     tiempoSegundos: 0
@@ -14194,9 +14208,9 @@ MonoBehaviour:
     mostrarTextoPresionar: 0
     mostrarTemporalmente: 1
   - nombrePaso: 18.2
-    instruccion: Despues de tomar la foto saldremos del modo Freeze debes volver
-      presionar el boton Freeze o 1 si estas en modo computadora para salir del modo
-      Freeze
+    instruccion: "Despu\xE9s de tomar la foto, saldremos del modo Freeze; debes volver
+      a presionar el bot\xF3n Freeze o 1 si est\xE1s en modo computadora para salir
+      del modo Freeze."
     uiAResaltar: {fileID: 732441917}
     espera: 1
     tiempoSegundos: 0
@@ -14206,8 +14220,8 @@ MonoBehaviour:
     mostrarTextoPresionar: 0
     mostrarTemporalmente: 1
   - nombrePaso: 19
-    instruccion: Presiona accion o 5 si estas en modo computadora para ir a seleccion
-      de pinzas
+    instruccion: "Presiona Acci\xF3n o 5 si est\xE1s en modo computadora para ir
+      a selecci\xF3n de pinzas."
     uiAResaltar: {fileID: 732441917}
     espera: 1
     tiempoSegundos: 0
@@ -14217,8 +14231,8 @@ MonoBehaviour:
     mostrarTextoPresionar: 0
     mostrarTemporalmente: 1
   - nombrePaso: 19.1
-    instruccion: Cortalo con el asa usando el boton capture o 2 si estas en modo
-      computadora
+    instruccion: "C\xF3rtalo con el asa de Polipectom\xEDa usando el bot\xF3n capture
+      o 2 si est\xE1s en modo computadora."
     uiAResaltar: {fileID: 732441917}
     espera: 1
     tiempoSegundos: 0
@@ -14238,8 +14252,9 @@ MonoBehaviour:
     mostrarTextoPresionar: 0
     mostrarTemporalmente: 0
   - nombrePaso: 20.1
-    instruccion: como puedes notar los polipo yamada 3 y 4 son muy grandes para que
-      salgan por el orificio de las pinzas por lo que deberas succionarlos
+    instruccion: "Como puedes notar, hay p\xF3lipos muy grandes como para que salgan
+      por el orificio de las pinzas, por lo que deber\xE1s agarrarlos con el asa
+      de Polipectom\xEDa."
     uiAResaltar: {fileID: 732441917}
     espera: 1
     tiempoSegundos: 0
@@ -14249,8 +14264,8 @@ MonoBehaviour:
     mostrarTextoPresionar: 1
     mostrarTemporalmente: 1
   - nombrePaso: 20.2
-    instruccion: Presiona el Boton de succion o 4 si estas en modo computadora para
-      succionarlo
+    instruccion: "Presiona el bot\xF3n de atrapar p\xF3lipo o 4 si est\xE1s en modo
+      computadora para succionarlo."
     uiAResaltar: {fileID: 732441917}
     espera: 1
     tiempoSegundos: 0
@@ -14270,9 +14285,9 @@ MonoBehaviour:
     mostrarTextoPresionar: 0
     mostrarTemporalmente: 0
   - nombrePaso: 20.3
-    instruccion: El polipo succionado debe ser sacado del instestino deberas ir sacando
-      el tubo sin hacer tirones para no lastimar al paciente  o S si estas en modo
-      computadora,  para sacar el endoscopio
+    instruccion: "El p\xF3lipo atrapado debe ser sacado del intestino; deber\xE1s
+      ir sacando el tubo sin hacer tirones para no lastimar al paciente, o S si est\xE1s
+      en modo computadora, para sacar el endoscopio."
     uiAResaltar: {fileID: 732441917}
     espera: 1
     tiempoSegundos: 0
@@ -14292,8 +14307,8 @@ MonoBehaviour:
     mostrarTextoPresionar: 0
     mostrarTemporalmente: 0
   - nombrePaso: 21
-    instruccion: llegaste a la zona de extraccion (salida del endoscopio) presiona
-      denuevo succionar para soltar el polipo o 4 si estas en modo computadora
+    instruccion: "Llegaste a la zona de extracci\xF3n (salida del endoscopio); presiona
+      soltar p\xF3lipo o 4 si est\xE1s en modo computadora."
     uiAResaltar: {fileID: 732441917}
     espera: 1
     tiempoSegundos: 0
@@ -14303,8 +14318,8 @@ MonoBehaviour:
     mostrarTextoPresionar: 0
     mostrarTemporalmente: 1
   - nombrePaso: 22
-    instruccion: como notaras en el panel morado se ira aumentando los polipos que
-      hayas sacado todavia faltan polipos ve a buscar los que faltan.
+    instruccion: "Como notar\xE1s, en el panel morado se ir\xE1n aumentando los p\xF3lipos
+      que hayas sacado; todav\xEDa faltan p\xF3lipos. Ve a buscar los que faltan."
     uiAResaltar: {fileID: 732441917}
     espera: 1
     tiempoSegundos: 0
@@ -14344,8 +14359,8 @@ MonoBehaviour:
     mostrarTextoPresionar: 0
     mostrarTemporalmente: 0
   - nombrePaso: 23
-    instruccion: Haz encontrado varios polipo se recomienda revisar el intestino
-      completo
+    instruccion: "Has encontrado varios p\xF3lipos, siempre se recomienda revisar
+      el intestino completo para una revision completa y optima."
     uiAResaltar: {fileID: 732441917}
     espera: 1
     tiempoSegundos: 0
@@ -14355,7 +14370,7 @@ MonoBehaviour:
     mostrarTextoPresionar: 1
     mostrarTemporalmente: 1
   - nombrePaso: 24
-    instruccion: "Cuando est\xE9s listo, regresa a la salida/zona de extraccion"
+    instruccion: "Cuando est\xE9s listo, regresa a la salida/zona de extracci\xF3n."
     uiAResaltar: {fileID: 732441917}
     espera: 1
     tiempoSegundos: 0
@@ -14375,7 +14390,8 @@ MonoBehaviour:
     mostrarTextoPresionar: 0
     mostrarTemporalmente: 0
   - nombrePaso: 25
-    instruccion: "presiona Acci\xF3n o 5 si estas en modo computadora, para terminar."
+    instruccion: "En la zona de extracci\xF3n, presiona Acci\xF3n o 5 si est\xE1s
+      en modo computadora, para terminar."
     uiAResaltar: {fileID: 732441917}
     espera: 1
     tiempoSegundos: 0
@@ -14397,6 +14413,8 @@ MonoBehaviour:
   panelInstrucciones: {fileID: 732441914}
   txtInstrucciones: {fileID: 1489307360}
   mascara: {fileID: 1942030679}
+  uiBotonSuccion: {fileID: 445210974}
+  uiBotonLimpiado: {fileID: 445210974}
   endoscopio: {fileID: 1325639774}
   herramientas: {fileID: 808759708}
   monitorUI: {fileID: 154574840}
@@ -14405,6 +14423,17 @@ MonoBehaviour:
   - {fileID: 1296131327}
   - {fileID: 1771341918}
   accionEsperadaActiva: 
+--- !u!114 &1160223227 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5465662729581903921, guid: b224e666635630b4c8fd7d57c98156e5, type: 3}
+  m_PrefabInstance: {fileID: 601043322}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23bc1662f8547f843bb20c2d55af301a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1184416986
 GameObject:
   m_ObjectHideFlags: 0
@@ -15138,7 +15167,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0.000061035156, y: 0}
   m_SizeDelta: {x: -44.6567, y: -34.3695}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1290634858
@@ -15532,11 +15561,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1942030677}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 503.41, y: 0.014984}
-  m_SizeDelta: {x: 2200, y: 2200}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 1, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: 243, y: 0.0049950257}
+  m_SizeDelta: {x: 1200, y: 1200}
+  m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &1334094233
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16262,11 +16291,11 @@ RectTransform:
   - {fileID: 1980628824}
   m_Father: {fileID: 455842472}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 616.4, y: -459.62}
-  m_SizeDelta: {x: 241.6874, y: 62.1799}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
+  m_AnchoredPosition: {x: 277.2437, y: 19.29004}
+  m_SizeDelta: {x: 241.68738, y: 62.1799}
+  m_Pivot: {x: 1, y: 0}
 --- !u!114 &1528901828
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16969,7 +16998,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 10, y: 480}
+  m_AnchoredPosition: {x: 10.0000305, y: 480}
   m_SizeDelta: {x: 417.86, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1632158497
@@ -17103,11 +17132,11 @@ RectTransform:
   - {fileID: 1587137597}
   m_Father: {fileID: 829215623}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 123.47, y: -109}
+  m_AnchorMin: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
+  m_AnchoredPosition: {x: -16.53003, y: 37}
   m_SizeDelta: {x: 170, y: 60}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 1, y: 0}
 --- !u!114 &1633378208
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17360,11 +17389,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 829215623}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 51.700012}
-  m_SizeDelta: {x: -33.0259, y: -167.4539}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: -32.02694}
+  m_SizeDelta: {x: 416.9741, y: 184.5461}
+  m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1638781477
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17493,6 +17522,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1555660250}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1659700489 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3229129475188583106, guid: f48653a0f59c1ca4191a45fbdb7281bc, type: 3}
+  m_PrefabInstance: {fileID: 167541165}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23bc1662f8547f843bb20c2d55af301a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1693905513 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 997206eb93350e4489cb393208564c8f, type: 3}
@@ -17750,10 +17790,10 @@ RectTransform:
   - {fileID: 544515727}
   m_Father: {fileID: 154574839}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -997.0729, y: -175.541}
+  m_SizeDelta: {x: 922.9271, y: 904.459}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1766167897
 MonoBehaviour:
@@ -18400,11 +18440,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 154574839}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 211.9485, y: -0.000011444}
-  m_SizeDelta: {x: 1496.103, y: 1080}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 1496.103, y: 0}
+  m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &1852607040
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19017,6 +19057,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 762594593520144583, guid: 0f14d6ec57a93e34d81c3108c26ee87e, type: 3}
   m_PrefabInstance: {fileID: 1901217116}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1901217118 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2058180188995145887, guid: 0f14d6ec57a93e34d81c3108c26ee87e, type: 3}
+  m_PrefabInstance: {fileID: 1901217116}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23bc1662f8547f843bb20c2d55af301a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1908742155
 GameObject:
   m_ObjectHideFlags: 0
@@ -19051,11 +19102,11 @@ RectTransform:
   - {fileID: 643960753}
   m_Father: {fileID: 829215623}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -123.47, y: -109}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 16.53003, y: 37}
   m_SizeDelta: {x: 170, y: 60}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0, y: 0}
 --- !u!114 &1908742157
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19626,6 +19677,12 @@ MonoBehaviour:
   capaIntestino:
     serializedVersion: 2
     m_Bits: 128
+  poliposTutorial:
+  - {fileID: 2042054234}
+  - {fileID: 1123982342}
+  - {fileID: 1901217118}
+  - {fileID: 1160223227}
+  - {fileID: 1659700489}
   poliposActivos: []
 --- !u!1 &1934338131
 GameObject:
@@ -19738,10 +19795,10 @@ RectTransform:
   - {fileID: 1334094232}
   m_Father: {fileID: 154574839}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1942030678
 CanvasRenderer:
@@ -19912,8 +19969,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 25.109, y: 169.75}
-  m_SizeDelta: {x: 472.03, y: 325.5}
+  m_AnchoredPosition: {x: 21.061, y: 169.75}
+  m_SizeDelta: {x: 463.93, y: 325.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1973696620
 MonoBehaviour:
@@ -20683,6 +20740,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2035928786}
   m_CullTransparentMesh: 1
+--- !u!114 &2042054234 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2058180188995145887, guid: 0f14d6ec57a93e34d81c3108c26ee87e, type: 3}
+  m_PrefabInstance: {fileID: 764728775}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23bc1662f8547f843bb20c2d55af301a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2082879554
 PrefabInstance:
   m_ObjectHideFlags: 0
