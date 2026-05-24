@@ -16,7 +16,7 @@ public class EndoscopioCurvas : MonoBehaviour
     public float velocidadInsercion = 0.5f;
     public float velocidadExtraccion = 0.8f;
     
-    public float velocidadGiroPunta = 80f;
+    public float velocidadGiroPunta = 10f;
     public float suavidadGiroHuesos = 15f;
 
     [Header("Mecánicas Médicas")]
@@ -69,19 +69,19 @@ public class EndoscopioCurvas : MonoBehaviour
     private LineRenderer lr;
     private List<Vector3> rutaTubo = new List<Vector3>();
 
-    // --- REFERENCIAS PARA RESTRICCIÓN DE FREEZE ---
+    // REFERENCIAS PARA RESTRICCIÓN DE FREEZE 
     private SistemaHerramientas herramientas;
     private MonitorEndoscopiaUI monitorUI;
     private bool alertaFreezeDada = false;
 
-    // --- Banderas para no repetir la misma penalización infinitamente ---
+    // Banderas para no repetir la misma penalización infinitamente
     private bool penalizadoBucle = false;
     private bool penalizadoTiron = false;
     private int siguienteUmbralSuavidad = 5;
 
     private int siguienteUmbralTiron = 35;
     private bool atascadoPorBucle = false;
-
+    private float velocidadGiroPuntapc = 20f;
     void OnEnable()
     {
         if (ConfigManager.instancia != null) ConfigManager.instancia.AlRecibirDatosProcesados += ActualizarDatosHardware;
@@ -152,13 +152,14 @@ public class EndoscopioCurvas : MonoBehaviour
         {
             if (modoPC)
             {
+                velocidadGiroPuntapc= 80f; // En PC, la punta gira el doble de rápido para compensar la falta de sensibilidad analógica.
                 if (Input.GetKey(KeyCode.W)) empujeFisico = 1f;
                 if (Input.GetKey(KeyCode.S)) empujeFisico = -1f;
 
-                if (Input.GetKey(KeyCode.UpArrow)) { rotX -= velocidadGiroPunta * Time.deltaTime; tocandoFlechas = true; }
-                if (Input.GetKey(KeyCode.DownArrow)) { rotX += velocidadGiroPunta * Time.deltaTime; tocandoFlechas = true; }
-                if (Input.GetKey(KeyCode.LeftArrow)) { rotZ += velocidadGiroPunta * Time.deltaTime; tocandoFlechas = true; }
-                if (Input.GetKey(KeyCode.RightArrow)) { rotZ -= velocidadGiroPunta * Time.deltaTime; tocandoFlechas = true; }
+                if (Input.GetKey(KeyCode.UpArrow)) { rotX -= velocidadGiroPuntapc * Time.deltaTime; tocandoFlechas = true; }
+                if (Input.GetKey(KeyCode.DownArrow)) { rotX += velocidadGiroPuntapc * Time.deltaTime; tocandoFlechas = true; }
+                if (Input.GetKey(KeyCode.LeftArrow)) { rotZ += velocidadGiroPuntapc * Time.deltaTime; tocandoFlechas = true; }
+                if (Input.GetKey(KeyCode.RightArrow)) { rotZ -= velocidadGiroPuntapc * Time.deltaTime; tocandoFlechas = true; }
 
 
                 if (Input.GetKeyDown(KeyCode.W)) Debug.Log("[PC] Avanzando tubo (W)");
@@ -169,26 +170,33 @@ public class EndoscopioCurvas : MonoBehaviour
             {
                 if (datosHardware != null)
                 {
+                    // El Timeout de 0.15s AHORA SOLO AFECTA A LA INSERCIÓN.
+                    // (La inserción sí necesita este empuje simulado para mover las físicas).
                     if (Time.time - tiempoUltimoDatoHardware > 0.15f)
                     {
                         datosHardware.insercionFinal = 0f;
-                        datosHardware.volanteXFinal = 0f;
-                        datosHardware.volanteYFinal = 0f;
                     }
 
                     empujeFisico = Mathf.Clamp(datosHardware.insercionFinal, -1f, 1f);
                     if (Mathf.Abs(empujeFisico) < 0.05f) empujeFisico = 0f;
 
 
-                    if (Mathf.Abs(datosHardware.volanteYFinal) > 0.05f)
+                    // --- EL FIX DEL DESFASE PARA VOLANTES ---
+                    // Como ahora son "Pulsos Exactos" y se borran solos cada frame, 
+                    // los aplicamos directamente a la rotación SIN multiplicar por Time.deltaTime.
+
+                    // El '5f' es un multiplicador base de fuerza de giro. Si sientes que al mover 
+                    // tu volante el endoscopio gira muy poco, súbelo a 10f. Si gira mucho, bájalo a 2f.
+
+                    if (Mathf.Abs(datosHardware.volanteYFinal) > 0.001f)
                     {
-                        rotX -= datosHardware.volanteYFinal * velocidadGiroPunta * Time.deltaTime;
+                        rotX -= datosHardware.volanteYFinal * velocidadGiroPunta;
                         tocandoFlechas = true;
                     }
 
-                    if (Mathf.Abs(datosHardware.volanteXFinal) > 0.05f)
+                    if (Mathf.Abs(datosHardware.volanteXFinal) > 0.001f)
                     {
-                        rotZ += datosHardware.volanteXFinal * velocidadGiroPunta * Time.deltaTime;
+                        rotZ += datosHardware.volanteXFinal * velocidadGiroPunta;
                         tocandoFlechas = true;
                     }
                 }
@@ -348,13 +356,13 @@ public class EndoscopioCurvas : MonoBehaviour
             }
             else
             {
-                // FIX: Baja suavemente en vez de caer a cero instantáneo
+                // Baja suavemente en vez de caer a cero instantáneo
                 tiempoForzandoBucle = Mathf.Max(0, tiempoForzandoBucle - (Time.fixedDeltaTime * 2f));
             }
         }
         else
         {
-            // FIX: Baja suavemente en vez de caer a cero
+            // Baja suavemente en vez de caer a cero
             tiempoForzandoBucle = Mathf.Max(0, tiempoForzandoBucle - (Time.fixedDeltaTime * 2f));
         }
 
@@ -373,7 +381,8 @@ public class EndoscopioCurvas : MonoBehaviour
             if (curvaturaCuerpo > 60f)
             {
                 float factorFriccion = Mathf.Clamp01((curvaturaCuerpo - 60f) / 100f);
-                multiplicadorAvance = 1f - (factorFriccion * 0.4f);
+                //multiplicadorAvance = 1f - (factorFriccion * 0.4f); 
+                multiplicadorAvance = 1f ;//sistema usado para pruebas de avance real y retraccion real deltubo de insecion
 
                 if (curvaturaCuerpo > 120f)
                 {
@@ -408,7 +417,7 @@ public class EndoscopioCurvas : MonoBehaviour
             siguienteUmbralTiron = 35;
         }
 
-        // --- UNIFICACIÓN DE UI DE DAÑO ---
+        // UNIFICACIÓN DE UI DE DAÑO 
         // Calcula el daño mayor actual y se lo envía a MonitorEndoscopiaUI para que lo dibuje.
         // Como las variables 'tiempoForzandoBucle' y 'tiempoExtraccionBrusca', 
         // el texto de la UI también bajará su porcentaje suavemente.
@@ -534,7 +543,7 @@ public class EndoscopioCurvas : MonoBehaviour
     {
         if (juegoTerminado || huesos.Length < 2) return;
 
-        // --- ELIMINADO: La rotación axial Y multiplicada por el Torque ---
+        // La rotación axial Y multiplicada por el Torque 
         olaDeCurvas[0] = olaDeCurvas[1] * Quaternion.Euler(rotX, 0, rotZ);
         Quaternion curvaCuello = Quaternion.identity;
 

@@ -1,8 +1,9 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using System.IO.Ports;
 using System.Threading;
 using System.Collections.Concurrent;
 using System;
+
 
 // 1. EL CONTENEDOR DE DATOS TRADUCIDOS
 public class DatosHardware
@@ -31,11 +32,11 @@ public class SerialManager : MonoBehaviour
     public string mensajeInterfaz = "Cargando componentes...";
     public string puertoActivo = "";
 
-    // Aquí guardaremos los datos ya traducidos y listos para usar
+    // AquÃ­ guardaremos los datos ya traducidos y listos para usar
     public DatosHardware datosActuales = new DatosHardware();
-    public string ultimoMensajeCrudo = ""; // Solo para depuración
+    public string ultimoMensajeCrudo = ""; // Solo para depuraciÃ³n
 
-    [Header("Configuración")]
+    [Header("ConfiguraciÃ³n")]
     public string firmaEsperada = "ID:ENDOSCOPIO_V1";
 
     private SerialPort _puerto;
@@ -45,6 +46,17 @@ public class SerialManager : MonoBehaviour
     private ConcurrentQueue<string> _colaMensajes = new ConcurrentQueue<string>();
     // CREAMOS EL EVENTO (control de emisiones)
     public event Action<DatosHardware> AlRecibirNuevosDatos;
+
+
+    // VARIABLES TEST DE LATENCIA
+    private System.Diagnostics.Stopwatch cronometroLatencia = new System.Diagnostics.Stopwatch();
+    private int pingsCompletados = 0;
+    private long sumaRTT = 0;
+    private bool pruebaLatenciaActiva = false;
+
+
+
+
     void Awake()
     {
         // Hacer que este objeto sobreviva al cambiar de escenas
@@ -66,18 +78,18 @@ public class SerialManager : MonoBehaviour
 
     public void IniciarBusqueda()
     {
-        Debug.Log($"<color=yellow>[Serial] IniciarBusqueda invocado. Estado actual: {estadoActual}</color>");
+        //Debug.Log($"<color=yellow>[Serial] IniciarBusqueda invocado. Estado actual: {estadoActual}</color>");
 
         if (estadoActual == EstadoConexion.Buscando)
         {
-            Debug.LogWarning("<color=orange>[Serial] ABORTADO: El sistema cree que ya está buscando. El botón no hará nada.</color>");
+            Debug.LogWarning("<color=orange>[Serial] ABORTADO: El sistema cree que ya estÃ¡ buscando. El botÃ³n no harÃ¡ nada.</color>");
             return;
         }
 
         estadoActual = EstadoConexion.Buscando;
         mensajeInterfaz = "Iniciando escaneo de puertos...";
 
-        Debug.Log("<color=yellow>[Serial] Estado cambiado a Buscando. Disparando el Hilo Secundario...</color>");
+        //Debug.Log("<color=yellow>[Serial] Estado cambiado a Buscando. Disparando el Hilo Secundario...</color>");
 
         _hiloBusqueda = new Thread(RutinaBusquedaEnFondo) { IsBackground = true };
         _hiloBusqueda.Start();
@@ -85,11 +97,11 @@ public class SerialManager : MonoBehaviour
 
     void RutinaBusquedaEnFondo()
     {
-        Debug.Log("<color=magenta>[Hilo] --- HILO INICIADO --- Durmiendo 1.5s para no saturar USB...</color>");
+        //Debug.Log("<color=magenta>[Hilo] --- HILO INICIADO --- Durmiendo 1.5s para no saturar USB...</color>");
         Thread.Sleep(1500);
 
         string[] puertos = SerialPort.GetPortNames();
-        Debug.Log($"<color=magenta>[Hilo] Escaneo completado. Se encontraron {puertos.Length} puertos conectados a la PC.</color>");
+        //Debug.Log($"<color=magenta>[Hilo] Escaneo completado. Se encontraron {puertos.Length} puertos conectados a la PC.</color>");
 
         if (puertos.Length == 0)
         {
@@ -102,7 +114,7 @@ public class SerialManager : MonoBehaviour
         foreach (string nombrePuerto in puertos)
         {
             mensajeInterfaz = "Verificando " + nombrePuerto + "...";
-            Debug.Log($"<color=magenta>[Hilo] Intentando handshake con {nombrePuerto}...</color>");
+            //Debug.Log($"<color=magenta>[Hilo] Intentando handshake con {nombrePuerto}...</color>");
 
             if (IntentarConexionFondo(nombrePuerto))
             {
@@ -114,18 +126,18 @@ public class SerialManager : MonoBehaviour
                 _hiloLectura = new Thread(LecturaDeFondo) { IsBackground = true };
                 _hiloLectura.Start();
 
-                Debug.Log($"<color=green><b>[Hilo] ¡ÉXITO! Endoscopio detectado en {nombrePuerto}. Hilo de búsqueda cerrado.</b></color>");
+                Debug.Log($"<color=green><b>[Hilo] Â¡Ã‰XITO! Endoscopio detectado en {nombrePuerto}. Hilo de bÃºsqueda cerrado.</b></color>");
                 return;
             }
             else
             {
-                Debug.Log($"<color=magenta>[Hilo] {nombrePuerto} rechazó la conexión o no es el endoscopio.</color>");
+                Debug.Log($"<color=magenta>[Hilo] {nombrePuerto} rechazÃ³ la conexiÃ³n o no es el endoscopio.</color>");
             }
         }
 
         estadoActual = EstadoConexion.Error;
         mensajeInterfaz = "Endoscopio no encontrado.";
-        Debug.Log("<color=magenta>[Hilo] Fin de rutina: Se revisaron todos los puertos pero no hubo firma válida. Estado -> Error.</color>");
+        Debug.Log("<color=magenta>[Hilo] Fin de rutina: Se revisaron todos los puertos pero no hubo firma vÃ¡lida. Estado -> Error.</color>");
     }
 
     
@@ -173,7 +185,7 @@ public class SerialManager : MonoBehaviour
             catch (System.IO.IOException)
             {
                 estadoActual = EstadoConexion.Error;
-                mensajeInterfaz = "¡CONEXIÓN PERDIDA! El cable se desconectó.";
+                mensajeInterfaz = "Â¡CONEXIÃ“N PERDIDA! El cable se desconectÃ³.";
                 CerrarTodo();
                 break;
             }
@@ -184,22 +196,71 @@ public class SerialManager : MonoBehaviour
 
     void Update()
     {
-        string mensajeFresco = "";
-        // El Manager sí debe revisar el buzón en Update (es muy ligero)
-        while (_colaMensajes.TryDequeue(out string mensaje)) mensajeFresco = mensaje;
+        // Presiona L en el teclado de 
+        if (Input.GetKeyDown(KeyCode.L) && !pruebaLatenciaActiva && estadoActual == EstadoConexion.Conectado)
+        {
+            Debug.Log("<color=yellow>Iniciando Test de Latencia (20 Pings)...</color>");
+            pruebaLatenciaActiva = true;
+            pingsCompletados = 0;
+            sumaRTT = 0;
+            DispararPing();
+        }
 
+        string mensajeFresco = "";
+        bool llegoPong = false;
+
+        // Leemos TODOS los mensajes atrapados. Si vemos el PONG, levantamos la bandera.
+        while (_colaMensajes.TryDequeue(out string mensaje))
+        {
+            if (mensaje.Contains("PONG"))
+            {
+                llegoPong = true;
+            }
+            else
+            {
+                mensajeFresco = mensaje; // Guardamos solo si son datos del endoscopio
+            }
+        }
+
+        // RECEPTOR DEL TEST DE LATENCIA 
+        if (pruebaLatenciaActiva && llegoPong)
+        {
+            cronometroLatencia.Stop();
+            long rttActual = cronometroLatencia.ElapsedMilliseconds;
+            sumaRTT += rttActual;
+            pingsCompletados++;
+
+            Debug.Log($"Ping {pingsCompletados}/20 -> RTT: {rttActual} ms");
+
+            if (pingsCompletados < 20)
+            {
+                DispararPing(); // Dispara el siguiente
+            }
+            else
+            {
+                long rttPromedio = sumaRTT / 20;
+                long latenciaPromedio = rttPromedio / 2;
+                Debug.Log($"<color=green><b>=== RESULTADO FINAL DE LATENCIA ===\nRTT Promedio: {rttPromedio} ms\nLatencia (1-VÃ­a): {latenciaPromedio} ms\n================================</b></color>");
+                pruebaLatenciaActiva = false;
+            }
+            return; // Cortamos el frame aquÃ­ para evitar procesar ruido
+        }
+
+        // FLUJO NORMAL DE JUEGO
         if (!string.IsNullOrEmpty(mensajeFresco))
         {
             ultimoMensajeCrudo = mensajeFresco;
             TraducirDatos(mensajeFresco);
-
-            // ESTILO SOCKET.IO:
-            // Si alguien está escuchando, le enviamos los datos ya traducidos.
             AlRecibirNuevosDatos?.Invoke(datosActuales);
         }
     }
 
-    //EL MOTOR DE TRADUCCIÓN
+    private void DispararPing()
+    {
+        cronometroLatencia.Restart(); // Pone a 0 y arranca
+        EnviarDato("P"); //
+    }
+    //EL MOTOR DE TRADUCCIÃ“N
     private void TraducirDatos(string mensajeCrudo)
     {
         try
@@ -234,7 +295,7 @@ public class SerialManager : MonoBehaviour
         }
         catch { /* Si llega un texto a medias o basura, lo ignoramos para no crashear */ }
     }
-    //enviado de datos a la STM32 (ej: para activar vibración )
+    //enviado de datos a la STM32 (ej: para activar vibraciÃ³n )
     public void EnviarDato(string mensaje)
     {
         if (estadoActual == EstadoConexion.Conectado && _puerto != null && _puerto.IsOpen)
@@ -243,7 +304,7 @@ public class SerialManager : MonoBehaviour
             catch (Exception e) { Debug.LogWarning("Error al enviar: " + e.Message); }
         }
     }
-    //cierre de seguridad para evitar que el puerto quede abierto o los hilos sigan corriendo al cerrar la aplicación
+    //cierre de seguridad para evitar que el puerto quede abierto o los hilos sigan corriendo al cerrar la aplicaciÃ³n
     void CerrarPuerto()
     {
         if (_puerto != null)

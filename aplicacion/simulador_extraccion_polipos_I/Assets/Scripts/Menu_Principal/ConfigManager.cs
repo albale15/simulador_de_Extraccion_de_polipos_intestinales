@@ -14,6 +14,7 @@ public class DatosProcesados
     public bool botonSuccion;
     public bool botonLimpiado;
 }
+
 // Obligamos a este script a iniciar primero
 [DefaultExecutionOrder(-50)]
 public class ConfigManager : MonoBehaviour
@@ -44,11 +45,13 @@ public class ConfigManager : MonoBehaviour
     public string mapAccion = "B4";
     public string mapSuccion = "Su";
     public string mapLimpiado = "Lim";
+
     public DatosProcesados datosActuales = new DatosProcesados();
+    private float acumuladorVolX = 0f;
+    private float acumuladorVolY = 0f;
 
     void Awake()
     {
-        //cargamos los ajustes guardados, o dejamos los valores por defecto si no hay nada guardado
         if (instancia == null)
         {
             instancia = this;
@@ -57,58 +60,48 @@ public class ConfigManager : MonoBehaviour
         }
         else Destroy(gameObject);
 
-        // Si se nos olvida arrastrarlo en el Inspector, lo busca automáticamente
         if (serial == null) serial = FindObjectOfType<SerialManager>();
     }
 
     void OnEnable()
     {
-        // Nos suscribimos al evento del SerialManager para recibir los datos crudos y procesarlos
         if (serial != null)
             serial.AlRecibirNuevosDatos += ProcesarHardware;
     }
 
     void OnDisable()
     {
-        // Nos desuscribimos para evitar errores y liberar RAM
         if (serial != null)
             serial.AlRecibirNuevosDatos -= ProcesarHardware;
     }
-    // Esta función se ejecutará cada vez que el SerialManager reciba datos nuevos del hardware
+
     private void ProcesarHardware(DatosHardware d)
     {
-        DatosProcesados limpios = new DatosProcesados();
+        // Inserción se queda normal
+        datosActuales.insercionFinal += (ObtenerEje(mapInsAdelante, d) - ObtenerEje(mapInsAtras, d)) * sensInsercion;
+        // Usamos += para sumar todos los micro-giros si llegan muy rápido en un solo frame
+        datosActuales.volanteXFinal += (ObtenerEje(mapVolXDer, d) - ObtenerEje(mapVolXIzq, d)) * sensVolantes;
+        datosActuales.volanteYFinal += (ObtenerEje(mapVolYArr, d) - ObtenerEje(mapVolYAba, d)) * sensVolantes;
 
-        limpios.insercionFinal = (ObtenerEje(mapInsAdelante, d) - ObtenerEje(mapInsAtras, d)) * sensInsercion;
-        limpios.volanteXFinal = (ObtenerEje(mapVolXDer, d) - ObtenerEje(mapVolXIzq, d)) * sensVolantes;
-        limpios.volanteYFinal = (ObtenerEje(mapVolYArr, d) - ObtenerEje(mapVolYAba, d)) * sensVolantes;
+        datosActuales.botonFreeze = ObtenerBoton(mapFreeze, d);
+        datosActuales.botonCapture = ObtenerBoton(mapCapture, d);
+        datosActuales.botonZoom = ObtenerBoton(mapZoom, d);
+        datosActuales.botonAccion = ObtenerBoton(mapAccion, d);
+        datosActuales.botonSuccion = ObtenerBoton(mapSuccion, d);
+        datosActuales.botonLimpiado = ObtenerBoton(mapLimpiado, d);
 
-        limpios.botonFreeze = ObtenerBoton(mapFreeze, d);
-        limpios.botonCapture = ObtenerBoton(mapCapture, d);
-        limpios.botonZoom = ObtenerBoton(mapZoom, d);
-        limpios.botonAccion = ObtenerBoton(mapAccion, d);
-        limpios.botonSuccion = ObtenerBoton(mapSuccion, d);
-        limpios.botonLimpiado = ObtenerBoton(mapLimpiado, d);
-        // Una vez que tenemos los datos limpios y listos, los enviamos a través de nuestro propio evento para que cualquier otro script pueda usarlos sin preocuparse por el hardware
-        datosActuales = limpios;
-        AlRecibirDatosProcesados?.Invoke(limpios);
-
-        //d.boton1 = 0;
-        //d.boton2 = 0;
-        //d.boton3 = 0;
-        //d.boton4 = 0;
-        //d.botonSuccion = 0;
-        //d.botonLimpiado = 0; 
+        AlRecibirDatosProcesados?.Invoke(datosActuales);
     }
 
     void LateUpdate()
     {
         if (datosActuales != null)
         {
-            // LateUpdate ocurre al final del frame, justo DESPUÉS de que el TutorialManager 
-            // o el SistemaHerramientas hayan leído las variables en sus Update().
-            // Forzamos las banderas a false para simular un "Gatillo". 
-            // Esto soluciona el problema de cuando la STM32 manda el 1 y se queda en silencio.
+            // Limpiamos LOS VOLANTES cada frame. Si paras la mano, esto cae a cero INSTANTÁNEAMENTE.
+            datosActuales.insercionFinal = 0f;
+            datosActuales.volanteXFinal = 0f;
+            datosActuales.volanteYFinal = 0f;
+
             datosActuales.botonFreeze = false;
             datosActuales.botonCapture = false;
             datosActuales.botonZoom = false;
@@ -118,7 +111,6 @@ public class ConfigManager : MonoBehaviour
         }
     }
 
-    // Esta función toma el nombre del bind (por ejemplo, "INS_+") y devuelve el valor correspondiente del hardware, aplicando las condiciones de dirección (positivo/negativo) según el caso.
     private float ObtenerEje(string bind, DatosHardware d)
     {
         if (bind == "INS_+" && d.insercion > 0) return d.insercion;
@@ -129,7 +121,7 @@ public class ConfigManager : MonoBehaviour
         if (bind == "E2_-" && d.volante2 < 0) return Mathf.Abs(d.volante2);
         return 0f;
     }
-    // Esta función toma el nombre del bind de botón (por ejemplo, "B1") y devuelve true si ese botón está presionado en los datos actuales, o false si no lo está.
+
     private bool ObtenerBoton(string bind, DatosHardware d)
     {
         if (bind == "B1") return d.boton1 == 1;
@@ -140,21 +132,17 @@ public class ConfigManager : MonoBehaviour
         if (bind == "Lim") return d.botonLimpiado == 1;
         return false;
     }
-    // Esta función se puede llamar desde el menú de configuración para guardar los ajustes actuales en PlayerPrefs, lo que permite que persistan entre sesiones.
+
     public void GuardarAjustes()
     {
         PlayerPrefs.SetFloat("S_Ins", sensInsercion);
-
         PlayerPrefs.SetFloat("S_Vol", sensVolantes);
-
         PlayerPrefs.SetString("M_InsA", mapInsAdelante);
         PlayerPrefs.SetString("M_InsB", mapInsAtras);
-
         PlayerPrefs.SetString("M_VxD", mapVolXDer);
         PlayerPrefs.SetString("M_VxI", mapVolXIzq);
         PlayerPrefs.SetString("M_VyA", mapVolYArr);
         PlayerPrefs.SetString("M_VyB", mapVolYAba);
-
         PlayerPrefs.SetString("M_BtnF", mapFreeze);
         PlayerPrefs.SetString("M_BtnC", mapCapture);
         PlayerPrefs.SetString("M_BtnZ", mapZoom);
@@ -163,19 +151,17 @@ public class ConfigManager : MonoBehaviour
         PlayerPrefs.SetString("M_BtnL", mapLimpiado);
         PlayerPrefs.Save();
     }
-    // Esta función se llama al iniciar el juego para cargar los ajustes guardados previamente, o usar los valores por defecto si no hay nada guardado.
+
     void CargarAjustes()
     {
         sensInsercion = PlayerPrefs.GetFloat("S_Ins", 1.0f);
         sensVolantes = PlayerPrefs.GetFloat("S_Vol", 1.0f);
-
         mapInsAdelante = PlayerPrefs.GetString("M_InsA", "INS_+");
         mapInsAtras = PlayerPrefs.GetString("M_InsB", "INS_-");
         mapVolXDer = PlayerPrefs.GetString("M_VxD", "E1_+");
         mapVolXIzq = PlayerPrefs.GetString("M_VxI", "E1_-");
         mapVolYArr = PlayerPrefs.GetString("M_VyA", "E2_+");
         mapVolYAba = PlayerPrefs.GetString("M_VyB", "E2_-");
-
         mapFreeze = PlayerPrefs.GetString("M_BtnF", "B1");
         mapCapture = PlayerPrefs.GetString("M_BtnC", "B2");
         mapZoom = PlayerPrefs.GetString("M_BtnZ", "B3");
@@ -183,7 +169,7 @@ public class ConfigManager : MonoBehaviour
         mapSuccion = PlayerPrefs.GetString("M_BtnS", "Su");
         mapLimpiado = PlayerPrefs.GetString("M_BtnL", "Lim");
     }
-    // Esta función se puede llamar desde el menú de configuración para restablecer todos los ajustes a sus valores predeterminados de fábrica, y luego guardarlos.
+
     public void RestablecerValores()
     {
         sensInsercion = 1.0f; sensVolantes = 1.0f;
@@ -191,7 +177,7 @@ public class ConfigManager : MonoBehaviour
         mapVolXDer = "E1_+"; mapVolXIzq = "E1_-";
         mapVolYArr = "E2_+"; mapVolYAba = "E2_-";
         mapFreeze = "B1"; mapCapture = "B2"; mapZoom = "B4"; mapAccion = "B3"; mapSuccion = "Su";
-        mapLimpiado = "Lim"; 
+        mapLimpiado = "Lim";
         GuardarAjustes();
     }
 }

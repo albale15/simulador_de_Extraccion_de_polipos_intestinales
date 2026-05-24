@@ -26,6 +26,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>  // Necesario para printf y sscanf
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -50,12 +51,16 @@ uint8_t btn_lim, btn_su, btn1, btn2, btn3, btn4;
 uint8_t bl_last=0, bs_last=0, b1_last=0, b2_last=0, b3_last=0, b4_last=0;
 uint16_t angulo_anterior_1 = 0, angulo_anterior_2 = 0;
 int32_t enc1_accumulator = 0, enc2_accumulator = 0;
-const int32_t MAGNETIC_THRESHOLD_1 = 200; // Para el volante 1 e2
-const int32_t MAGNETIC_THRESHOLD_2 = 120; // Para el volante 2 e1
+//4096 pulsos del sensor en 360 grados
+const int32_t MAGNETIC_THRESHOLD_1 = 90; // Para el volante 1 e2 de 8 grado
+const int32_t MAGNETIC_THRESHOLD_2 = 90; // Para el volante 2 e1 de 8 grado es mayor por la transmision
 int8_t enc1_send = 0, enc2_send = 0, activate = 0;
 
 volatile int32_t encoder_insercion = 0;
 uint32_t last_irq_ins = 0;
+int8_t pasos_acumulados_ins = 0;
+const int8_t PASOS_POR_CLICK = 2;
+
 
 uint8_t err_encoder = 0;
 
@@ -131,31 +136,35 @@ int _write(int file, char *ptr, int len) {
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 
     // ENCODER 1: Inserción (PB5 = CLK, PA12 = DT)
-    // Si la interrupción viene de CLK o de DT del Encoder 1...
     if(GPIO_Pin == GPIO_PIN_5 || GPIO_Pin == GPIO_PIN_12) {
 
-        // Leemos el estado físico de ambos pines al mismo tiempo
         uint8_t clk = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5);
         uint8_t dt = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_12);
 
-        // Unimos los bits para formar el estado actual (0, 1, 2 o 3)
         uint8_t estado_actual = (clk << 1) | dt;
-
-        // Creamos un índice combinando el estado anterior con el actual
         uint8_t indice = (estado_ant_1 << 2) | estado_actual;
 
-        // Consultamos la tabla maestra
         int8_t movimiento = tabla_encoder[indice];
 
         if(movimiento != 0) {
-            encoder_insercion += movimiento;
-            activate = 1;
+            // En lugar de disparar directo, ACUMULAMOS los micropasos
+            pasos_acumulados_ins += movimiento;
+
+            // Verificamos si ya se completó el "Click Físico"
+            if(pasos_acumulados_ins >= PASOS_POR_CLICK) {
+                encoder_insercion += 1;
+                activate = 1;
+                pasos_acumulados_ins = 0; // Vaciamos el acumulador
+            }
+            else if(pasos_acumulados_ins <= -PASOS_POR_CLICK) {
+                encoder_insercion -= 1;
+                activate = 1;
+                pasos_acumulados_ins = 0; // Vaciamos el acumulador
+            }
         }
 
-        // Guardamos el estado para la próxima vez
         estado_ant_1 = estado_actual;
     }
-
 }
 // INTERRUPCIÓN DE RECEPCIÓN UART (Mensajes de Unity)
 // Unity debe enviar mensajes terminados en '\n', ej: "V1:100\n"
@@ -171,16 +180,21 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
             // NO guardamos el '?' en el buffer, simplemente reiniciamos la escucha
         }
-        // 2. CASO NORMAL: Es un mensaje de control (vibración, etc.)
-        else {
-            if(rx_byte == '\n' || rx_index >= 19) {
-                rx_buffer[rx_index] = '\0'; // Terminamos el string
-                mensaje_completo = 1;
-                rx_index = 0;
-            } else {
-                rx_buffer[rx_index++] = rx_byte;
-            }
-        }
+        // CASO PING INSTANTÁNEO
+        else if(rx_byte == 'P') {
+			printf("PONG\r\n"); // Rebota a la velocidad de la luz
+		}
+		// ------------------------------------
+		// 2. CASO NORMAL: Mensajes de vibración terminados en \n
+		else {
+			if(rx_byte == '\n' || rx_index >= 19) {
+				rx_buffer[rx_index] = '\0'; // Terminamos el string
+				mensaje_completo = 1;
+				rx_index = 0;
+			} else {
+				rx_buffer[rx_index++] = rx_byte;
+			}
+		}
 
         // 3. CONTINUIDAD: Volvemos a habilitar la escucha del siguiente byte
         HAL_UART_Receive_IT(&huart2, &rx_byte, 1);
@@ -308,14 +322,14 @@ int main(void)
 		if(mensaje_completo == 1) {
 			int fuerza_motor = 0;
 			if(sscanf((char*)rx_buffer, "V1:%d", &fuerza_motor) == 1) {
-				TIM2->CCR1 = fuerza_motor; // Enciende el motor
-				  tiempo_inicio_vibracion = HAL_GetTick(); // Guarda la hora actual
-				  vibrando = 1; // Avisa que está vibrando
+				TIM2->CCR1 = fuerza_motor;
+				tiempo_inicio_vibracion = HAL_GetTick();
+				vibrando = 1;
 			}
 			else if(sscanf((char*)rx_buffer, "V2:%d", &fuerza_motor) == 1) {
 				TIM2->CCR2 = fuerza_motor;
-				  tiempo_inicio_vibracion = HAL_GetTick();
-				  vibrando = 1;
+				tiempo_inicio_vibracion = HAL_GetTick();
+				vibrando = 1;
 			}
 			mensaje_completo = 0;
 		}

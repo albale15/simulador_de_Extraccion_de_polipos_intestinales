@@ -45,7 +45,7 @@ public class SistemaHerramientas : MonoBehaviour
 
     private float tiempoLenteSucio = 0f;
     private bool penalizadoPorSuciedad = false;
-
+    private bool succionAutomatica = false;
     private float tiempoSangrandoSinSuccion = 0f;
     private bool penalizadoPorSangrado = false;
     [Header("Estado del Sistema")]
@@ -93,6 +93,7 @@ public class SistemaHerramientas : MonoBehaviour
  
     private bool forzarPrimerSangradoTutorial = true;    // Variable para asegurar que el tutorial muestre la emergencia al menos una vez
     private Vector3 escalaOriginalLazoBase;
+
     void Start()
     {
         if (ManejadorPartida.dificultad == 0)
@@ -238,14 +239,14 @@ public class SistemaHerramientas : MonoBehaviour
                 nivelSangrado -= Time.deltaTime * 0.5f; // Tarda 2 segundos en aspirarse
                 nivelSangrado = Mathf.Max(0, nivelSangrado);
 
-                // Si ya aspiró toda la sangre, apagamos las partículas
+                // Si ya aspiró toda la sangre, se apaga sola
                 if (nivelSangrado == 0 && particulasSangrado != null && particulasSangrado.isPlaying)
                 {
                     particulasSangrado.Stop();
                     EnviarInfoUI("Hemorragia controlada. Campo visual despejado.", "#00FF00");
                     estabaSuccionandoSangre = false;
+                    succionAutomatica = false; // Apagado automático
 
-                    // Reseteamos los castigos para el próximo pólipo
                     tiempoSangrandoSinSuccion = 0f;
                     penalizadoPorSangrado = false;
                 }
@@ -275,6 +276,7 @@ public class SistemaHerramientas : MonoBehaviour
             // Seguridad: Si no hay sangre, los relojes siempre están en cero
             tiempoSangrandoSinSuccion = 0f;
             penalizadoPorSangrado = false;
+            succionAutomatica = false;
         }
 
         // Si la pantalla está llena de partículas de sangre, bloqueamos herramientas y cámara
@@ -399,7 +401,10 @@ public class SistemaHerramientas : MonoBehaviour
                 }
                 else if (nivelSangrado > 0f)
                 {
-                    EnviarInfoUI("Succión activada. Aspirando hemorragia...", "#1E90FF");
+                    succionAutomatica = !succionAutomatica;
+                    if (succionAutomatica) EnviarInfoUI("Succión activada. Aspirando hemorragia...", "#1E90FF");
+                    else EnviarInfoUI("Succión detenida manualmente.", "#FF8C00");
+
                 }
                 // PRIORIDAD 3: Hay agua de lavado acumulada (Ignora la herramienta)
                 else if (lavadosSinSuccionar > 0)

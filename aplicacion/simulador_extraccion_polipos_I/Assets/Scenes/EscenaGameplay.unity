@@ -15381,13 +15381,13 @@ MonoBehaviour:
   - {fileID: 535037705}
   - {fileID: 423532366}
   usarControlHardware: 0
-  velocidadInsercion: 2
-  velocidadExtraccion: 2
-  velocidadGiroPunta: 60
-  suavidadGiroHuesos: 15
+  velocidadInsercion: 7.2
+  velocidadExtraccion: 7.2
+  velocidadGiroPunta: 2
+  suavidadGiroHuesos: 30
   fuerzaArrectar: 5
   umbralBucleAtasco: 110
-  caidaGravedad: 8
+  caidaGravedad: 4
   limiteFlexionNormal: 90
   limiteFlexionRelajada: 160
   tiempoMaximoForzandoBucle: 3
