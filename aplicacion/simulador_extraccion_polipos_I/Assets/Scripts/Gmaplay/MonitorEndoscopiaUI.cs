@@ -355,37 +355,39 @@ public class MonitorEndoscopiaUI : MonoBehaviour
 
                 // Texto dinámico para el botón 4
                 string textoSuccion = "Succión"; // Nombre por defecto
-
+                string textoFreeze = "Freeze";
                 if (herramientas != null)
                 {
                     // 1. Si el canal está tapado por un pólipo
                     if (herramientas.llevandoPolipo)
                     {
-                        textoSuccion = "<color=#32CD32>Soltar Pólipo</color>";
+                        textoFreeze = "<color=#32CD32>Soltar Pólipo</color>";
                     }
-                    // 2. Si hay hemorragia
-                    else if (herramientas.ObtenerNivelSangrado() > 0f)
-                    {
-                        textoSuccion = "<color=#FF0000>Aspirar Sangre</color>";
-                    }
-                    // 3. Si hay agua de lavado
-                    else if (herramientas.ObtenerLavadosSinSuccionar() > 0)
-                    {
-                        textoSuccion = "<color=#1E90FF>Aspirar Agua</color>";
-                    }
-                    // 4. Si hay un pólipo cortado esperando
+                    // 2. Si hay un pólipo cortado esperando
                     else if (
                         (herramientas.ObtenerUltimoPolipoCortado() != null && herramientas.ObtenerUltimoPolipoCortado().estadoActual == PolipoInteractuable.EstadoPolipo.CortadoSuelto) ||
                         (herramientas.ObtenerPolipoEnMira() != null && herramientas.ObtenerPolipoEnMira().estadoActual == PolipoInteractuable.EstadoPolipo.CortadoSuelto)
                     )
                     {
-                        textoSuccion = "<color=#FFD700>Atrapar Pólipo</color>";
+                        textoFreeze = "<color=#FFD700>Atrapar Pólipo</color>";
                     }
+                    // 1. Si hay hemorragia
+                    else if (herramientas.ObtenerNivelSangrado() > 0f)
+                    {
+                        textoSuccion = "<color=#FF0000>Aspirar Sangre</color>";
+                    }
+                    // 2. Si hay agua de lavado
+                    else if (herramientas.ObtenerLavadosSinSuccionar() > 0)
+                    {
+                        textoSuccion = "<color=#1E90FF>Aspirar Agua</color>";
+                    }
+                    
+                    
                 }
 
                 txtListaBotones.text =
                     $"<color=#00FFFF>(Controles)</color>\n" +
-                    $"Freeze [{cfg.mapFreeze}]\n" +
+                    $"{textoFreeze} [{cfg.mapFreeze}]\n" +
                     $"Capture [{cfg.mapCapture}]\n" +
                     $"Zoom [{cfg.mapZoom}]\n" +
                     $"Lavar Lente [{cfg.mapLimpiado}]\n" +
@@ -833,7 +835,7 @@ public class MonitorEndoscopiaUI : MonoBehaviour
         else if (herramientas.llevandoPolipo)
         {
             if (herramientas.enZonaExtraccion)
-                mensajeGuia = $"¡Llegaste a la salida! Usa Soltar Pólipo <color=yellow>[{btnSuccion}]</color> para depositar la muestra en el laboratorio.";
+                mensajeGuia = $"¡Llegaste a la salida! Usa Soltar Pólipo <color=yellow>[{btnFreeze}]</color> para depositar la muestra en el laboratorio.";
             else
                 mensajeGuia = "Saca el pólipo atrapado extrayendo el tubo hacia la zona de inicio. Cuidado con los tirones.";
         }
@@ -853,7 +855,7 @@ public class MonitorEndoscopiaUI : MonoBehaviour
             (herramientas.ObtenerPolipoEnMira() != null && herramientas.ObtenerPolipoEnMira().estadoActual == PolipoInteractuable.EstadoPolipo.CortadoSuelto)
         )
         {
-            mensajeGuia = $"El pólipo está suelto. Apunta hacia él y usa Atrapar Pólipo <color=yellow>[{btnSuccion}]</color> para asegurarlo con el asa.";
+            mensajeGuia = $"El pólipo está suelto. Apunta hacia él y usa Atrapar Pólipo <color=yellow>[{btnFreeze}]</color> para asegurarlo con el asa.";
         }
         // 7. MENÚ DE HERRAMIENTAS ABIERTO
         else if (herramientas.EstaEnModoSeleccion())

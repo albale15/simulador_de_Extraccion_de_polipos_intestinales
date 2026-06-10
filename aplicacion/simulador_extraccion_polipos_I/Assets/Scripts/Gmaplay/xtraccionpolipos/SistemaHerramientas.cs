@@ -381,25 +381,26 @@ public class SistemaHerramientas : MonoBehaviour
         if (!enModoSeleccion)
         {
             if (btnZoom && camaraPrincipal != null) EjecutarZoom();
-            if (btnFreeze) EjecutarFreeze();
+            //if (btnFreeze) EjecutarFreeze();
             if (btnCapture) EjecutarCapture();
             if (btnLimpiado) EjecutarLimpiado();
 
             // --- LÓGICA DE SUCCIÓN MANUAL Y CONTAMINACIÓN ---
             if (btnSuccion)
             {
-                if (llevandoPolipo)
-                {
-                    if (enZonaExtraccion)
-                    {
-                        SoltarPolipoEnLaboratorio();
-                    }
-                    else
-                    {
-                        EnviarErrorUI(MonitorEndoscopiaUI.CategoriaEvaluacion.Tecnica, 9, "Contaminación: No puede soltar la muestra dentro del tracto. Llévela hasta la salida.");
-                    }
-                }
-                else if (nivelSangrado > 0f)
+                //if (llevandoPolipo)
+                //{
+                //    if (enZonaExtraccion)
+                //    {
+                //        SoltarPolipoEnLaboratorio();
+                //    }
+                //    else
+                //    {
+                //        EnviarErrorUI(MonitorEndoscopiaUI.CategoriaEvaluacion.Tecnica, 9, "Contaminación: No puede soltar la muestra dentro del tracto. Llévela hasta la salida.");
+                //    }
+                //}
+                //else if (nivelSangrado > 0f)
+                if (nivelSangrado > 0f)
                 {
                     succionAutomatica = !succionAutomatica;
                     if (succionAutomatica) EnviarInfoUI("Succión activada. Aspirando hemorragia...", "#1E90FF");
@@ -412,12 +413,27 @@ public class SistemaHerramientas : MonoBehaviour
                     lavadosSinSuccionar = 0; // Vaciamos el agua acumulada
                     EnviarInfoUI("Succión activada. Aspirando fluidos de irrigación...", "#1E90FF");
                 }
-                // PRIORIDAD 4: El campo visual está limpio, se procede a intentar atrapar
+
+            }
+            if (btnFreeze)
+            {
+                if (llevandoPolipo)
+                {
+                    if (enZonaExtraccion) SoltarPolipoEnLaboratorio();
+                    else EnviarErrorUI(MonitorEndoscopiaUI.CategoriaEvaluacion.Tecnica, 9, "Contaminación: No puede soltar la muestra dentro del tracto. Llévela hasta la salida.");
+                }
+                else if (IntentarAtrapar(origenRayo, direccionRayo))
+                {
+                    // Si la función logró atrapar un pólipo, no hacemos nada más.
+                    // (Evitamos congelar la pantalla accidentalmente mientras atrapamos)
+                }
                 else
                 {
-                    IntentarAtrapar(origenRayo, direccionRayo);
+                    // Si no había pólipos sueltos para atrapar, hace su función médica normal
+                    EjecutarFreeze();
                 }
             }
+
         }
 
         if (estaCortando) { VerificarMovimientoProhibido(); return; }
@@ -724,7 +740,7 @@ public class SistemaHerramientas : MonoBehaviour
     //}
 
 
-    private void IntentarAtrapar(Vector3 origen, Vector3 direccion)
+    private bool IntentarAtrapar(Vector3 origen, Vector3 direccion)
     {
         if (Physics.Raycast(origen, direccion, out RaycastHit hit, distanciaAccion * 1.5f, capaPolipos))
         {
@@ -740,12 +756,18 @@ public class SistemaHerramientas : MonoBehaviour
                     ultimoPolipoCortado = null;
                     movimientosSinSuccionar = 0;
                 }
+                return true;
             }
-            else if (polipoTocado != null && polipoTocado.estadoActual == PolipoInteractuable.EstadoPolipo.Intacto)
+            // El pólipo está intacto PERO ya fue fotografiado.
+            // Si vuelve a presionar el botón Freeze ahora, su intención es claramente atraparlo por error. ¡Aplica el método de enseñanza!
+            else if (polipoTocado.estadoActual == PolipoInteractuable.EstadoPolipo.Intacto && polipoTocado.fueFotografiado)
             {
-                EnviarErrorUI(MonitorEndoscopiaUI.CategoriaEvaluacion.Tecnica, 9, "Enfermera: No podemos atrapar un pólipo que no ha sido seccionado.");
+                EnviarErrorUI(MonitorEndoscopiaUI.CategoriaEvaluacion.Tecnica, 9, "Enfermera: No podemos atrapar un pólipo que no ha sido seccionado. Proceda con el corte.");
+
+                return true; // Retornamos 'true' para consumir el botón y evitar que la pantalla se vuelva a congelar por accidente.
             }
         }
+        return false;
     }
 
     private IEnumerator AnimacionAsaAtrapar(PolipoInteractuable polipo)

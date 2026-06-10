@@ -152,9 +152,9 @@ public class EndoscopioCurvas : MonoBehaviour
         {
             if (modoPC)
             {
-                velocidadGiroPuntapc= 80f; // En PC, la punta gira el doble de rápido para compensar la falta de sensibilidad analógica.
-                if (Input.GetKey(KeyCode.W)) empujeFisico = 1f;
-                if (Input.GetKey(KeyCode.S)) empujeFisico = -1f;
+                velocidadGiroPuntapc= 40f; // En PC, la punta gira el doble de rápido para compensar la falta de sensibilidad analógica.
+                if (Input.GetKey(KeyCode.W)) empujeFisico = 0.5f;
+                if (Input.GetKey(KeyCode.S)) empujeFisico = -0.3f;
 
                 if (Input.GetKey(KeyCode.UpArrow)) { rotX -= velocidadGiroPuntapc * Time.deltaTime; tocandoFlechas = true; }
                 if (Input.GetKey(KeyCode.DownArrow)) { rotX += velocidadGiroPuntapc * Time.deltaTime; tocandoFlechas = true; }
