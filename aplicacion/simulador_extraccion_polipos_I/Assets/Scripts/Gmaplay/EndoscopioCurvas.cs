@@ -143,7 +143,7 @@ public class EndoscopioCurvas : MonoBehaviour
         float rotXAnterior = rotX;
         float rotZAnterior = rotZ;
 
-        empujeFisico = 0f;
+        
         bool tocandoFlechas = false;
         bool bloqueadoPorTutorial = (TutorialManager.instancia != null && TutorialManager.instancia.controlesBloqueados);
         bool modoPC = !usarControlHardware;
@@ -152,7 +152,8 @@ public class EndoscopioCurvas : MonoBehaviour
         {
             if (modoPC)
             {
-                velocidadGiroPuntapc= 40f; // En PC, la punta gira el doble de rápido para compensar la falta de sensibilidad analógica.
+                empujeFisico = 0f;
+                velocidadGiroPuntapc = 40f; // En PC, la punta gira el doble de rápido para compensar la falta de sensibilidad analógica.
                 if (Input.GetKey(KeyCode.W)) empujeFisico = 0.5f;
                 if (Input.GetKey(KeyCode.S)) empujeFisico = -0.3f;
 
@@ -170,23 +171,19 @@ public class EndoscopioCurvas : MonoBehaviour
             {
                 if (datosHardware != null)
                 {
-                    // El Timeout de 0.15s AHORA SOLO AFECTA A LA INSERCIÓN.
-                    // (La inserción sí necesita este empuje simulado para mover las físicas).
-                    if (Time.time - tiempoUltimoDatoHardware > 0.15f)
+                    // 1. Si el hardware mandó un pulso, lo atrapamos. 
+                    // Al no borrarlo arriba, sobrevive todos los frames rápidos hasta que la física lo procese.
+                    if (Mathf.Abs(datosHardware.insercionFinal) > 0.01f)
                     {
-                        datosHardware.insercionFinal = 0f;
+                        empujeFisico = Mathf.Clamp(datosHardware.insercionFinal, -1f, 1f);
                     }
 
-                    empujeFisico = Mathf.Clamp(datosHardware.insercionFinal, -1f, 1f);
-                    if (Mathf.Abs(empujeFisico) < 0.05f) empujeFisico = 0f;
-
-
-                    // --- EL FIX DEL DESFASE PARA VOLANTES ---
-                    // Como ahora son "Pulsos Exactos" y se borran solos cada frame, 
-                    // los aplicamos directamente a la rotación SIN multiplicar por Time.deltaTime.
-
-                    // El '5f' es un multiplicador base de fuerza de giro. Si sientes que al mover 
-                    // tu volante el endoscopio gira muy poco, súbelo a 10f. Si gira mucho, bájalo a 2f.
+                    // 2. Si hay silencio total del hardware por 150ms, ENTONCES lo apagamos.
+                    if (Time.time - tiempoUltimoDatoHardware > 0.15f)
+                    {
+                        empujeFisico = 0f;
+                        datosHardware.insercionFinal = 0f;
+                    }
 
                     if (Mathf.Abs(datosHardware.volanteYFinal) > 0.001f)
                     {
@@ -201,6 +198,10 @@ public class EndoscopioCurvas : MonoBehaviour
                     }
                 }
             }
+        }
+        else
+        {
+            empujeFisico = 0f; // Si el tutorial nos bloquea, detenemos la fuerza
         }
         if (TutorialManager.instancia != null && ManejadorPartida.dificultad == 0)
         {

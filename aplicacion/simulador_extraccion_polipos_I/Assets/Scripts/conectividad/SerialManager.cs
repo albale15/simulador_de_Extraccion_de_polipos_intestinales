@@ -19,6 +19,8 @@ public class DatosHardware
     public int insercion; // "INS"
 }
 
+[DefaultExecutionOrder(-100)]
+
 public class SerialManager : MonoBehaviour
 {
 
@@ -218,7 +220,10 @@ public class SerialManager : MonoBehaviour
             }
             else
             {
-                mensajeFresco = mensaje; // Guardamos solo si son datos del endoscopio
+                // Procesamos CADA mensaje uno por uno sin perder ninguno
+                ultimoMensajeCrudo = mensaje;
+                TraducirDatos(mensaje);
+                AlRecibirNuevosDatos?.Invoke(datosActuales);
             }
         }
 
@@ -247,12 +252,12 @@ public class SerialManager : MonoBehaviour
         }
 
         // FLUJO NORMAL DE JUEGO
-        if (!string.IsNullOrEmpty(mensajeFresco))
-        {
-            ultimoMensajeCrudo = mensajeFresco;
-            TraducirDatos(mensajeFresco);
-            AlRecibirNuevosDatos?.Invoke(datosActuales);
-        }
+        //if (!string.IsNullOrEmpty(mensajeFresco))
+        //{
+        //    ultimoMensajeCrudo = mensajeFresco;
+        //    TraducirDatos(mensajeFresco);
+        //    AlRecibirNuevosDatos?.Invoke(datosActuales);
+        //}
     }
 
     private void DispararPing()

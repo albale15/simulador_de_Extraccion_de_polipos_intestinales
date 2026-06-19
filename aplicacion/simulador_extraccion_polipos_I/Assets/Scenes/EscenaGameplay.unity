@@ -15381,8 +15381,8 @@ MonoBehaviour:
   - {fileID: 535037705}
   - {fileID: 423532366}
   usarControlHardware: 0
-  velocidadInsercion: 7.2
-  velocidadExtraccion: 7.2
+  velocidadInsercion: 1.7
+  velocidadExtraccion: 1.7
   velocidadGiroPunta: 2
   suavidadGiroHuesos: 30
   fuerzaArrectar: 5
