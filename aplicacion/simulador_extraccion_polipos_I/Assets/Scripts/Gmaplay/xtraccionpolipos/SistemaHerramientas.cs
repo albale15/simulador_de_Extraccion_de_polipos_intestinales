@@ -189,6 +189,31 @@ public class SistemaHerramientas : MonoBehaviour
                 ultimoL = datosHardware.botonLimpiado;
             }
         }
+        // TOGGLE DE SUCCIÓN PARA ENDOSCOPIO
+        if (!modoPC)
+        {
+            // 1. Si hay sangre y presiona succión, actuamos como interruptor (Toggle)
+            if (btnSuccion && nivelSangrado > 0f)
+            {
+                succionAutomatica = !succionAutomatica;
+
+                if (succionAutomatica) EnviarInfoUI("Succión continua activada. Aspirando hemorragia...", "#1E90FF");
+                else EnviarInfoUI("Succión detenida manualmente.", "#FF8C00");
+
+                // Consumimos el input para que no dispare la succión de agua más abajo
+                btnSuccion = false;
+            }
+            // 2. Interrupción: Si la succión automática está prendida, PERO el usuario mueve el endoscopio o toca otra herramienta, se cancela sola
+            else if (succionAutomatica && (moviendo || btnFreeze || btnCapture || btnZoom || btnAccion || btnLimpiado))
+            {
+                succionAutomatica = false;
+                // No mandamos el error aquí; el sistema de sangre más abajo detectará 
+                // que la succión se apagó prematuramente y lanzará la penalización médica.
+            }
+
+            // Asignamos el estado del toggle a la variable que exige el sistema de sangre
+            manteniendoSuccion = succionAutomatica;
+        }
 
         Vector3 origenRayo = canalDeTrabajo.position;
         Vector3 direccionRayo = canalDeTrabajo.forward;
@@ -388,27 +413,16 @@ public class SistemaHerramientas : MonoBehaviour
             // --- LÓGICA DE SUCCIÓN MANUAL Y CONTAMINACIÓN ---
             if (btnSuccion)
             {
-                //if (llevandoPolipo)
+                //if (nivelSangrado > 0f)
                 //{
-                //    if (enZonaExtraccion)
-                //    {
-                //        SoltarPolipoEnLaboratorio();
-                //    }
-                //    else
-                //    {
-                //        EnviarErrorUI(MonitorEndoscopiaUI.CategoriaEvaluacion.Tecnica, 9, "Contaminación: No puede soltar la muestra dentro del tracto. Llévela hasta la salida.");
-                //    }
-                //}
-                //else if (nivelSangrado > 0f)
-                if (nivelSangrado > 0f)
-                {
-                    succionAutomatica = !succionAutomatica;
-                    if (succionAutomatica) EnviarInfoUI("Succión activada. Aspirando hemorragia...", "#1E90FF");
-                    else EnviarInfoUI("Succión detenida manualmente.", "#FF8C00");
+                //    succionAutomatica = !succionAutomatica;
+                //    if (succionAutomatica) EnviarInfoUI("Succión activada. Aspirando hemorragia...", "#1E90FF");
+                //    else EnviarInfoUI("Succión detenida manualmente.", "#FF8C00");
 
-                }
+                //}
                 // PRIORIDAD 3: Hay agua de lavado acumulada (Ignora la herramienta)
-                else if (lavadosSinSuccionar > 0)
+                //else 
+                if (lavadosSinSuccionar > 0)
                 {
                     lavadosSinSuccionar = 0; // Vaciamos el agua acumulada
                     EnviarInfoUI("Succión activada. Aspirando fluidos de irrigación...", "#1E90FF");
@@ -868,7 +882,7 @@ public class SistemaHerramientas : MonoBehaviour
         {
             nivelSangrado = 1.0f;
             if (particulasSangrado != null) particulasSangrado.Play(); // Dispara la nube de sangre
-            EnviarInfoUI("Hemorragia leve post-corte. Mantenga Succión para aspirar los fluidos.", "#FF0000");
+            //EnviarInfoUI("Hemorragia leve post-corte. Mantenga Succión para aspirar los fluidos.", "#FF0000");
         }
 
         ultimoPolipoCortado = polipoEnMira;

@@ -39,6 +39,9 @@ public class EndoscopioCurvas : MonoBehaviour
     public bool dibujarTuboExterior = true;
     public float grosorTubo = 0.012f;
 
+    [Header("Escudo Anti-Túnel")]
+    public LayerMask capaIntestino;
+
     // Estado del juego
     private bool juegoTerminado = false;
 
@@ -373,6 +376,8 @@ public class EndoscopioCurvas : MonoBehaviour
             siguienteUmbralSuavidad = 5; 
         }
 
+        // Si usamos PC (tecla S continua), sana rápido (8f) como lo tenías originalmente.
+        float tasaCuracion = usarControlHardware ? 1.5f : 8f;
         // LÓGICA DE DAÑO POR EXTRACCIÓN BRUSCA (TIRÓN)
         if (empujeFisico < 0)
         {
@@ -403,13 +408,13 @@ public class EndoscopioCurvas : MonoBehaviour
                         }
                     }
                 }
-                else tiempoExtraccionBrusca = Mathf.Max(0, tiempoExtraccionBrusca - (Time.fixedDeltaTime * 8f));
+                else tiempoExtraccionBrusca = Mathf.Max(0, tiempoExtraccionBrusca - (Time.fixedDeltaTime * tasaCuracion));
             }
-            else tiempoExtraccionBrusca = Mathf.Max(0, tiempoExtraccionBrusca - (Time.fixedDeltaTime * 8f));
+            else tiempoExtraccionBrusca = Mathf.Max(0, tiempoExtraccionBrusca - (Time.fixedDeltaTime * tasaCuracion));
         }
         else
         {
-            tiempoExtraccionBrusca = Mathf.Max(0, tiempoExtraccionBrusca - (Time.fixedDeltaTime * 8f));
+            tiempoExtraccionBrusca = Mathf.Max(0, tiempoExtraccionBrusca - (Time.fixedDeltaTime * tasaCuracion));
         }
 
         if (tiempoExtraccionBrusca == 0)
