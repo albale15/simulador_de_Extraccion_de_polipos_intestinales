@@ -20,11 +20,11 @@ RenderSettings:
   m_FogDensity: 0.01
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
-  m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
+  m_AmbientSkyColor: {r: 0, g: 0, b: 0, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 0
-  m_AmbientMode: 0
+  m_AmbientMode: 3
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
   m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
   m_HaloStrength: 0
@@ -193,7 +193,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: c22777d6e868e4f2fb421913386b154e, type: 2}
+  - {fileID: 2100000, guid: 00c7a0a64bb400349a84a71e16f91840, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -3764,6 +3764,10 @@ PrefabInstance:
       propertyPath: m_Radius
       value: 0.2
       objectReference: {fileID: 0}
+    - target: {fileID: 7316963869324127897, guid: f48653a0f59c1ca4191a45fbdb7281bc, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 62552ff5be86e664c91122110d09a7c0, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4694,6 +4698,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -5293948897566223025, guid: 30b35aaa471a3e649bf7ae3295d14eef, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 0dab27defb48547468c7b0cb6664862f, type: 2}
     - target: {fileID: 919132149155446097, guid: 30b35aaa471a3e649bf7ae3295d14eef, type: 3}
       propertyPath: m_Name
       value: puntaEndoscopio
@@ -5742,6 +5750,10 @@ PrefabInstance:
       propertyPath: m_Radius
       value: 0.2
       objectReference: {fileID: 0}
+    - target: {fileID: 4548219747170619863, guid: b224e666635630b4c8fd7d57c98156e5, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 62552ff5be86e664c91122110d09a7c0, type: 2}
     - target: {fileID: 7676103615317139473, guid: b224e666635630b4c8fd7d57c98156e5, type: 3}
       propertyPath: m_Name
       value: realYamada_2
@@ -7071,6 +7083,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5093566459134267879, guid: 0f14d6ec57a93e34d81c3108c26ee87e, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 62552ff5be86e664c91122110d09a7c0, type: 2}
     - target: {fileID: 7500221628409301471, guid: 0f14d6ec57a93e34d81c3108c26ee87e, type: 3}
       propertyPath: m_Name
       value: realYamada_1
@@ -7313,8 +7329,8 @@ Camera:
   m_GameObject: {fileID: 808759703}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0.22745098, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -7844,6 +7860,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: c8f555b2eea695e4ca01ddbcd43cdfd5, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 909c933ba1ac0b94bafa7d15e82d24a2, type: 2}
     - target: {fileID: 919132149155446097, guid: c8f555b2eea695e4ca01ddbcd43cdfd5, type: 3}
       propertyPath: m_Name
       value: intestinoMASgRANDE
@@ -13354,6 +13374,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: realYamada_3
       objectReference: {fileID: 0}
+    - target: {fileID: 6550241879363327277, guid: 3cfd241cb540c4142b954daded24fc21, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 62552ff5be86e664c91122110d09a7c0, type: 2}
     - target: {fileID: 6666325845448536447, guid: 3cfd241cb540c4142b954daded24fc21, type: 3}
       propertyPath: m_LocalPosition.x
       value: -4.87
@@ -15519,6 +15543,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 90
       objectReference: {fileID: 0}
+    - target: {fileID: -8257156037124481220, guid: 997206eb93350e4489cb393208564c8f, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: c282640ca7d611846be7e2cb3604d83f, type: 2}
+    - target: {fileID: -7511558181221131132, guid: 997206eb93350e4489cb393208564c8f, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: c282640ca7d611846be7e2cb3604d83f, type: 2}
     - target: {fileID: 919132149155446097, guid: 997206eb93350e4489cb393208564c8f, type: 3}
       propertyPath: m_Name
       value: pinzaDientes
@@ -15527,6 +15559,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3739307573201240513, guid: 997206eb93350e4489cb393208564c8f, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: c282640ca7d611846be7e2cb3604d83f, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -19046,6 +19082,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: -49.696
       objectReference: {fileID: 0}
+    - target: {fileID: 5093566459134267879, guid: 0f14d6ec57a93e34d81c3108c26ee87e, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 62552ff5be86e664c91122110d09a7c0, type: 2}
     - target: {fileID: 7500221628409301471, guid: 0f14d6ec57a93e34d81c3108c26ee87e, type: 3}
       propertyPath: m_Name
       value: realYamada_1 (1)
@@ -20814,6 +20854,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 90
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: a3a0705ca0a57de47b468631e9671370, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: c282640ca7d611846be7e2cb3604d83f, type: 2}
+    - target: {fileID: -1412065204616056259, guid: a3a0705ca0a57de47b468631e9671370, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 00c7a0a64bb400349a84a71e16f91840, type: 2}
     - target: {fileID: 919132149155446097, guid: a3a0705ca0a57de47b468631e9671370, type: 3}
       propertyPath: m_Name
       value: pinzaAsas 1

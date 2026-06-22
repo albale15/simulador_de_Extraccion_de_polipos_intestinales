@@ -82,7 +82,7 @@ public class EndoscopioCurvas : MonoBehaviour
     private bool penalizadoTiron = false;
     private int siguienteUmbralSuavidad = 5;
 
-    private int siguienteUmbralTiron = 35;
+    private int siguienteUmbralTiron = 30;
     private bool atascadoPorBucle = false;
     private float velocidadGiroPuntapc = 20f;
     void OnEnable()
@@ -298,10 +298,7 @@ public class EndoscopioCurvas : MonoBehaviour
     {
         if (juegoTerminado || huesos.Length < 2) return;
 
-        if (controlActivo)
-        {
-            rb.constraints = RigidbodyConstraints.FreezeRotation;
-        }
+        if (controlActivo) rb.constraints = RigidbodyConstraints.FreezeRotation;
         else
         {
             rb.constraints = RigidbodyConstraints.FreezeAll;
@@ -318,25 +315,33 @@ public class EndoscopioCurvas : MonoBehaviour
 
         float velActual = (empujeFisico > 0) ? velocidadInsercion : velocidadExtraccion;
         float distanciaAvanzada = empujeFisico * velActual * Time.fixedDeltaTime;
-
         bool choqueFrontalActivo = false;
 
-        // 1. CÁLCULO DE LA CURVATURA TOTAL
-        float curvaturaCuerpo = 0f;
+
+        // VARIABLE A: CÁLCULO NUEVO (SOLO PARA FRENAR TRAMPAS/BUCLES)
+
+        float curvaturaFreno = 0f;
         for (int i = 0; i < huesos.Length - 1; i++)
         {
-            curvaturaCuerpo += Vector3.Angle(huesos[i].up, huesos[i + 1].up);
+            curvaturaFreno += Vector3.Angle(huesos[i].up, huesos[i + 1].up);
+        }
+        float anguloU = Vector3.Angle(huesos[0].up, huesos[huesos.Length - 1].up);
+
+
+        // VARIABLE B:CÁLCULO ORIGINAL (SOLO PARA DAÑO POR EXTRACCIÓN)
+
+        float curvaturaOriginal = 0f;
+        for (int i = 1; i < olaDeCurvas.Length; i++)
+        {
+            curvaturaOriginal += Quaternion.Angle(Quaternion.identity, olaDeCurvas[i]);
         }
 
-        // 2. ESCUDO PREDICTIVO
+        // --- ESCUDO PREDICTIVO ---
         if (empujeFisico > 0)
         {
-            Vector3 origenPunta = huesos[0].position;
-
-            if (Physics.SphereCast(origenPunta, 0.015f, direccionFinal, out RaycastHit paredHit, distanciaAvanzada + 0.015f, capaIntestino))
+            if (Physics.SphereCast(huesos[0].position, 0.015f, direccionFinal, out RaycastHit paredHit, distanciaAvanzada + 0.015f, capaIntestino))
             {
                 float anguloChoque = Vector3.Angle(direccionFinal, -paredHit.normal);
-
                 if (anguloChoque < 35f)
                 {
                     distanciaAvanzada = 0f;
@@ -344,58 +349,42 @@ public class EndoscopioCurvas : MonoBehaviour
                 }
                 else
                 {
+                    direccionFinal = Vector3.ProjectOnPlane(direccionFinal, paredHit.normal).normalized;
                     distanciaAvanzada = Mathf.Max(0, paredHit.distance - 0.01f);
                 }
             }
         }
 
-        // 3. LÓGICA DE FRENO ABSOLUTO POR BUCLE
-        float multiplicadorAvance = 1f;
+        // --- LÓGICA DE FRENO ABSOLUTO POR BUCLE (Usa Variable A) ---
+        float umbralPeligro = 180f;
+        float umbralVueltaEnU = 130f;
+        bool enBucle = (curvaturaFreno > umbralPeligro) || (anguloU > umbralVueltaEnU);
 
-        // Reducimos el umbral. 200° es suficiente para dar curvas sanas. 
-        // Si pasa de 200°, significa que el usuario está dando la vuelta (U-Turn).
-        float umbralPeligro = 200f;
-
-        // SOLO aplicamos el multiplicador 0 si está empujando. Si está jalando (extrayendo), le dejamos moverse.
-        if (empujeFisico > 0)
+        if (empujeFisico > 0 && (choqueFrontalActivo || enBucle))
         {
-            if (choqueFrontalActivo) multiplicadorAvance = 0f;
-            else if (curvaturaCuerpo > umbralPeligro) multiplicadorAvance = 0f; // FRENO 100% ABSOLUTO
+            distanciaAvanzada = 0f;
         }
 
-        // El atasco se activa si hay choque frontal o si el tubo está demasiado torcido.
-        // Esto bloquea los volantes en tu función Update() para que no sigan girando la cámara.
-        atascadoPorBucle = (choqueFrontalActivo && empujeFisico > 0) || (curvaturaCuerpo > umbralPeligro);
-
-        // El daño solo ocurre si empuja mientras está atascado.
+        atascadoPorBucle = (choqueFrontalActivo && empujeFisico > 0) || enBucle;
         bool bajoEstres = atascadoPorBucle && empujeFisico > 0;
 
         if (bajoEstres)
         {
-            if (multiplicadorAvance < 0.05f)
+            tiempoForzandoBucle += Time.fixedDeltaTime;
+            if (tiempoForzandoBucle > tiempoMaximoForzandoBucle)
+                ProcesarGameOver(choqueFrontalActivo ? "PERFORACIÓN INTESTINAL: Choque frontal." : "PERFORACIÓN INTESTINAL: Bucle crítico.");
+            else
             {
-                tiempoForzandoBucle += Time.fixedDeltaTime;
-                if (tiempoForzandoBucle > tiempoMaximoForzandoBucle)
+                int porcentaje = (int)((tiempoForzandoBucle / tiempoMaximoForzandoBucle) * 100);
+                if (porcentaje >= siguienteUmbralSuavidad)
                 {
-                    string motivo = choqueFrontalActivo ? "PERFORACIÓN INTESTINAL: Forzaste el avance frontalmente contra la mucosa." : "PERFORACIÓN INTESTINAL: Bucle crítico. El endoscopio se volcó sobre sí mismo.";
-                    ProcesarGameOver(motivo);
+                    if (monitorUI != null) monitorUI.RegistrarErrorEstandarizado(MonitorEndoscopiaUI.CategoriaEvaluacion.Seguridad, 1, $"Fuerza excesiva ({porcentaje}% tensión).");
+                    siguienteUmbralSuavidad += 5;
                 }
-                else
+                if (porcentaje >= 25 && !penalizadoBucle)
                 {
-                    int porcentaje = (int)((tiempoForzandoBucle / tiempoMaximoForzandoBucle) * 100);
-                    string alerta = choqueFrontalActivo ? "¡CHOQUE FRONTAL!" : "¡ATASCO/VUELTA EN U!";
-                    Debug.LogWarning($"<color=orange>{alerta} Daño: {porcentaje}%</color>");
-
-                    if (porcentaje >= siguienteUmbralSuavidad)
-                    {
-                        if (monitorUI != null) monitorUI.RegistrarErrorEstandarizado(MonitorEndoscopiaUI.CategoriaEvaluacion.Seguridad, 1, $"Suavidad de Desplazamiento: Fuerza excesiva ({porcentaje}% tensión).");
-                        siguienteUmbralSuavidad += 5;
-                    }
-                    if (porcentaje >= 25 && !penalizadoBucle)
-                    {
-                        if (monitorUI != null) monitorUI.RegistrarErrorEstandarizado(MonitorEndoscopiaUI.CategoriaEvaluacion.Seguridad, 0, "Trauma Tisular: Fuerza excesiva contra la mucosa.");
-                        penalizadoBucle = true;
-                    }
+                    if (monitorUI != null) monitorUI.RegistrarErrorEstandarizado(MonitorEndoscopiaUI.CategoriaEvaluacion.Seguridad, 0, "Trauma Tisular: Fuerza excesiva contra la mucosa.");
+                    penalizadoBucle = true;
                 }
             }
         }
@@ -404,26 +393,39 @@ public class EndoscopioCurvas : MonoBehaviour
             tiempoForzandoBucle = Mathf.Max(0, tiempoForzandoBucle - (Time.fixedDeltaTime * 2f));
         }
 
+        // FIX: Reajuste dinámico del umbral de bucle (baja de 5 en 5 si la tensión se relaja)
+        int tensionActual = (int)((tiempoForzandoBucle / tiempoMaximoForzandoBucle) * 100);
+        while (siguienteUmbralSuavidad > 5 && tensionActual < siguienteUmbralSuavidad - 5)
+        {
+            siguienteUmbralSuavidad -= 5;
+        }
+
         if (tiempoForzandoBucle == 0) { penalizadoBucle = false; siguienteUmbralSuavidad = 5; }
 
         bool bloqueadoPorTutorial = (TutorialManager.instancia != null && TutorialManager.instancia.controlesBloqueados);
         if (monitorUI != null && !bloqueadoPorTutorial) monitorUI.ActualizarEstadoBucle(atascadoPorBucle);
 
-        // 4. LÓGICA DE EXTRACCIÓN BRUSCA (TIRÓN)
-        float tasaCuracion = usarControlHardware ? 1.5f : 8f;
+        // --- LÓGICA DE EXTRACCIÓN BRUSCA (Restaura tu código original con Variable B) ---
+        float tasaCuracion = usarControlHardware ? 3f : 8f;
+
         if (empujeFisico < 0)
         {
-            if (curvaturaCuerpo > 90f)
+            if (curvaturaOriginal > 60f)
             {
-                multiplicadorAvance = 1f; // Se permite extraer para desatar nudos
-                if (curvaturaCuerpo > 180f)
+                if (curvaturaOriginal > 120f)
                 {
-                    tiempoExtraccionBrusca += Time.fixedDeltaTime * valorDañoExtraccion;
+                    float fuerzaJalon = Mathf.Abs(empujeFisico);
+                    float multiplicadorSensibilidad = usarControlHardware ? (fuerzaJalon / 0.3f) : 1f;
+
+                    tiempoExtraccionBrusca += Time.fixedDeltaTime * valorDañoExtraccion * multiplicadorSensibilidad;
+
                     if (tiempoExtraccionBrusca > tiempoMaximoTiron)
-                        ProcesarGameOver("LACERACIÓN DE MUCOSA: Mantuviste un jalón prolongado sin pausas en una curva cerrada.");
+                        ProcesarGameOver("LACERACIÓN DE MUCOSA: Mantuviste un jalón violento en una curva cerrada.");
                     else
                     {
                         int dolor = (int)((tiempoExtraccionBrusca / tiempoMaximoTiron) * 100);
+                        Debug.LogWarning($"<color=orange>¡PACIENTE CON DOLOR! Fricción: {dolor}% | Fuerza del jalón: {fuerzaJalon:F2}</color>");
+
                         if (dolor >= siguienteUmbralTiron)
                         {
                             if (monitorUI != null) monitorUI.RegistrarErrorEstandarizado(MonitorEndoscopiaUI.CategoriaEvaluacion.Seguridad, 3, "Seguridad en la Retirada: Tirones bruscos causando laceración.");
@@ -438,38 +440,34 @@ public class EndoscopioCurvas : MonoBehaviour
         }
         else tiempoExtraccionBrusca = Mathf.Max(0, tiempoExtraccionBrusca - (Time.fixedDeltaTime * tasaCuracion));
 
-        if (tiempoExtraccionBrusca == 0) { penalizadoTiron = false; siguienteUmbralTiron = 35; }
+        // FIX: Reajuste dinámico del umbral de dolor por extracción (baja de 20 en 20 si el paciente se relaja)
+        int dolorActualizado = (int)((tiempoExtraccionBrusca / tiempoMaximoTiron) * 100);
+        while (siguienteUmbralTiron > 30 && dolorActualizado < siguienteUmbralTiron - 20)
+        {
+            siguienteUmbralTiron -= 20;
+        }
 
+        if (tiempoExtraccionBrusca == 0) { penalizadoTiron = false; siguienteUmbralTiron = 30; }
+
+        // --- UNIFICACIÓN UI ---
         if (monitorUI != null)
         {
             int porcentajeBucle = (int)((tiempoForzandoBucle / tiempoMaximoForzandoBucle) * 100);
             int porcentajeTiron = (int)((tiempoExtraccionBrusca / tiempoMaximoTiron) * 100);
-
             if (porcentajeBucle > 0 || porcentajeTiron > 0)
             {
-                if (porcentajeBucle >= porcentajeTiron)
-                {
-                    string txtPeligro = choqueFrontalActivo ? "¡Choque Frontal!" : "¡Atasco Interno!";
-                    monitorUI.MostrarDanio(porcentajeBucle, txtPeligro);
-                }
+                if (porcentajeBucle >= porcentajeTiron) monitorUI.MostrarDanio(porcentajeBucle, choqueFrontalActivo ? "¡Choque Frontal!" : "¡Atasco Interno!");
                 else monitorUI.MostrarDanio(porcentajeTiron, "¡Fricción alta en retirada!");
             }
             else monitorUI.MostrarDanio(0, "");
         }
 
-        // 5. APLICAR MOVIMIENTO FINAL CON CANDADO ABSOLUTO
+        // --- APLICAR MOVIMIENTO FINAL ---
         if (empujeFisico != 0)
         {
-            distanciaAvanzada *= multiplicadorAvance;
-
-            // --- AQUÍ ESTÁ LA MAGIA ---
-            // Si la distancia cayó a 0 (porque estás en bucle o chocado de frente), 
-            // CORTAMOS LA FUNCIÓN AQUÍ MISMO con un 'return'.
-            // Esto evita que se ejecute el rb.MovePosition y el acumulador Slerp.
-            // Consecuencia: Congelación total de la física. Imposible deslizarse o dar la vuelta.
             if (Mathf.Abs(distanciaAvanzada) < 0.0001f && empujeFisico > 0)
             {
-                rb.velocity = Vector3.zero; // Aniquilamos cualquier inercia de Unity
+                rb.velocity = Vector3.zero;
                 return;
             }
 

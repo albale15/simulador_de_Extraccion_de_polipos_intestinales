@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-
+using System.Collections;
 public class ConfigUI : MonoBehaviour
 {
     [Header("Conexiones Directas")]
@@ -254,13 +254,26 @@ public class ConfigUI : MonoBehaviour
     {
         if (serial != null && serial.estadoActual == SerialManager.EstadoConexion.Conectado)
         {
-            serial.EnviarDato("V1:1000\n");
-            serial.EnviarDato("V2:1000\n");
-            txtFeedback.text = "<color=green>Probando vibrador...</color>";
+            // Lanzamos una corrutina para espaciar el envío de datos mecánicos
+            StartCoroutine(RutinaProbarVibracion());
         }
         else
         {
             txtFeedback.text = "<color=red>Error: Hardware no conectado.</color>";
         }
+    }
+    private IEnumerator RutinaProbarVibracion()
+    {
+        txtFeedback.text = "<color=yellow>Probando Motor 1...</color>";
+        serial.EnviarDato("V1:1000\n");
+
+        // Esperamos 40 milisegundos. Es invisible para el ojo humano, 
+        // pero para la STM32 es una eternidad que le permite procesar el comando libremente.
+        yield return new WaitForSeconds(0.04f);
+
+        txtFeedback.text = "<color=yellow>Probando Motor 2...</color>";
+        serial.EnviarDato("V2:1000\n");
+
+        txtFeedback.text = "<color=green>¡Prueba de motores completada con éxito!</color>";
     }
 }

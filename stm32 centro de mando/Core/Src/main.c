@@ -318,20 +318,33 @@ int main(void)
 			enc2_send = -1; enc2_accumulator += MAGNETIC_THRESHOLD_2; activate = 1;
 		}
 
-	  // 3. RECEPCIÓN UNITY -> VIBRACIÓN
+		// 3. RECEPCIÓN UNITY -> VIBRACIÓN (COPIA SEGURA ANTI-CORRUPCIÓN)
 		if(mensaje_completo == 1) {
+			char local_buffer[20];
+
+			// --- ZONA CRÍTICA ---
+			// Deshabilitamos interrupciones globales un instante para que la UART
+			// no modifique el string mientras lo estamos duplicando.
+			__disable_irq();
+			strcpy(local_buffer, (char*)rx_buffer);
+			mensaje_completo = 0; // Bajamos la bandera inmediatamente
+			__enable_irq();
+			// --- FIN ZONA CRÍTICA ---
+
 			int fuerza_motor = 0;
-			if(sscanf((char*)rx_buffer, "V1:%d", &fuerza_motor) == 1) {
+
+			// Ahora escaneamos el buffer local aislado. La UART puede interrumpir
+			// y escribir en rx_buffer todo lo que quiera, no nos corromperá este análisis.
+			if(sscanf(local_buffer, "V1:%d", &fuerza_motor) == 1) {
 				TIM2->CCR1 = fuerza_motor;
 				tiempo_inicio_vibracion = HAL_GetTick();
 				vibrando = 1;
 			}
-			else if(sscanf((char*)rx_buffer, "V2:%d", &fuerza_motor) == 1) {
+			else if(sscanf(local_buffer, "V2:%d", &fuerza_motor) == 1) {
 				TIM2->CCR2 = fuerza_motor;
 				tiempo_inicio_vibracion = HAL_GetTick();
 				vibrando = 1;
 			}
-			mensaje_completo = 0;
 		}
 
 		  // 4. EL AUTO-APAGADO DEL VIBRADOR (Cooldown de 1 segundo)
