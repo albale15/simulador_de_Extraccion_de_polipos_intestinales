@@ -15395,6 +15395,9 @@ MonoBehaviour:
   "valorDa\xF1oExtraccion": 3
   dibujarTuboExterior: 1
   grosorTubo: 0.5
+  capaIntestino:
+    serializedVersion: 2
+    m_Bits: 128
   distanciaTotalInsertada: 0
   rotX: 0
   rotZ: 0

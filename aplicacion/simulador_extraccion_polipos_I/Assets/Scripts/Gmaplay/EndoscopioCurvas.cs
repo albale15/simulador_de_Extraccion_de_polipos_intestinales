@@ -166,9 +166,9 @@ public class EndoscopioCurvas : MonoBehaviour
                 if (Input.GetKey(KeyCode.RightArrow)) { rotZ -= velocidadGiroPuntapc * Time.deltaTime; tocandoFlechas = true; }
 
 
-                if (Input.GetKeyDown(KeyCode.W)) Debug.Log("[PC] Avanzando tubo (W)");
-                if (Input.GetKeyDown(KeyCode.S)) Debug.Log("[PC] Retrayendo tubo (S)");;
-                if (Input.GetKeyDown(KeyCode.UpArrow)) Debug.Log("[PC] Moviendo Punta (Flechas)");
+                //if (Input.GetKeyDown(KeyCode.W)) Debug.Log("[PC] Avanzando tubo (W)");
+                //if (Input.GetKeyDown(KeyCode.S)) Debug.Log("[PC] Retrayendo tubo (S)");;
+                //if (Input.GetKeyDown(KeyCode.UpArrow)) Debug.Log("[PC] Moviendo Punta (Flechas)");
             }
             else
             {
@@ -309,88 +309,114 @@ public class EndoscopioCurvas : MonoBehaviour
             rb.angularVelocity = Vector3.zero;
         }
 
-        float anguloBucle = Vector3.Angle(huesos[huesos.Length - 1].up, huesos[0].up);
-        float multiplicadorAvance = 1f;
-        // Penalización por Suavidad si entra en bucle peligroso
-        if (anguloBucle > umbralBucleAtasco)
+        Vector3 direccionFinal = huesos[0].up;
+        if (empujeFisico < 0 && huesos.Length >= 4)
         {
-            atascadoPorBucle = true;
-            
+            int huesoGuia = Mathf.Min(4, huesos.Length - 1);
+            direccionFinal = (huesos[0].position - huesos[huesoGuia].position).normalized;
         }
-        else
+
+        float velActual = (empujeFisico > 0) ? velocidadInsercion : velocidadExtraccion;
+        float distanciaAvanzada = empujeFisico * velActual * Time.fixedDeltaTime;
+
+        bool choqueFrontalActivo = false;
+
+        // 1. CÁLCULO DE LA CURVATURA TOTAL
+        float curvaturaCuerpo = 0f;
+        for (int i = 0; i < huesos.Length - 1; i++)
         {
-            
-            // ABRIMOS EL CANDADO SOLO SI EL ÁNGULO YA ES SEGURO Y EL JUGADOR ESTÁ JALANDO
-            if (empujeFisico < 0)
+            curvaturaCuerpo += Vector3.Angle(huesos[i].up, huesos[i + 1].up);
+        }
+
+        // 2. ESCUDO PREDICTIVO
+        if (empujeFisico > 0)
+        {
+            Vector3 origenPunta = huesos[0].position;
+
+            if (Physics.SphereCast(origenPunta, 0.015f, direccionFinal, out RaycastHit paredHit, distanciaAvanzada + 0.015f, capaIntestino))
             {
-                atascadoPorBucle = false;
+                float anguloChoque = Vector3.Angle(direccionFinal, -paredHit.normal);
+
+                if (anguloChoque < 35f)
+                {
+                    distanciaAvanzada = 0f;
+                    choqueFrontalActivo = true;
+                }
+                else
+                {
+                    distanciaAvanzada = Mathf.Max(0, paredHit.distance - 0.01f);
+                }
             }
         }
-        bool bloqueadoPorTutorial = (TutorialManager.instancia != null && TutorialManager.instancia.controlesBloqueados);
-        if (monitorUI != null && !bloqueadoPorTutorial) monitorUI.ActualizarEstadoBucle(atascadoPorBucle);
 
-        // LÓGICA DE DAÑO POR BUCLE (ATASCO)
-        if (anguloBucle > umbralBucleAtasco && empujeFisico > 0)
+        // 3. LÓGICA DE FRENO ABSOLUTO POR BUCLE
+        float multiplicadorAvance = 1f;
+
+        // Reducimos el umbral. 200° es suficiente para dar curvas sanas. 
+        // Si pasa de 200°, significa que el usuario está dando la vuelta (U-Turn).
+        float umbralPeligro = 200f;
+
+        // SOLO aplicamos el multiplicador 0 si está empujando. Si está jalando (extrayendo), le dejamos moverse.
+        if (empujeFisico > 0)
         {
-            multiplicadorAvance = Mathf.Clamp01(1f - ((anguloBucle - umbralBucleAtasco) / 40f));
+            if (choqueFrontalActivo) multiplicadorAvance = 0f;
+            else if (curvaturaCuerpo > umbralPeligro) multiplicadorAvance = 0f; // FRENO 100% ABSOLUTO
+        }
+
+        // El atasco se activa si hay choque frontal o si el tubo está demasiado torcido.
+        // Esto bloquea los volantes en tu función Update() para que no sigan girando la cámara.
+        atascadoPorBucle = (choqueFrontalActivo && empujeFisico > 0) || (curvaturaCuerpo > umbralPeligro);
+
+        // El daño solo ocurre si empuja mientras está atascado.
+        bool bajoEstres = atascadoPorBucle && empujeFisico > 0;
+
+        if (bajoEstres)
+        {
             if (multiplicadorAvance < 0.05f)
             {
                 tiempoForzandoBucle += Time.fixedDeltaTime;
                 if (tiempoForzandoBucle > tiempoMaximoForzandoBucle)
                 {
-                    ProcesarGameOver("PERFORACIÓN INTESTINAL: Forzaste el avance durante un bucle.");
+                    string motivo = choqueFrontalActivo ? "PERFORACIÓN INTESTINAL: Forzaste el avance frontalmente contra la mucosa." : "PERFORACIÓN INTESTINAL: Bucle crítico. El endoscopio se volcó sobre sí mismo.";
+                    ProcesarGameOver(motivo);
                 }
                 else
                 {
                     int porcentaje = (int)((tiempoForzandoBucle / tiempoMaximoForzandoBucle) * 100);
-                    Debug.LogWarning($"<color=orange>¡ATASCO! Ángulo ({anguloBucle}°). USA S PARA ARRECTAR. Daño: {porcentaje}%</color>"); 
+                    string alerta = choqueFrontalActivo ? "¡CHOQUE FRONTAL!" : "¡ATASCO/VUELTA EN U!";
+                    Debug.LogWarning($"<color=orange>{alerta} Daño: {porcentaje}%</color>");
+
                     if (porcentaje >= siguienteUmbralSuavidad)
                     {
-                        if (monitorUI != null)
-                            monitorUI.RegistrarErrorEstandarizado(MonitorEndoscopiaUI.CategoriaEvaluacion.Seguridad, 1, $"Suavidad de Desplazamiento: Forzó el endoscopio atascado ({porcentaje}% tensión).");
-
-                        siguienteUmbralSuavidad += 5; // Subimos la vara para el próximo castigo (10%, 15%, 20%...)
+                        if (monitorUI != null) monitorUI.RegistrarErrorEstandarizado(MonitorEndoscopiaUI.CategoriaEvaluacion.Seguridad, 1, $"Suavidad de Desplazamiento: Fuerza excesiva ({porcentaje}% tensión).");
+                        siguienteUmbralSuavidad += 5;
                     }
                     if (porcentaje >= 25 && !penalizadoBucle)
                     {
-                        if (monitorUI != null) monitorUI.RegistrarErrorEstandarizado(MonitorEndoscopiaUI.CategoriaEvaluacion.Seguridad, 0, "Trauma Tisular: Fuerza excesiva contra la pared intestinal.");
+                        if (monitorUI != null) monitorUI.RegistrarErrorEstandarizado(MonitorEndoscopiaUI.CategoriaEvaluacion.Seguridad, 0, "Trauma Tisular: Fuerza excesiva contra la mucosa.");
                         penalizadoBucle = true;
                     }
                 }
             }
-            else
-            {
-                // Baja suavemente en vez de caer a cero instantáneo
-                tiempoForzandoBucle = Mathf.Max(0, tiempoForzandoBucle - (Time.fixedDeltaTime * 2f));
-            }
         }
         else
         {
-            // Baja suavemente en vez de caer a cero
             tiempoForzandoBucle = Mathf.Max(0, tiempoForzandoBucle - (Time.fixedDeltaTime * 2f));
         }
 
-        if (tiempoForzandoBucle == 0)
-        {
-            penalizadoBucle = false;
-            siguienteUmbralSuavidad = 5; 
-        }
+        if (tiempoForzandoBucle == 0) { penalizadoBucle = false; siguienteUmbralSuavidad = 5; }
 
-        // Si usamos PC (tecla S continua), sana rápido (8f) como lo tenías originalmente.
+        bool bloqueadoPorTutorial = (TutorialManager.instancia != null && TutorialManager.instancia.controlesBloqueados);
+        if (monitorUI != null && !bloqueadoPorTutorial) monitorUI.ActualizarEstadoBucle(atascadoPorBucle);
+
+        // 4. LÓGICA DE EXTRACCIÓN BRUSCA (TIRÓN)
         float tasaCuracion = usarControlHardware ? 1.5f : 8f;
-        // LÓGICA DE DAÑO POR EXTRACCIÓN BRUSCA (TIRÓN)
         if (empujeFisico < 0)
         {
-            float curvaturaCuerpo = 0f;
-            for (int i = 1; i < olaDeCurvas.Length; i++) curvaturaCuerpo += Quaternion.Angle(Quaternion.identity, olaDeCurvas[i]);
-
-            if (curvaturaCuerpo > 60f)
+            if (curvaturaCuerpo > 90f)
             {
-                float factorFriccion = Mathf.Clamp01((curvaturaCuerpo - 60f) / 100f);
-                //multiplicadorAvance = 1f - (factorFriccion * 0.4f); 
-                multiplicadorAvance = 1f ;//sistema usado para pruebas de avance real y retraccion real deltubo de insecion
-
-                if (curvaturaCuerpo > 120f)
+                multiplicadorAvance = 1f; // Se permite extraer para desatar nudos
+                if (curvaturaCuerpo > 180f)
                 {
                     tiempoExtraccionBrusca += Time.fixedDeltaTime * valorDañoExtraccion;
                     if (tiempoExtraccionBrusca > tiempoMaximoTiron)
@@ -398,12 +424,10 @@ public class EndoscopioCurvas : MonoBehaviour
                     else
                     {
                         int dolor = (int)((tiempoExtraccionBrusca / tiempoMaximoTiron) * 100);
-                        Debug.LogWarning($"<color=orange>¡PACIENTE CON DOLOR! Fricción alta. Daño tisular: {dolor}% (Suelta S un momento para relajar)</color>");
-
                         if (dolor >= siguienteUmbralTiron)
                         {
                             if (monitorUI != null) monitorUI.RegistrarErrorEstandarizado(MonitorEndoscopiaUI.CategoriaEvaluacion.Seguridad, 3, "Seguridad en la Retirada: Tirones bruscos causando laceración.");
-                            siguienteUmbralTiron += 20; // Preparamos el siguiente castigo
+                            siguienteUmbralTiron += 20;
                             penalizadoTiron = true;
                         }
                     }
@@ -412,21 +436,10 @@ public class EndoscopioCurvas : MonoBehaviour
             }
             else tiempoExtraccionBrusca = Mathf.Max(0, tiempoExtraccionBrusca - (Time.fixedDeltaTime * tasaCuracion));
         }
-        else
-        {
-            tiempoExtraccionBrusca = Mathf.Max(0, tiempoExtraccionBrusca - (Time.fixedDeltaTime * tasaCuracion));
-        }
+        else tiempoExtraccionBrusca = Mathf.Max(0, tiempoExtraccionBrusca - (Time.fixedDeltaTime * tasaCuracion));
 
-        if (tiempoExtraccionBrusca == 0)
-        {
-            penalizadoTiron = false;
-            siguienteUmbralTiron = 35;
-        }
+        if (tiempoExtraccionBrusca == 0) { penalizadoTiron = false; siguienteUmbralTiron = 35; }
 
-        // UNIFICACIÓN DE UI DE DAÑO 
-        // Calcula el daño mayor actual y se lo envía a MonitorEndoscopiaUI para que lo dibuje.
-        // Como las variables 'tiempoForzandoBucle' y 'tiempoExtraccionBrusca', 
-        // el texto de la UI también bajará su porcentaje suavemente.
         if (monitorUI != null)
         {
             int porcentajeBucle = (int)((tiempoForzandoBucle / tiempoMaximoForzandoBucle) * 100);
@@ -435,55 +448,31 @@ public class EndoscopioCurvas : MonoBehaviour
             if (porcentajeBucle > 0 || porcentajeTiron > 0)
             {
                 if (porcentajeBucle >= porcentajeTiron)
-                    monitorUI.MostrarDanio(porcentajeBucle, "¡Atasco! Perforación inminente");
-                else
-                    monitorUI.MostrarDanio(porcentajeTiron, "¡Fricción alta en retirada!");
-            }
-            else
-            {
-                monitorUI.MostrarDanio(0, ""); // Si ambos son cero, limpia la pantalla
-            }
-        }
-
-
-        Vector3 direccionHaciaPunta = huesos[0].position - huesos[huesos.Length - 1].position;
-        float productoPuntoPlano = Vector3.Dot(huesos[huesos.Length - 1].up, direccionHaciaPunta.normalized);
-        if (productoPuntoPlano < -0.1f && anguloBucle > 90f) ProcesarGameOver("AUTO-INTERSECCIÓN FATAL: El endoscopio cruzó su propio plano de entrada.");
-
-        if (dibujarTuboExterior && rutaTubo.Count > 10 && !juegoTerminado)
-        {
-            int puntosCuerpo = Mathf.CeilToInt(((huesos.Length - 1) * longitudHueso) / 0.04f) + 5;
-            if (rutaTubo.Count > puntosCuerpo)
-            {
-                for (int i = 0; i < rutaTubo.Count - puntosCuerpo; i++)
                 {
-                    if (Vector3.Distance(huesos[0].position, rutaTubo[i]) < 0.04f && empujeFisico > 0)
-                    {
-                        ProcesarGameOver("AUTO-INTERSECCIÓN: El endoscopio se anudó sobre sí mismo y chocó con su cable.");
-                        break;
-                    }
+                    string txtPeligro = choqueFrontalActivo ? "¡Choque Frontal!" : "¡Atasco Interno!";
+                    monitorUI.MostrarDanio(porcentajeBucle, txtPeligro);
                 }
+                else monitorUI.MostrarDanio(porcentajeTiron, "¡Fricción alta en retirada!");
             }
+            else monitorUI.MostrarDanio(0, "");
         }
 
+        // 5. APLICAR MOVIMIENTO FINAL CON CANDADO ABSOLUTO
         if (empujeFisico != 0)
         {
+            distanciaAvanzada *= multiplicadorAvance;
 
-            Vector3 direccionFinal = huesos[1].up;
-            if (empujeFisico < 0 && huesos.Length >= 4)
+            // --- AQUÍ ESTÁ LA MAGIA ---
+            // Si la distancia cayó a 0 (porque estás en bucle o chocado de frente), 
+            // CORTAMOS LA FUNCIÓN AQUÍ MISMO con un 'return'.
+            // Esto evita que se ejecute el rb.MovePosition y el acumulador Slerp.
+            // Consecuencia: Congelación total de la física. Imposible deslizarse o dar la vuelta.
+            if (Mathf.Abs(distanciaAvanzada) < 0.0001f && empujeFisico > 0)
             {
-                // Al extraer, ignoramos hacia dónde mira la punta.
-                // Usamos el hueso 3 o 4 (que ya está seguro atrás en el centro del tubo) como un ancla.
-                int huesoGuia = Mathf.Min(4, huesos.Length - 1);
-
-                // Calculamos el vector desde el cuerpo hacia la punta.
-                // Como 'empujeFisico' es negativo al jalar, esto invertirá el vector 
-                // y jalará la punta SUAVEMENTE por el mismo camino por el que entró.
-                direccionFinal = (huesos[0].position - huesos[huesoGuia].position).normalized;
+                rb.velocity = Vector3.zero; // Aniquilamos cualquier inercia de Unity
+                return;
             }
-            float velActual = (empujeFisico > 0) ? velocidadInsercion : velocidadExtraccion;
 
-            float distanciaAvanzada = empujeFisico * (velActual * multiplicadorAvance) * Time.fixedDeltaTime;
             distanciaTotalInsertada += distanciaAvanzada;
             if (distanciaTotalInsertada < 0) distanciaTotalInsertada = 0f;
 

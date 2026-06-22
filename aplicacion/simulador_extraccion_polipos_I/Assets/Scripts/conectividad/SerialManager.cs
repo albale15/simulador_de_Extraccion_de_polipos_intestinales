@@ -133,7 +133,7 @@ public class SerialManager : MonoBehaviour
             }
             else
             {
-                Debug.Log($"<color=magenta>[Hilo] {nombrePuerto} rechazó la conexión o no es el endoscopio.</color>");
+                //Debug.Log($"<color=magenta>[Hilo] {nombrePuerto} rechazó la conexión o no es el endoscopio.</color>");
             }
         }
 
