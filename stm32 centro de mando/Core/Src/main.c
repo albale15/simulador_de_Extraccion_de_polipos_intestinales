@@ -432,6 +432,19 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
+// PROTOCOLO DE RESURRECCIÓN UART
+void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
+    if (huart->Instance == USART2) {
+
+        // 1. Limpiamos las banderas de error de hardware (Overrun, Noise, Framing)
+        __HAL_UART_CLEAR_OREFLAG(huart);
+        __HAL_UART_CLEAR_NEFLAG(huart);
+        __HAL_UART_CLEAR_FEFLAG(huart);
+
+        // 2. Forzamos a la UART a volver a escuchar
+        HAL_UART_Receive_IT(&huart2, &rx_byte, 1);
+    }
+}
 /* USER CODE END 4 */
 
 /**

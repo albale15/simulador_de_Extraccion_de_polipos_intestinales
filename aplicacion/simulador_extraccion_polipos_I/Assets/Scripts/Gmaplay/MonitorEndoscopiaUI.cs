@@ -89,6 +89,7 @@ public class MonitorEndoscopiaUI : MonoBehaviour
         "Higiene / Contaminación"    // Indice 9
     };
     public ScrollRect scrollRespuestas;
+    private float tiempoUltimaVibracion = 0f;
     void Start()
     {
         panelPausa.SetActive(false);
@@ -455,23 +456,25 @@ public class MonitorEndoscopiaUI : MonoBehaviour
             // HILO SECUNDARIO Y ANTI-COLAPSO DE BUFFER
             // Ejecutamos la comunicación USB por fuera del hilo principal de Unity
             // para evitar que el juego se congele y las físicas se bugueen.
-            System.Threading.ThreadPool.QueueUserWorkItem(state =>
+            if (Time.unscaledTime - tiempoUltimaVibracion >= 0.5f)
             {
-                try
-                {
-                    SerialManager.instancia.EnviarDato("V1:1000\n");
+                tiempoUltimaVibracion = Time.unscaledTime; // Reiniciamos el reloj
 
-                    // Le damos 50 milisegundos a la placa STM32 para "masticar" el V1
-                    // antes de lanzarle el V2, evitando que se asfixie el buffer.
-                    System.Threading.Thread.Sleep(50);
-
-                    SerialManager.instancia.EnviarDato("V2:1000\n");
-                }
-                catch (System.Exception e)
+                System.Threading.ThreadPool.QueueUserWorkItem(state =>
                 {
-                    Debug.LogWarning("Error en hilo de vibración: " + e.Message);
-                }
-            });
+                    try
+                    {
+                        SerialManager.instancia.EnviarDato("V1:1000\n");
+                        // Le damos 50 milisegundos a la placa STM32 para "masticar" el V1
+                        System.Threading.Thread.Sleep(50);
+                        SerialManager.instancia.EnviarDato("V2:1000\n");
+                    }
+                    catch (System.Exception e)
+                    {
+                        Debug.LogWarning("Error en hilo de vibración: " + e.Message);
+                    }
+                });
+            }
         }
     }
 

@@ -5,5 +5,6 @@
 ../Core/Src/main.c:172:6:HAL_UART_RxCpltCallback	6
 ../Core/Src/main.c:209:5:main	27
 ../Core/Src/main.c:387:6:SystemClock_Config	4
-../Core/Src/main.c:441:6:Error_Handler	1
-../Core/Src/main.c:459:6:assert_failed	1
+../Core/Src/main.c:436:6:HAL_UART_ErrorCallback	2
+../Core/Src/main.c:454:6:Error_Handler	1
+../Core/Src/main.c:472:6:assert_failed	1
