@@ -8237,7 +8237,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &970984854
 RectTransform:
   m_ObjectHideFlags: 0
@@ -14009,6 +14009,18 @@ MonoBehaviour:
     bloquearControles: 0
     mostrarTextoPresionar: 0
     mostrarTemporalmente: 0
+  - nombrePaso: 10.0.1
+    instruccion: "Si se queda sin espacio en su mesa para seguir empujando, presione
+      Pausa. Esto congela la simulaci\xF3n para que pueda retraer el tubo f\xEDsico
+      libremente. Al terminar, quite la pausa y contin\xFAe explorando."
+    uiAResaltar: {fileID: 0}
+    espera: 1
+    tiempoSegundos: 0
+    accionRequerida: Freeze
+    colliderABloquear: {fileID: 0}
+    bloquearControles: 0
+    mostrarTextoPresionar: 0
+    mostrarTemporalmente: 1
   - nombrePaso: paso 10.1
     instruccion: "Debes tener cuidado con la extracci\xF3n del tubo, ya que generas
       fricci\xF3n en el paciente; ten cuidado con el da\xF1o que le haces."
