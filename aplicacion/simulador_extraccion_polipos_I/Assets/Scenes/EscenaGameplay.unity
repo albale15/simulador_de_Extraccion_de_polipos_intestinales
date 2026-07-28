@@ -6779,8 +6779,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 487.06, y: -256.445}
-  m_SizeDelta: {x: 974.12, y: 512.89}
+  m_AnchoredPosition: {x: 433.585, y: -256.445}
+  m_SizeDelta: {x: 867.17, y: 512.89}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &716434391
 CanvasRenderer:
@@ -14010,16 +14010,16 @@ MonoBehaviour:
     mostrarTextoPresionar: 0
     mostrarTemporalmente: 0
   - nombrePaso: 10.0.1
-    instruccion: "Si se queda sin espacio en su mesa para seguir empujando, presione
-      Pausa. Esto congela la simulaci\xF3n para que pueda retraer el tubo f\xEDsico
-      libremente. Al terminar, quite la pausa y contin\xFAe explorando."
+    instruccion: "Si se queda sin espacio en su mesa para seguir empujando o jalando,
+      presione Pausa. Esto congela la simulaci\xF3n para que pueda retraer el tubo
+      f\xEDsico libremente. Al terminar, quite la pausa y contin\xFAe explorando."
     uiAResaltar: {fileID: 0}
     espera: 1
     tiempoSegundos: 0
     accionRequerida: Freeze
     colliderABloquear: {fileID: 0}
-    bloquearControles: 0
-    mostrarTextoPresionar: 0
+    bloquearControles: 1
+    mostrarTextoPresionar: 1
     mostrarTemporalmente: 1
   - nombrePaso: paso 10.1
     instruccion: "Debes tener cuidado con la extracci\xF3n del tubo, ya que generas
@@ -14344,7 +14344,7 @@ MonoBehaviour:
     mostrarTemporalmente: 0
   - nombrePaso: 21
     instruccion: "Llegaste a la zona de extracci\xF3n (salida del endoscopio); presiona
-      soltar p\xF3lipo o 4 si est\xE1s en modo computadora."
+      soltar p\xF3lipo o 1 si est\xE1s en modo computadora."
     uiAResaltar: {fileID: 732441917}
     espera: 1
     tiempoSegundos: 0

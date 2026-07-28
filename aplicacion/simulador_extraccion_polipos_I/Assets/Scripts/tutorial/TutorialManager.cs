@@ -79,20 +79,20 @@ public class TutorialManager : MonoBehaviour
             // SOBREESCRIBIMOS EL TUTORIAL TEMPORALMENTE
             if (sangrando)
             {
-                txtInstrucciones.text = "<color=#FF0000>Cuando se hace un corte puede ensuciar un poco el lente con sangre,</color>\nMantén presionado <b>Succión</b> para limpiar el campo visual.";
+                txtInstrucciones.text = "<color=#FF0000>Cuando se hace un corte puede ensuciar un poco el lente con sangre,</color>\nMantén presionado <b>Succión o 4</b> para limpiar el campo visual.";
                 mascara.ResaltarElemento(uiBotonSuccion);
                 accionEsperadaActiva = "Succion"; // Desbloqueamos este botón en el simulador
                 
             }
             else if (inundado)
             {
-                txtInstrucciones.text = "<color=#1E90FF>Cuando limpias se usa liquido este se pone en el intestino</color>\nPresiona <b>Succión</b> para aspirar el agua acumulada.";
+                txtInstrucciones.text = "<color=#1E90FF>Cuando limpias se usa liquido este se pone en el intestino</color>\nPresiona <b>Succión o 4</b> para aspirar el agua acumulada.";
                 mascara.ResaltarElemento(uiBotonSuccion);
                 accionEsperadaActiva = "Succion";
             }
             else if (herramientas.ObtenerNivelSuciedad() > 0.2f)
             {
-                txtInstrucciones.text = "<color=#FF8C00>Cuando se ensucia el lente</color>\nPresiona <b>Lavar Lente</b> para poder ver con claridad.";
+                txtInstrucciones.text = "<color=#FF8C00>Cuando se ensucia el lente</color>\nPresiona <b>Lavar Lente o 6</b> para poder ver con claridad.";
                 mascara.ResaltarElemento(uiBotonLimpiado);
                 accionEsperadaActiva = "Limpiado"; // Desbloqueamos este botón en el simulador
             }

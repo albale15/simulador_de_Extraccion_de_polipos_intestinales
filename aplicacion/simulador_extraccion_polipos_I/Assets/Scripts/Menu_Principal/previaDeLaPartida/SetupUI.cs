@@ -290,12 +290,12 @@ public class SetupUI : MonoBehaviour
     public void RestablecerPesos()
     {
         ajustandoSliders = true;
-        sliderSeguridad.value = 30f; sliderProtocolo.value = 30f; sliderTecnica.value = 40f;
+        sliderSeguridad.value = 50f; sliderProtocolo.value = 30f; sliderTecnica.value = 20f;
 
         // --- CAMBIO: ESCRIBIMOS EN LOS INPUTS ---
-        if (inputSeg != null) inputSeg.text = "30";
+        if (inputSeg != null) inputSeg.text = "50";
         if (inputProt != null) inputProt.text = "30";
-        if (inputTec != null) inputTec.text = "40";
+        if (inputTec != null) inputTec.text = "20";
 
         ajustandoSliders = false;
     }
