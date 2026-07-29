@@ -97,20 +97,14 @@ public class SistemaHerramientas : MonoBehaviour
 
     void Start()
     {
-        if (ManejadorPartida.dificultad == 0)
-        {
-            anguloTolerancia = 90f; // <--- CÁMBIALO A 2f
-            anguloToleranciaFoto = 40f; // <--- CÁMBIALO A 2f (o déjalo más alto si solo quieres castigar la pinza)
-            // Detiene la ejecución del script aquí
-        }
         if (lazoBezier != null)
         {
             escalaOriginalLazoBase = lazoBezier.localScale; // Guardamos su tamaño real de trabajo
         }
         if (ManejadorPartida.dificultad == 0)
         {
-            anguloTolerancia = 180f;
-            anguloToleranciaFoto = 180f;
+            anguloTolerancia = 270f;
+            anguloToleranciaFoto = 270f;
             // Detiene la ejecución del script aquí
         }
         pinzaDientes.SetActive(false);
@@ -461,6 +455,9 @@ public class SistemaHerramientas : MonoBehaviour
 
         if (estaCortando) { VerificarMovimientoProhibido(); return; }
 
+        float radioDeteccion = (ManejadorPartida.dificultad == 0) ? 0.4f : 0.01f;
+        float distanciaDeteccion = (ManejadorPartida.dificultad == 0) ? 2.0f : distanciaAccion;
+
         if (Physics.Raycast(origenRayo, direccionRayo, out RaycastHit hit, distanciaAccion, capaPolipos))
         {
             polipoEnMira = hit.collider.GetComponent<PolipoInteractuable>();
@@ -765,6 +762,8 @@ public class SistemaHerramientas : MonoBehaviour
 
     private bool IntentarAtrapar(Vector3 origen, Vector3 direccion)
     {
+        float radioDeteccion = (ManejadorPartida.dificultad == 0) ? 0.4f : 0.01f;
+        float distanciaDeteccion = (ManejadorPartida.dificultad == 0) ? 2.0f : distanciaAccion * 1.5f;
         if (Physics.Raycast(origen, direccion, out RaycastHit hit, distanciaAccion * 1.5f, capaPolipos))
         {
             PolipoInteractuable polipoTocado = hit.collider.GetComponent<PolipoInteractuable>();
