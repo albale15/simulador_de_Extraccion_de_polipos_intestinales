@@ -90,6 +90,9 @@ public class MonitorEndoscopiaUI : MonoBehaviour
     };
     public ScrollRect scrollRespuestas;
     private float tiempoUltimaVibracion = 0f;
+
+
+    private bool juegoTerminado = false;
     void Start()
     {
         panelPausa.SetActive(false);
@@ -154,6 +157,7 @@ public class MonitorEndoscopiaUI : MonoBehaviour
 
     void Update()
     {
+        if (juegoTerminado) return;
         float profundidadActualCm = endoscopio.distanciaTotalInsertada * 3.3f;
         txtReloj.text = DateTime.Now.ToString("dd/MM/yyyy\nHH:mm:ss");
 
@@ -518,7 +522,9 @@ public class MonitorEndoscopiaUI : MonoBehaviour
         Time.timeScale = 0f;
         if (panelConfirmarSalida != null) panelConfirmarSalida.SetActive(false);
         if (panelResultadosFinales != null) panelResultadosFinales.SetActive(true);
-
+        // LLAMAMOS A LOS APAGADOS MAESTROS DE ACCION:
+        if (herramientas != null) herramientas.ApagarSistema();
+        if (endoscopio != null) endoscopio.ApagarEndoscopio();
         // --- CÁLCULO DE PENALIZACIÓN POR EXPLORACIÓN (ÍNDICE 2) ---
         float puntosPerdidosExploracion = 0f;
         float penalizacionBase = ManejadorPartida.penalizaciones[2];
@@ -600,6 +606,7 @@ public class MonitorEndoscopiaUI : MonoBehaviour
         {
             StringBuilder sb = new StringBuilder();
             System.Collections.Generic.List<string> listaPenalizacionesJson = new System.Collections.Generic.List<string>();
+
             if (esGameOver)
             {
                 sb.AppendLine($"<color=red><b>¡NEGLIGENCIA MÉDICA GRAVE!</b></color>");
@@ -607,33 +614,72 @@ public class MonitorEndoscopiaUI : MonoBehaviour
                 sb.AppendLine($"<color=red><b>CASTIGO: -50% EN TODAS LAS CATEGORÍAS</b></color>\n");
                 listaPenalizacionesJson.Add($"EVENTO CRÍTICO: {motivoGameOverCritico} (-50% general)");
             }
-            sb.AppendLine("<color=#DEFF9A><b>DESGLOSE DE PENALIZACIONES:</b></color>\n");
 
-            // Imprimimos el array de 10 parámetros
+            // 1. LLENADO DE LA LISTA PARA EL JSON (Exactamente igual que antes)
             for (int i = 0; i < puntosPerdidosTally.Length; i++)
             {
                 if (puntosPerdidosTally[i] > 0)
                 {
-                    sb.AppendLine($"• {nombresParametros[i]}: <color=red>-{puntosPerdidosTally[i]:F1} pts</color>");
                     listaPenalizacionesJson.Add($"-{puntosPerdidosTally[i]:F1} pts: Falla en {nombresParametros[i]}.");
                 }
             }
 
-            // Agregamos el texto extra si hubo penalización por inacción
+            float penalizacionPorInaccion = 0f;
             if (poliposRestantes > 0 && ManejadorPartida.totalPolipos > 0)
             {
-                float penalizacionPorInaccion = (100f / ManejadorPartida.totalPolipos) * poliposRestantes;
-                sb.AppendLine($"\n• <color=orange>Inacción Quirúrgica (Prot/Tec): -{penalizacionPorInaccion:F1} pts</color>");
+                penalizacionPorInaccion = (100f / ManejadorPartida.totalPolipos) * poliposRestantes;
                 listaPenalizacionesJson.Add($"-{penalizacionPorInaccion:F1} pts: Inacción Quirúrgica ({poliposRestantes} pólipos ignorados).");
             }
 
-            if (profundidadMaximaAlcanzada < 80f && herramientas.ObtenerTotalEliminados() == 0)
+            bool abandonoPrematuro = (profundidadMaximaAlcanzada < 80f && herramientas.ObtenerTotalEliminados() == 0);
+            if (abandonoPrematuro)
             {
-                sb.AppendLine($"• <color=red>Abandono Prematuro: Seguridad reducida a 0%</color>");
                 listaPenalizacionesJson.Add("-100 pts: Abandono Prematuro de la intervención.");
             }
 
-            if (sb.Length < 60) sb.AppendLine("<color=green>Excelente: No se registraron penalizaciones.</color>");
+            // 2. CONSTRUCCIÓN DE LA UI (Agrupada y simple)
+            sb.AppendLine("<color=#DEFF9A><b>DESGLOSE DE PENALIZACIONES POR CATEGORÍA:</b></color>\n");
+
+            // --- SEGURIDAD Y NAVEGACIÓN (Índices 0 al 3) ---
+            if (puntosPerdidosTally[0] > 0 || puntosPerdidosTally[1] > 0 || puntosPerdidosTally[2] > 0 || puntosPerdidosTally[3] > 0 || abandonoPrematuro)
+            {
+                sb.AppendLine("<color=#00FFFF><b>[ SEGURIDAD Y NAVEGACIÓN ]</b></color>");
+                for (int i = 0; i <= 3; i++)
+                {
+                    if (puntosPerdidosTally[i] > 0) sb.AppendLine($"• {nombresParametros[i]}: <color=red>-{puntosPerdidosTally[i]:F1} pts</color>");
+                }
+                if (abandonoPrematuro) sb.AppendLine($"• Abandono Prematuro: <color=red>Seguridad reducida a 0%</color>");
+                sb.AppendLine();
+            }
+
+            // --- PROTOCOLO Y DIAGNÓSTICO (Índices 4 al 6) ---
+            if (puntosPerdidosTally[4] > 0 || puntosPerdidosTally[5] > 0 || puntosPerdidosTally[6] > 0 || penalizacionPorInaccion > 0)
+            {
+                sb.AppendLine("<color=#00FFFF><b>[ PROTOCOLO Y DIAGNÓSTICO ]</b></color>");
+                for (int i = 4; i <= 6; i++)
+                {
+                    if (puntosPerdidosTally[i] > 0) sb.AppendLine($"• {nombresParametros[i]}: <color=red>-{puntosPerdidosTally[i]:F1} pts</color>");
+                }
+                if (penalizacionPorInaccion > 0) sb.AppendLine($"• Inacción Quirúrgica: <color=orange>-{penalizacionPorInaccion:F1} pts</color>");
+                sb.AppendLine();
+            }
+
+            // --- TÉCNICA QUIRÚRGICA (Índices 7 al 9) ---
+            if (puntosPerdidosTally[7] > 0 || puntosPerdidosTally[8] > 0 || puntosPerdidosTally[9] > 0 || penalizacionPorInaccion > 0)
+            {
+                sb.AppendLine("<color=#00FFFF><b>[ TÉCNICA QUIRÚRGICA ]</b></color>");
+                for (int i = 7; i <= 9; i++)
+                {
+                    if (puntosPerdidosTally[i] > 0) sb.AppendLine($"• {nombresParametros[i]}: <color=red>-{puntosPerdidosTally[i]:F1} pts</color>");
+                }
+                if (penalizacionPorInaccion > 0) sb.AppendLine($"• Inacción Quirúrgica: <color=orange>-{penalizacionPorInaccion:F1} pts</color>");
+                sb.AppendLine();
+            }
+
+            if (sb.Length < 100 && !esGameOver)
+            {
+                sb.AppendLine("<color=green>Excelente: No se registraron penalizaciones.</color>");
+            }
 
             txtDetallePenalizaciones.text = sb.ToString();
 
@@ -706,6 +752,7 @@ public class MonitorEndoscopiaUI : MonoBehaviour
     {
         if (contextoConfirmacion == TipoConfirmacion.FinalizarProcedimiento)
         {
+            juegoTerminado = true;
             FinalizarSimulacion(); // Calcula nota y muestra resultados
         }
         else if (contextoConfirmacion == TipoConfirmacion.SalirAlMenu)

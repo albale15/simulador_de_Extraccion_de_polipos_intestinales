@@ -52,6 +52,7 @@ public class SistemaHerramientas : MonoBehaviour
     public bool estaCortando = false;
     public bool llevandoPolipo = false;
     public bool estaCongelado = false;
+    public bool juegoTerminado = false;
 
     // Sensor de zona de extracción
     [HideInInspector]
@@ -143,6 +144,7 @@ public class SistemaHerramientas : MonoBehaviour
 
     void Update()
     {
+        if (juegoTerminado) return;
         bool btnFreeze = false, btnCapture = false, btnZoom = false, btnSuccion = false, btnAccion = false, btnLimpiado = false;
         bool moviendo = false; // Sensor local de movimiento
         bool manteniendoSuccion = false;
@@ -203,16 +205,23 @@ public class SistemaHerramientas : MonoBehaviour
                 // Consumimos el input para que no dispare la succión de agua más abajo
                 btnSuccion = false;
             }
-            // 2. Interrupción: Si la succión automática está prendida, PERO el usuario mueve el endoscopio o toca otra herramienta, se cancela sola
-            else if (succionAutomatica && (moviendo || btnFreeze || btnCapture || btnZoom || btnAccion || btnLimpiado))
-            {
-                succionAutomatica = false;
-                // No mandamos el error aquí; el sistema de sangre más abajo detectará 
-                // que la succión se apagó prematuramente y lanzará la penalización médica.
-            }
+            //// 2. Interrupción: Si la succión automática está prendida, PERO el usuario mueve el endoscopio o toca otra herramienta, se cancela sola
+            //else if (succionAutomatica && (moviendo || btnFreeze || btnCapture || btnZoom || btnAccion || btnLimpiado))
+            //{
+            //    succionAutomatica = false;
+            //    // No mandamos el error aquí; el sistema de sangre más abajo detectará 
+            //    // que la succión se apagó prematuramente y lanzará la penalización médica.
+            //}
 
-            // Asignamos el estado del toggle a la variable que exige el sistema de sangre
-            manteniendoSuccion = succionAutomatica;
+            //// Asignamos el estado del toggle a la variable que exige el sistema de sangre
+            //manteniendoSuccion = succionAutomatica;
+
+            // Si la succión automática está encendida, forzamos que se mantenga succionando
+            // SIN importar si el endoscopio se mueve o gira.
+            if (succionAutomatica)
+            {
+                manteniendoSuccion = true;
+            }
         }
 
         Vector3 origenRayo = canalDeTrabajo.position;
@@ -291,7 +300,7 @@ public class SistemaHerramientas : MonoBehaviour
                 // Castigo por interrupción (Soltó el botón antes de tiempo)
                 if (estabaSuccionandoSangre)
                 {
-                    EnviarErrorUI(MonitorEndoscopiaUI.CategoriaEvaluacion.Seguridad, 1, "Manejo de Fluidos: Interrumpió la aspiración antes de controlar totalmente la hemorragia.");
+                    //EnviarErrorUI(MonitorEndoscopiaUI.CategoriaEvaluacion.Seguridad, 1, "Manejo de Fluidos: Interrumpió la aspiración antes de controlar totalmente la hemorragia.");
                     estabaSuccionandoSangre = false;
                 }
             }
@@ -1064,5 +1073,20 @@ public class SistemaHerramientas : MonoBehaviour
         }
     }
 
-    
+    public void ApagarSistema()
+    {
+        juegoTerminado = true;
+
+        // Matamos todas las corrutinas asíncronas (pinzas, lavados)
+        StopAllCoroutines();
+
+        // Apagamos los modelos 3D y partículas
+        if (pinzaDientes != null) pinzaDientes.SetActive(false);
+        if (pinzaAsas != null) pinzaAsas.SetActive(false);
+        if (cableHerramienta != null) cableHerramienta.enabled = false;
+        if (particulasSangrado != null) particulasSangrado.Stop();
+
+        // Apagamos el script completo
+        this.enabled = false;
+    }
 }

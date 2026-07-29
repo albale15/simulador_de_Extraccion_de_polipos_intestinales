@@ -556,4 +556,20 @@ public class EndoscopioCurvas : MonoBehaviour
         Quaternion objPunta = rotacionesGlobalesIniciales[0] * curvaPunta;
         huesos[0].rotation = Quaternion.Slerp(huesos[0].rotation, objPunta, Time.deltaTime * suavidadGiroHuesos);
     }
+    public void ApagarEndoscopio()
+    {
+        juegoTerminado = true;
+        controlActivo = false;
+        empujeFisico = 0f;
+
+        // Frenamos las físicas en seco
+        if (rb != null)
+        {
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            rb.constraints = RigidbodyConstraints.FreezeAll;
+        }
+
+        this.enabled = false;
+    }
 }
